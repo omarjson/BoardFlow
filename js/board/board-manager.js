@@ -2,7 +2,7 @@
 // Board CRUD Manager
 // ============================================
 
-class BoardManager {
+class _BoardManager {
   constructor() {
     this.boards = [];
     this.currentBoard = null;
@@ -141,4 +141,6 @@ class BoardManager {
   }
 }
 
-window.BoardManager = new BoardManager();
+try {
+  Object.defineProperty(window, 'BoardManager', { value: new _BoardManager(), writable: false, configurable: true, enumerable: true });
+} catch { window.BoardManager = new _BoardManager(); }

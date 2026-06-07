@@ -1,4 +1,4 @@
-class MediaPlayer {
+class _MediaPlayer {
   play(url, type, title) {
     Modal.show({
       title: Utils.escapeHtml(title || 'Media Player'),
@@ -27,4 +27,6 @@ class MediaPlayer {
   }
 }
 
-window.MediaPlayer = new MediaPlayer();
+try {
+  Object.defineProperty(window, 'MediaPlayer', { value: new _MediaPlayer(), writable: false, configurable: true, enumerable: true });
+} catch { window.MediaPlayer = new _MediaPlayer(); }

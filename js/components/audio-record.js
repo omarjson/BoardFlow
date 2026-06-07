@@ -2,7 +2,7 @@
 // Audio Recorder — In-Browser Recording
 // ============================================
 
-class AudioRecorder {
+class _AudioRecorder {
   constructor() {
     this.mediaRecorder = null;
     this.audioChunks = [];
@@ -134,4 +134,6 @@ class AudioRecorder {
   }
 }
 
-window.AudioRecorder = new AudioRecorder();
+try {
+  Object.defineProperty(window, 'AudioRecorder', { value: new _AudioRecorder(), writable: false, configurable: true, enumerable: true });
+} catch { window.AudioRecorder = new _AudioRecorder(); }

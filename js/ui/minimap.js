@@ -2,7 +2,7 @@
 // Mini-Map Navigation
 // ============================================
 
-class Minimap {
+class _Minimap {
   constructor() {
     this.el = null;
     this.ctx = null;
@@ -144,4 +144,6 @@ class Minimap {
   }
 }
 
-window.Minimap = new Minimap();
+try {
+  Object.defineProperty(window, 'Minimap', { value: new _Minimap(), writable: false, configurable: true, enumerable: true });
+} catch { window.Minimap = new _Minimap(); }

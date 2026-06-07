@@ -2,7 +2,7 @@
 // Board Chat — Real-time Messaging
 // ============================================
 
-class BoardChat {
+class _BoardChat {
   constructor() {
     this.panel = null;
     this.isOpen = false;
@@ -217,4 +217,6 @@ class BoardChat {
   }
 }
 
-window.BoardChat = new BoardChat();
+try {
+  Object.defineProperty(window, 'BoardChat', { value: new _BoardChat(), writable: false, configurable: true, enumerable: true });
+} catch { window.BoardChat = new _BoardChat(); }

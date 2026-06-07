@@ -2,7 +2,7 @@
 // Modal Dialog System
 // ============================================
 
-class Modal {
+class _Modal {
   constructor() {
     this.backdrop = null;
     this.isOpen = false;
@@ -83,4 +83,6 @@ class Modal {
   }
 }
 
-window.Modal = new Modal();
+try {
+  Object.defineProperty(window, 'Modal', { value: new _Modal(), writable: false, configurable: true, enumerable: true });
+} catch { window.Modal = new _Modal(); }

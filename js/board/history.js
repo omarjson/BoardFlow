@@ -2,7 +2,7 @@
 // Undo/Redo History System
 // ============================================
 
-class History {
+class _History {
   constructor() {
     this.undoStack = [];
     this.redoStack = [];
@@ -50,4 +50,4 @@ class History {
   }
 }
 
-window.BoardHistory = new History();
+window.BoardHistory = new _History();

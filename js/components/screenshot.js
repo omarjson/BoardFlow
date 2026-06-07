@@ -1,4 +1,4 @@
-class ScreenshotCapture {
+class _ScreenshotCapture {
   async captureAndUpload() {
     const file = await this.capture();
     if (!file) return null;
@@ -69,4 +69,6 @@ class ScreenshotCapture {
   destroy() {}
 }
 
-window.ScreenshotCapture = new ScreenshotCapture();
+try {
+  Object.defineProperty(window, 'ScreenshotCapture', { value: new _ScreenshotCapture(), writable: false, configurable: true, enumerable: true });
+} catch { window.ScreenshotCapture = new _ScreenshotCapture(); }

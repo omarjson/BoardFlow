@@ -2,7 +2,7 @@
 // Roadmap — Timeline Component
 // ============================================
 
-class Roadmap {
+class _Roadmap {
   render(item) {
     const el = document.createElement('div');
     el.className = `board-item roadmap-item ${ItemManager.selectedItems.has(item.id) ? 'selected' : ''}`;
@@ -185,4 +185,6 @@ class Roadmap {
   }
 }
 
-window.Roadmap = new Roadmap();
+try {
+  Object.defineProperty(window, 'Roadmap', { value: new _Roadmap(), writable: false, configurable: true, enumerable: true });
+} catch { window.Roadmap = new _Roadmap(); }

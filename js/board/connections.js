@@ -2,7 +2,7 @@
 // Connections — Lines Between Board Items
 // ============================================
 
-class Connections {
+class _Connections {
   constructor() {
     this.connections = [];
     this.svgEl = null;
@@ -212,4 +212,6 @@ class Connections {
   }
 }
 
-window.Connections = new Connections();
+try {
+  Object.defineProperty(window, 'Connections', { value: new _Connections(), writable: false, configurable: true, enumerable: true });
+} catch { window.Connections = new _Connections(); }

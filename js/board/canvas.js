@@ -2,7 +2,7 @@
 // Infinite Canvas — Pan, Zoom, Grid
 // ============================================
 
-class Canvas {
+class _Canvas {
   constructor() {
     this.el = null;
     this.container = null;
@@ -260,4 +260,6 @@ class Canvas {
   }
 }
 
-window.Canvas = new Canvas();
+try {
+  Object.defineProperty(window, 'Canvas', { value: new _Canvas(), writable: false, configurable: true, enumerable: true });
+} catch { window.Canvas = new _Canvas(); }

@@ -608,7 +608,7 @@ const BOARD_TEMPLATES = [
   }
 ];
 
-class TemplateEngine {
+class _TemplateEngine {
   getTemplate(id) {
     return BOARD_TEMPLATES.find(function(t) { return t.id === id; }) || null;
   }
@@ -671,4 +671,6 @@ class TemplateEngine {
   }
 }
 
-window.TemplateEngine = new TemplateEngine();
+try {
+  Object.defineProperty(window, 'TemplateEngine', { value: new _TemplateEngine(), writable: false, configurable: true, enumerable: true });
+} catch { window.TemplateEngine = new _TemplateEngine(); }

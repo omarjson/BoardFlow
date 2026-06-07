@@ -2,7 +2,7 @@
 // Sketch / Drawing Tool
 // ============================================
 
-class SketchTool {
+class _SketchTool {
   constructor() {
     this.canvas = null;
     this.ctx = null;

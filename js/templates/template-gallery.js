@@ -2,7 +2,7 @@
 // Template Gallery UI
 // ============================================
 
-class TemplateGallery {
+class _TemplateGallery {
   constructor() {
     this.selectedCategory = 'all';
   }
@@ -139,4 +139,6 @@ class TemplateGallery {
   }
 }
 
-window.TemplateGallery = new TemplateGallery();
+try {
+  Object.defineProperty(window, 'TemplateGallery', { value: new _TemplateGallery(), writable: false, configurable: true, enumerable: true });
+} catch { window.TemplateGallery = new _TemplateGallery(); }

@@ -5,7 +5,7 @@
 const DB_NAME = 'boardflow';
 const DB_VERSION = 1;
 
-class Storage {
+class _Storage {
   constructor() {
     this.db = null;
   }
@@ -113,4 +113,6 @@ class Storage {
   }
 }
 
-window.Storage = new Storage();
+try {
+  Object.defineProperty(window, 'Storage', { value: new _Storage(), writable: false, configurable: true, enumerable: true });
+} catch { window.Storage = new _Storage(); }

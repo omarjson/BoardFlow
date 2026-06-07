@@ -2,7 +2,7 @@
 // Video Upload Component
 // ============================================
 
-class VideoUpload {
+class _VideoUpload {
   async uploadAndAdd(x, y) {
     return new Promise((resolve) => {
       const input = document.createElement('input');
@@ -47,4 +47,6 @@ class VideoUpload {
   }
 }
 
-window.VideoUpload = new VideoUpload();
+try {
+  Object.defineProperty(window, 'VideoUpload', { value: new _VideoUpload(), writable: false, configurable: true, enumerable: true });
+} catch { window.VideoUpload = new _VideoUpload(); }

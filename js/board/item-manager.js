@@ -2,7 +2,7 @@
 // Item Manager — Create, Edit, Delete Board Items
 // ============================================
 
-class ItemManager {
+class _ItemManager {
   constructor() {
     this.items = [];
     this.boardId = null;
@@ -196,4 +196,6 @@ class ItemManager {
   }
 }
 
-window.ItemManager = new ItemManager();
+try {
+  Object.defineProperty(window, 'ItemManager', { value: new _ItemManager(), writable: false, configurable: true, enumerable: true });
+} catch { window.ItemManager = new _ItemManager(); }

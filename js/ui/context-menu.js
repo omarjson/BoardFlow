@@ -2,7 +2,7 @@
 // Context Menu
 // ============================================
 
-class ContextMenu {
+class _ContextMenu {
   constructor() {
     this.menu = null;
     this.onClose = null;
@@ -125,7 +125,9 @@ class ContextMenu {
   }
 }
 
-window.ContextMenu = new ContextMenu();
+try {
+  Object.defineProperty(window, 'ContextMenu', { value: new _ContextMenu(), writable: false, configurable: true, enumerable: true });
+} catch { window.ContextMenu = new _ContextMenu(); }
 
 // Add animation
 if (!document.getElementById('context-menu-styles')) {

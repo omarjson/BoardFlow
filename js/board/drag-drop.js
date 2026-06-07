@@ -2,7 +2,7 @@
 // Drag & Drop System
 // ============================================
 
-class DragDrop {
+class _DragDrop {
   constructor() {
     this.isDragging = false;
     this.dragElement = null;
@@ -125,4 +125,6 @@ class DragDrop {
   }
 }
 
-window.DragDrop = new DragDrop();
+try {
+  Object.defineProperty(window, 'DragDrop', { value: new _DragDrop(), writable: false, configurable: true, enumerable: true });
+} catch { window.DragDrop = new _DragDrop(); }

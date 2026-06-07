@@ -2,7 +2,7 @@
 // File Manager Component
 // ============================================
 
-class FileManager {
+class _FileManager {
   constructor() {
     this.files = [];
   }
@@ -236,4 +236,6 @@ class FileManager {
   }
 }
 
-window.FileManager = new FileManager();
+try {
+  Object.defineProperty(window, 'FileManager', { value: new _FileManager(), writable: false, configurable: true, enumerable: true });
+} catch { window.FileManager = new _FileManager(); }

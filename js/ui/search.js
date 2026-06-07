@@ -1,4 +1,4 @@
-class BoardSearch {
+class _BoardSearch {
   constructor() {
     this.overlay = null;
     this.input = null;
@@ -133,4 +133,6 @@ class BoardSearch {
   }
 }
 
-window.BoardSearch = new BoardSearch();
+try {
+  Object.defineProperty(window, 'BoardSearch', { value: new _BoardSearch(), writable: false, configurable: true, enumerable: true });
+} catch { window.BoardSearch = new _BoardSearch(); }

@@ -2,7 +2,7 @@
 // Link Card — URL Preview with OG Metadata
 // ============================================
 
-class LinkCard {
+class _LinkCard {
   async fetchMetadata(url) {
     try {
       const normalized = url.startsWith('http') ? url : 'https://' + url;
@@ -113,4 +113,6 @@ class LinkCard {
   }
 }
 
-window.LinkCard = new LinkCard();
+try {
+  Object.defineProperty(window, 'LinkCard', { value: new _LinkCard(), writable: false, configurable: true, enumerable: true });
+} catch { window.LinkCard = new _LinkCard(); }

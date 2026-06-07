@@ -2,7 +2,7 @@
 // BoardFlow SPA Router (Hash-based)
 // ============================================
 
-class Router {
+class _Router {
   constructor() {
     this.routes = {};
     this.currentRoute = null;
@@ -79,4 +79,4 @@ class Router {
   }
 }
 
-window.AppRouter = new Router();
+window.AppRouter = new _Router();

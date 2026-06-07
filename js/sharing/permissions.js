@@ -2,7 +2,7 @@
 // Permissions — Access Control
 // ============================================
 
-class Permissions {
+class _Permissions {
   constructor() {
     this.roles = ['owner', 'editor', 'viewer'];
   }
@@ -111,4 +111,6 @@ class Permissions {
   }
 }
 
-window.Permissions = new Permissions();
+try {
+  Object.defineProperty(window, 'Permissions', { value: new _Permissions(), writable: false, configurable: true, enumerable: true });
+} catch { window.Permissions = new _Permissions(); }

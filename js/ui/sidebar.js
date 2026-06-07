@@ -2,7 +2,7 @@
 // Sidebar Component
 // ============================================
 
-class Sidebar {
+class _Sidebar {
   constructor() {
     this.el = null;
     this.contentEl = null;
@@ -264,4 +264,6 @@ class Sidebar {
   }
 }
 
-window.Sidebar = new Sidebar();
+try {
+  Object.defineProperty(window, 'Sidebar', { value: new _Sidebar(), writable: false, configurable: true, enumerable: true });
+} catch { window.Sidebar = new _Sidebar(); }

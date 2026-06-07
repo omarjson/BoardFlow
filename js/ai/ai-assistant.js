@@ -2,7 +2,7 @@
 // AI Assistant — Puter.js Integration
 // ============================================
 
-class AIAssistant {
+class _AIAssistant {
   constructor() {
     this.panel = null;
     this.isOpen = false;
@@ -441,4 +441,6 @@ class AIAssistant {
   }
 }
 
-window.AIAssistant = new AIAssistant();
+try {
+  Object.defineProperty(window, 'AIAssistant', { value: new _AIAssistant(), writable: false, configurable: true, enumerable: true });
+} catch { window.AIAssistant = new _AIAssistant(); }

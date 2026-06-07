@@ -1,4 +1,4 @@
-const CACHE = 'boardflow-v5';
+const CACHE = 'boardflow-v6';
 const CRITICAL = [
   '/js/config.js',
   '/js/auth/auth.js',

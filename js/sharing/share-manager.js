@@ -1,4 +1,4 @@
-class ShareManager {
+class _ShareManager {
   async showShareDialog(boardId) {
     const board = BoardManager.boards.find(b => b.id === boardId);
     if (!board) return;
@@ -136,4 +136,6 @@ class ShareManager {
   }
 }
 
-window.ShareManager = new ShareManager();
+try {
+  Object.defineProperty(window, 'ShareManager', { value: new _ShareManager(), writable: false, configurable: true, enumerable: true });
+} catch { window.ShareManager = new _ShareManager(); }

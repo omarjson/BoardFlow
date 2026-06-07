@@ -2,7 +2,7 @@
 // Multi-Select System
 // ============================================
 
-class Selection {
+class _Selection {
   constructor() {
     this.isSelecting = false;
     this.startX = 0;
@@ -112,4 +112,6 @@ class Selection {
   }
 }
 
-window.Selection = new Selection();
+try {
+  Object.defineProperty(window, 'Selection', { value: new _Selection(), writable: false, configurable: true, enumerable: true });
+} catch { window.Selection = new _Selection(); }

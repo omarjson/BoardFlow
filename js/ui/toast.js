@@ -2,7 +2,7 @@
 // Toast Notification System
 // ============================================
 
-class Toast {
+class _Toast {
   constructor() {
     this.container = null;
     this.queue = [];
@@ -100,7 +100,9 @@ class Toast {
   }
 }
 
-window.Toast = new Toast();
+try {
+  Object.defineProperty(window, 'Toast', { value: new _Toast(), writable: false, configurable: true, enumerable: true });
+} catch { window.Toast = new _Toast(); }
 
 // Add toast animations
 if (!document.getElementById('toast-styles')) {
