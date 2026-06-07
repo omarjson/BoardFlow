@@ -16,7 +16,46 @@
       this.initNavScroll();
       this.initFAQ();
       this.initCounters();
+      this.initThemeToggle();
+      this.initLangSelector();
       this.initPreviewTilt();
+    },
+
+    // ---- Theme Toggle ----
+
+    initThemeToggle() {
+      const toggle = document.getElementById('theme-toggle');
+      if (!toggle) return;
+
+      const savedTheme = localStorage.getItem('boardflow_theme') || 'light';
+      document.documentElement.setAttribute('data-theme', savedTheme);
+
+      toggle.addEventListener('click', () => {
+        const current = document.documentElement.getAttribute('data-theme') || 'light';
+        const next = current === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('boardflow_theme', next);
+      });
+    },
+
+    // ---- Language Selector ----
+
+    initLangSelector() {
+      const selector = document.getElementById('lang-selector');
+      if (!selector) return;
+
+      const currentLang = localStorage.getItem('boardflow_lang') || 'en';
+      selector.value = currentLang;
+
+      selector.addEventListener('change', () => {
+        const lang = selector.value;
+        if (window.I18n && typeof window.I18n.setLanguage === 'function') {
+          window.I18n.setLanguage(lang);
+        } else {
+          localStorage.setItem('boardflow_lang', lang);
+          location.reload();
+        }
+      });
     },
 
     // ---- Scroll-Triggered Reveals ----
