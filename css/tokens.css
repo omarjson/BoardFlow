@@ -38,6 +38,12 @@
   --danger: #D32F2F;
   --info: #0066CC;
 
+  /* ---- Mesh gradient blobs ---- */
+  --mesh-blob-1: rgba(0, 102, 204, 0.10);
+  --mesh-blob-2: rgba(124, 58, 237, 0.08);
+  --mesh-blob-3: rgba(236, 72, 153, 0.06);
+  --mesh-blob-4: rgba(34, 211, 238, 0.07);
+
   /* ---- Radius: Pills for ALL interactive elements ---- */
   --radius-pill: 9999px;
   --radius-card: 12px;
@@ -225,6 +231,11 @@
   --warning: #FF9F0A;
   --danger: #FF453A;
   --info: #64D2FF;
+
+  --mesh-blob-1: rgba(10, 132, 255, 0.18);
+  --mesh-blob-2: rgba(124, 58, 237, 0.16);
+  --mesh-blob-3: rgba(236, 72, 153, 0.12);
+  --mesh-blob-4: rgba(34, 211, 238, 0.14);
 
   --glass-1: rgba(28, 28, 30, 0.60);
   --glass-2: rgba(28, 28, 30, 0.78);
