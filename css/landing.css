@@ -1918,7 +1918,8 @@
   }
 
   .landing-hero {
-    padding: 40px 0 32px;
+    display: block;
+    padding: 48px 0 40px;
     min-height: auto;
   }
 

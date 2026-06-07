@@ -174,8 +174,12 @@
 
       footerObserver.observe(footer);
 
-      window.addEventListener('scroll', () => {
-        const scrollY = window.scrollY;
+      const scrollContainer = document.querySelector('.landing-page');
+
+      if (!scrollContainer) return;
+
+      scrollContainer.addEventListener('scroll', () => {
+        const scrollY = scrollContainer.scrollTop;
         const scrolledDown = scrollY > lastScrollY;
         const pastHero = scrollY > 400;
 
@@ -197,9 +201,13 @@
 
       if (!nav && !legalNav) return;
 
-      window.addEventListener('scroll', () => {
-        if (nav) nav.classList.toggle('scrolled', window.scrollY > 20);
-        if (legalNav) legalNav.classList.toggle('scrolled', window.scrollY > 20);
+      const scrollContainer = document.querySelector('.landing-page, .legal-page');
+
+      if (!scrollContainer) return;
+
+      scrollContainer.addEventListener('scroll', () => {
+        if (nav) nav.classList.toggle('scrolled', scrollContainer.scrollTop > 20);
+        if (legalNav) legalNav.classList.toggle('scrolled', scrollContainer.scrollTop > 20);
       }, { passive: true });
     },
 
