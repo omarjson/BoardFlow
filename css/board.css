@@ -72,7 +72,7 @@
 }
 
 .sticky-note .note-title {
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xs);
   outline: none;
@@ -80,7 +80,7 @@
 }
 
 .sticky-note .note-content {
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   white-space: pre-wrap;
   outline: none;
@@ -97,14 +97,14 @@
 }
 
 .rich-note .note-title {
-  font-size: var(--text-body);
+  font-size: var(--text-body-size);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xs);
   outline: none;
 }
 
 .rich-note .note-content {
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   outline: none;
   min-height: 100px;
   white-space: pre-wrap;
@@ -169,7 +169,7 @@
 
 .file-item-info {
   padding: var(--space-xs) var(--space-sm);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   white-space: nowrap;
   overflow: hidden;

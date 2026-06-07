@@ -30,7 +30,7 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-xs);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   border: none;
   background: none;
@@ -85,7 +85,7 @@
   width: 32px;
   height: 32px;
   border-radius: var(--radius-xs);
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   color: var(--ink-secondary);
   border: none;
   background: none;

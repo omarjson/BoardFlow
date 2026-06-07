@@ -93,12 +93,18 @@
 
     initSmoothScroll() {
       document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-        const targetId = anchor.getAttribute('href').slice(1);
+        const href = anchor.getAttribute('href');
+        if (!href || href === '#') return;
+
+        // Skip SPA route links (/#/login, /#/signup, etc.) — let the router handle those
+        if (href.startsWith('#/')) return;
+
+        // Only handle same-page anchor links (#features, #pricing, etc.)
+        const targetId = href.slice(1);
         const target = document.getElementById(targetId);
         if (!target) return;
 
         anchor.addEventListener('click', (e) => {
-          if (anchor.getAttribute('href') === '#') return;
           e.preventDefault();
           target.scrollIntoView({ behavior: 'smooth', block: 'start' });
         });
@@ -129,18 +135,13 @@
 
       window.addEventListener('scroll', () => {
         const scrollY = window.scrollY;
-        const docHeight = document.documentElement.scrollHeight - window.innerHeight;
-        const scrollPercent = scrollY / docHeight;
+        const scrolledDown = scrollY > lastScrollY;
+        const pastHero = scrollY > 400;
 
-        if (scrollPercent > 0.15 && scrollY > lastScrollY && !footerVisible) {
+        if (pastHero && scrolledDown && !footerVisible) {
           sticky.classList.add('visible');
-        } else if (scrollPercent < 0.1 || scrollY < lastScrollY || footerVisible) {
+        } else if (!scrolledDown || footerVisible) {
           sticky.classList.remove('visible');
-        }
-
-        // Show on any scroll past hero when scrolling down
-        if (scrollY > 600 && scrollY > lastScrollY && !footerVisible) {
-          sticky.classList.add('visible');
         }
 
         lastScrollY = scrollY;
@@ -173,10 +174,15 @@
         question.addEventListener('click', () => {
           const isOpen = item.classList.contains('open');
 
-          items.forEach(i => i.classList.remove('open'));
+          items.forEach(i => {
+            i.classList.remove('open');
+            const btn = i.querySelector('.landing-faq-question');
+            if (btn) btn.setAttribute('aria-expanded', 'false');
+          });
 
           if (!isOpen) {
             item.classList.add('open');
+            question.setAttribute('aria-expanded', 'true');
           }
         });
       });
@@ -205,7 +211,7 @@
       if (isNaN(target)) return;
 
       const suffix = el.getAttribute('data-suffix') || '';
-      const duration = Math.min(2000, target * 15);
+      const duration = 1200;
       const start = performance.now();
 
       function update(now) {

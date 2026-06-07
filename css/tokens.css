@@ -67,7 +67,7 @@
   --font-sans: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
   --font-mono: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
 
-  /* ---- Typography: Fluid Scale ---- */
+  /* ---- Typography: Font Shorthands (use with `font:` property) ---- */
   --text-display: 700 clamp(36px, 5.5vw, 64px)/1.0 var(--font-sans);
   --text-h1: 700 clamp(28px, 4vw, 40px)/1.1 var(--font-sans);
   --text-h2: 700 clamp(22px, 3vw, 32px)/1.1 var(--font-sans);
@@ -79,6 +79,19 @@
   --text-caption: 400 14px/1.5 var(--font-sans);
   --text-xs: 500 12px/1.3 var(--font-sans);
   --text-eyebrow: 600 11px/1.2 var(--font-sans);
+
+  /* ---- Typography: Size-only (use with `font-size:` property) ---- */
+  --text-display-size: clamp(36px, 5.5vw, 64px);
+  --text-h1-size: clamp(28px, 4vw, 40px);
+  --text-h2-size: clamp(22px, 3vw, 32px);
+  --text-h3-size: 22px;
+  --text-h4-size: 18px;
+  --text-body-size: 16px;
+  --text-body-sm-size: 15px;
+  --text-button-size: 15px;
+  --text-caption-size: 14px;
+  --text-xs-size: 12px;
+  --text-eyebrow-size: 11px;
 
   /* ---- Elevation ---- */
   --shadow-flat: 0 0 0 0 transparent;
@@ -125,7 +138,7 @@
   --radius-full: var(--radius-pill);
   --radius-lg: var(--radius-card);
   --radius-md: var(--radius-sm);
-  --radius-xs: var(--radius-xs);
+  --radius-xxs: var(--radius-xs);
 
   /* Spacing */
   --space-xxs: var(--space-1);
@@ -138,19 +151,13 @@
   --space-3xl: var(--space-12);
   --space-4xl: var(--space-16);
 
-  /* Typography scale aliases */
+  /* Typography scale aliases — only alias NEW names, never overwrite shorthand tokens */
   --text-display-1: 64px;
   --text-display-2: 54px;
   --text-heading-1: var(--text-h1);
   --text-heading-2: var(--text-h2);
   --text-heading-3: var(--text-h3);
   --text-title: var(--text-h4);
-  --text-body: 16px;
-  --text-body-sm: 15px;
-  --text-button: 15px;
-  --text-caption: 14px;
-  --text-eyebrow: 12px;
-  --text-xs: 11px;
 
   /* Typography weight aliases */
   --weight-normal: 400;

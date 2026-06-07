@@ -12,7 +12,7 @@
 
 .btn-sm {
   padding: 6px var(--space-md);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
 }
 
 .fm-list::-webkit-scrollbar {
@@ -65,7 +65,7 @@
 .file-item-info {
   padding: var(--space-xs) var(--space-md);
   border-top: 1px solid var(--hairline);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   overflow: hidden;
   text-overflow: ellipsis;

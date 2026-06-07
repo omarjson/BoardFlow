@@ -35,7 +35,7 @@
   background: var(--canvas-soft);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   color: var(--ink);
 }
 

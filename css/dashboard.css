@@ -40,7 +40,7 @@
 }
 
 .dashboard-header h1 {
-  font-size: var(--text-title);
+  font-size: var(--text-h4-size);
   font-weight: var(--weight-semibold);
   background: linear-gradient(135deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 70%, var(--primary)) 100%);
   -webkit-background-clip: text;
@@ -135,7 +135,7 @@
 }
 
 .board-card-title {
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xxs);
   overflow: hidden;
@@ -145,7 +145,7 @@
 }
 
 .board-card-date {
-  font-size: var(--text-xs);
+  font-size: var(--text-xs-size);
   color: var(--ink-muted);
 }
 
@@ -167,7 +167,7 @@
 
 .board-card-actions .btn {
   padding: var(--space-xxs) var(--space-xs);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   background: var(--glass-3);
   -webkit-backdrop-filter: blur(var(--blur-md));
   backdrop-filter: blur(var(--blur-md));
@@ -232,7 +232,7 @@
 }
 
 .dashboard-empty h2 {
-  font-size: var(--text-heading-3);
+  font-size: var(--text-h3-size);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xs);
   background: linear-gradient(135deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 60%, var(--primary)) 100%);

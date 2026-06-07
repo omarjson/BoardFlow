@@ -30,7 +30,7 @@
   flex: 1;
   padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-xs);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   font-weight: var(--weight-medium);
   color: var(--ink-secondary);
   transition: var(--transition-fast);
@@ -59,7 +59,7 @@
 }
 
 .auth-form .form-group label {
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   font-weight: var(--weight-medium);
   color: var(--ink-secondary);
 }
@@ -70,7 +70,7 @@
   background: var(--canvas-soft);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   transition: var(--transition-fast);
 }
 
@@ -94,7 +94,7 @@
   gap: var(--space-md);
   margin: var(--space-md) 0;
   color: var(--ink-muted);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
 }
 
 .auth-divider::before,
@@ -108,7 +108,7 @@
 .auth-message {
   padding: var(--space-xs) var(--space-md);
   border-radius: var(--radius-md);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   display: none;
 }
 
@@ -131,7 +131,7 @@
 .auth-footer {
   text-align: center;
   margin-top: var(--space-lg);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
 }
 
@@ -151,4 +151,34 @@
 
 .auth-card .btn-secondary {
   margin-top: 0;
+}
+
+/* Autofill overrides */
+.auth-form .form-group input:-webkit-autofill,
+.auth-form .form-group input:-webkit-autofill:hover,
+.auth-form .form-group input:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px var(--surface) inset;
+  -webkit-text-fill-color: var(--ink);
+  transition: background-color 5000s ease-in-out 0s;
+}
+
+/* Tab focus-visible */
+.auth-tab:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Auth page back link */
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  font-size: var(--text-caption-size);
+  color: var(--ink-muted);
+  text-decoration: none;
+  margin-top: var(--space-sm);
+}
+
+.auth-back-link:hover {
+  color: var(--ink-secondary);
 }

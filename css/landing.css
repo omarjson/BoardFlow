@@ -464,6 +464,22 @@
   z-index: 10;
 }
 
+[data-theme="dark"] .preview-note {
+  color: var(--ink);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2), 0 4px 16px rgba(0,0,0,0.15);
+}
+
+[data-theme="dark"] .preview-note:nth-child(1) { background: #3d3a1a !important; }
+[data-theme="dark"] .preview-note:nth-child(2) { background: #1a3d22 !important; }
+[data-theme="dark"] .preview-note:nth-child(3) { background: #1a2d3d !important; }
+[data-theme="dark"] .preview-note:nth-child(4) { background: #3d1a2d !important; }
+[data-theme="dark"] .preview-note:nth-child(5) { background: #2d1a3d !important; }
+[data-theme="dark"] .preview-note:nth-child(6) { background: #3d2d1a !important; }
+
+[data-theme="dark"] .preview-note:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.3), 0 8px 24px rgba(0,0,0,0.2);
+}
+
 @keyframes preview-float {
   0% { transform: translateY(0); }
   100% { transform: translateY(-6px); }
@@ -827,6 +843,7 @@
 .landing-vision-visual {
   position: relative;
   height: 380px;
+  overflow: hidden;
 }
 
 .vision-float-card {
@@ -888,15 +905,6 @@
     0 12px 40px rgba(0,0,0,0.04);
   position: relative;
   overflow: hidden;
-}
-
-.landing-pricing-card.featured {
-  border-color: var(--primary);
-  box-shadow:
-    0 1px 3px rgba(0,0,0,0.04),
-    0 4px 12px rgba(0,0,0,0.04),
-    0 12px 40px rgba(0,117,222,0.08),
-    0 0 0 1px rgba(0,117,222,0.2);
 }
 
 .landing-pricing-badge {
@@ -1488,7 +1496,7 @@
   }
 
   .landing-footer-grid {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: 2fr 1fr;
     gap: 32px;
   }
 
@@ -1743,3 +1751,58 @@
     padding: 24px;
   }
 }
+
+/* ---- Landing Utility Classes ---- */
+
+/* Preview note positions and colors */
+.preview-note-1 { top: 12%; left: 8%; background: #fffde7; transform: rotate(-3deg); }
+.preview-note-2 { top: 5%; left: 55%; background: #e8f5e9; transform: rotate(2deg); }
+.preview-note-3 { top: 50%; left: 20%; background: #e3f2fd; transform: rotate(-1deg); }
+.preview-note-4 { top: 45%; left: 60%; background: #fce4ec; transform: rotate(3deg); }
+.preview-note-5 { top: 72%; left: 5%; background: #f3e5f5; transform: rotate(-2deg); }
+.preview-note-6 { top: 68%; left: 50%; background: #fff3e0; transform: rotate(1deg); }
+
+/* Feature icon backgrounds */
+.feature-icon-blue { background: rgba(0,117,222,0.1); color: var(--primary); }
+.feature-icon-purple { background: rgba(57,28,87,0.08); color: var(--accent-purple-deep); }
+.feature-icon-teal { background: rgba(42,157,153,0.1); color: var(--accent-teal); }
+.feature-icon-pink { background: rgba(194,24,91,0.08); color: #c2185b; }
+.feature-icon-green { background: rgba(46,125,50,0.08); color: #2e7d32; }
+.feature-icon-orange { background: rgba(221,91,0,0.08); color: var(--accent-orange); }
+
+/* Use case icon colors */
+.usecase-icon-blue { color: var(--primary); }
+.usecase-icon-purple { color: var(--accent-purple-deep); }
+.usecase-icon-teal { color: var(--accent-teal); }
+.usecase-icon-orange { color: var(--accent-orange); }
+.usecase-icon-pink { color: var(--accent-pink); }
+.usecase-icon-green { color: var(--accent-green); }
+
+/* Stat number colors */
+.stat-blue { color: var(--primary); }
+.stat-purple { color: var(--accent-purple); }
+.stat-teal { color: var(--accent-teal); }
+.stat-orange { color: var(--accent-orange); }
+
+/* Vision float cards */
+.vision-card-1 { --delay: 0s; left: 5%; top: 10%; }
+.vision-card-2 { --delay: 0.5s; left: 55%; top: 5%; }
+.vision-card-3 { --delay: 1s; left: 28%; top: 55%; }
+.vision-card-4 { --delay: 1.5s; left: 62%; top: 48%; }
+
+/* Tech logo backgrounds */
+.tech-logo-blue { background: rgba(59,130,246,0.1); color: #3b82f6; }
+.tech-logo-green { background: rgba(16,185,129,0.1); color: #10b981; }
+.tech-logo-orange { background: rgba(249,115,22,0.1); color: #f97316; }
+.tech-logo-yellow { background: rgba(234,179,8,0.1); color: #eab308; }
+.tech-logo-violet { background: rgba(139,92,246,0.1); color: #8b5cf6; }
+.tech-logo-emerald { background: rgba(34,197,94,0.1); color: #22c55e; }
+
+/* Pricing badge */
+.pricing-badge-blue { background: rgba(100,210,255,0.1); border-color: rgba(100,210,255,0.2); color: #64d2ff; }
+
+/* Section dark pricing badge */
+.section-dark .landing-badge { background: rgba(10,132,255,0.15); border-color: rgba(10,132,255,0.2); color: #64d2ff; }
+
+/* Gradient text rainbow */
+.gradient-text-rainbow { background: linear-gradient(135deg, #64d2ff 0%, #a78bfa 40%, #f472b6 70%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }

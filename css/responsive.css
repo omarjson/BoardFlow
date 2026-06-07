@@ -206,7 +206,7 @@
   background: var(--surface);
   border: 1px solid var(--hairline);
   box-shadow: var(--shadow-soft);
-  font-size: var(--text-body);
+  font-size: var(--text-body-size);
   cursor: pointer;
   align-items: center;
   justify-content: center;
@@ -225,7 +225,7 @@
   padding: var(--space-xs) var(--space-md);
   background: var(--primary);
   color: var(--ink-inverse);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   border-radius: var(--radius-md);
   cursor: pointer;
 }
@@ -254,8 +254,10 @@
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    transition-duration: 0.01ms !important;
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+    transition-duration: 0s !important;
+    transition-delay: 0s !important;
   }
 }
 

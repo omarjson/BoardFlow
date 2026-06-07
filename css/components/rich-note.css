@@ -39,7 +39,7 @@
   width: 26px;
   height: 26px;
   border-radius: var(--radius-xs);
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   border: none;
   background: none;
@@ -68,7 +68,7 @@
   cursor: pointer;
   padding: 2px 6px;
   border-radius: var(--radius-xs);
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   color: var(--ink-secondary);
   transition: background 0.1s ease;
   line-height: 1;
@@ -79,7 +79,7 @@
 }
 
 .rich-note .note-title {
-  font-size: var(--text-body);
+  font-size: var(--text-body-size);
   font-weight: var(--weight-semibold);
   padding: var(--space-xs) var(--space-md) 0;
   outline: none;
@@ -89,7 +89,7 @@
 }
 
 .rich-note .note-content {
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   padding: var(--space-xs) var(--space-md) var(--space-md);
   outline: none;
   border: none;
@@ -107,13 +107,13 @@
 }
 
 .rich-text-content h3 {
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
   font-weight: var(--weight-bold);
   margin: var(--space-xs) 0 var(--space-xxs);
 }
 
 .rich-text-content h4 {
-  font-size: var(--text-caption);
+  font-size: var(--text-caption-size);
   font-weight: var(--weight-semibold);
   margin: var(--space-xs) 0 var(--space-xxs);
 }
@@ -135,7 +135,7 @@
 
 .rich-text-content .checklist-item::before {
   content: '☐';
-  font-size: var(--text-body-sm);
+  font-size: var(--text-body-sm-size);
 }
 
 .rich-text-content strong {
