@@ -180,6 +180,10 @@
   --sidebar-width: 260px;
   --toolbar-height: 48px;
   --canvas-grid-color: #d8d7d5;
+
+  /* ---- Sticky Note Colors ---- */
+  --sticky-bg: #fffde7;
+  --sticky-border: #f5e6a3;
 }
 
 /* ============================================
@@ -248,4 +252,8 @@
   --mesh-blob-4: rgba(34, 211, 238, 0.14);
 
   --canvas-grid-color: #3a3a3c;
+
+  /* ---- Sticky Note Colors ---- */
+  --sticky-bg: #2c2c2e;
+  --sticky-border: #3a3a3c;
 }

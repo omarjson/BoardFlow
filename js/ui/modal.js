@@ -17,7 +17,7 @@ class _Modal {
       <div class="modal" role="dialog" aria-modal="true" aria-label="${title}">
         <div class="modal-header">
           <h3 class="modal-title">${title}</h3>
-          <button class="modal-close btn btn-ghost" aria-label="Close">&times;</button>
+          <button class="modal-close btn btn-ghost" aria-label="Close" style="display: flex; align-items: center; justify-content: center;">${Icons.close}</button>
         </div>
         <div class="modal-body">${content}</div>
         <div class="modal-footer">

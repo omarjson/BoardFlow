@@ -1,32 +1,8 @@
-.board-page {
-  position: relative;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-}
+/* ============================================
+   Board Canvas — Component-Specific Styles
+   ============================================ */
 
-.board-canvas {
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  overflow: hidden;
-  cursor: grab;
-  background: var(--canvas-soft);
-  touch-action: none;
-}
-
-.board-canvas:active {
-  cursor: grabbing;
-}
-
-.canvas-container {
-  position: absolute;
-  transform-origin: 0 0;
-  will-change: transform;
-}
-
+/* Canvas grid dots */
 .canvas-grid {
   position: absolute;
   top: -5000px;
@@ -36,27 +12,13 @@
   pointer-events: none;
 }
 
-.board-item {
-  position: absolute;
-  cursor: move;
-  user-select: none;
-  transition: box-shadow 0.15s ease;
-}
-
-.board-item:hover {
-  box-shadow: var(--shadow-soft);
-}
-
-.board-item.selected {
-  outline: 2px solid var(--primary);
-  outline-offset: 2px;
-}
-
+/* Board item — drag state */
 .board-item.dragging {
   opacity: 0.9;
   z-index: 9999 !important;
 }
 
+/* Resize handles */
 .item-resize-handle {
   position: absolute;
   width: 10px;
@@ -72,6 +34,7 @@
 .item-resize-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
 .item-resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
 
+/* Rotate handle */
 .item-rotate-handle {
   position: absolute;
   top: -30px;
@@ -97,13 +60,15 @@
   background: var(--primary);
 }
 
+/* Sticky note */
 .sticky-note {
-  background: #fffde7;
+  background: var(--sticky-bg, #fffde7);
   padding: var(--space-md);
-  border-radius: 2px;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-soft);
   font-family: var(--font-sans);
   overflow: hidden;
+  border: 1px solid color-mix(in srgb, var(--sticky-bg, #fffde7) 80%, transparent);
 }
 
 .sticky-note .note-title {
@@ -111,6 +76,7 @@
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xs);
   outline: none;
+  color: var(--ink);
 }
 
 .sticky-note .note-content {
@@ -121,6 +87,7 @@
   min-height: 60px;
 }
 
+/* Rich note */
 .rich-note {
   background: var(--surface);
   border: 1px solid var(--hairline);
@@ -143,27 +110,88 @@
   white-space: pre-wrap;
 }
 
+/* Selection box (drag-select) */
 .selection-box {
   position: absolute;
   border: 2px dashed var(--primary);
-  background: rgba(0, 122, 255, 0.1);
+  background: color-mix(in srgb, var(--primary) 10%, transparent);
   pointer-events: none;
   z-index: 10000;
 }
 
+/* Item type badge (hover label) */
 .item-type-badge {
   position: absolute;
   top: 4px;
   right: 4px;
   font-size: 10px;
-  background: rgba(0,0,0,0.5);
-  color: white;
+  background: var(--ink);
+  color: var(--ink-inverse);
   padding: 2px 6px;
   border-radius: var(--radius-xs);
   opacity: 0;
   transition: opacity 0.15s ease;
+  pointer-events: none;
 }
 
 .board-item:hover .item-type-badge {
-  opacity: 1;
+  opacity: 0.7;
+}
+
+/* File item (image, video, audio, file) */
+.file-item {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.file-item-preview {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--canvas-soft);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  overflow: hidden;
+  min-height: 100px;
+}
+
+.file-item-preview img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.file-item-preview .file-icon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.file-item-info {
+  padding: var(--space-xs) var(--space-sm);
+  font-size: var(--text-caption);
+  color: var(--ink-secondary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-top: 1px solid var(--hairline);
+}
+
+/* Sketch item */
+.sketch-item {
+  overflow: hidden;
+}
+
+.sketch-container {
+  width: 100%;
+  height: 100%;
+}
+
+/* Media player item */
+.media-player-item {
+  cursor: pointer;
+}
+
+.media-player-item .file-item-preview {
+  cursor: pointer;
 }

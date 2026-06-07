@@ -133,14 +133,14 @@ const ImageUtils = {
   },
 
   getFileIcon(mimeType) {
-    if (mimeType.startsWith('image/')) return '🖼';
-    if (mimeType.startsWith('video/')) return '🎬';
-    if (mimeType.startsWith('audio/')) return '🎵';
-    if (mimeType.startsWith('text/')) return '📄';
-    if (mimeType.includes('pdf')) return '📕';
-    if (mimeType.includes('zip') || mimeType.includes('rar')) return '📦';
-    if (mimeType.includes('json') || mimeType.includes('javascript')) return '📋';
-    return '📎';
+    if (mimeType.startsWith('image/')) return Icons.camera;
+    if (mimeType.startsWith('video/')) return Icons.video;
+    if (mimeType.startsWith('audio/')) return Icons.mic;
+    if (mimeType.startsWith('text/')) return Icons.richNote;
+    if (mimeType.includes('pdf')) return Icons.file;
+    if (mimeType.includes('zip') || mimeType.includes('rar')) return Icons.file;
+    if (mimeType.includes('json') || mimeType.includes('javascript')) return Icons.file;
+    return Icons.file;
   }
 };
 

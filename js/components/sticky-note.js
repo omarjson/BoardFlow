@@ -41,7 +41,7 @@ const StickyNote = {
         <div class="note-title" contenteditable="true" data-field="title" placeholder="Title...">${Utils.escapeHtml(item.title)}</div>
         <div class="note-content" contenteditable="true" data-field="content" placeholder="Write something...">${Utils.escapeHtml(item.content)}</div>
       </div>
-      <div class="item-type-badge">📝 Note</div>
+      <div class="item-type-badge">Note</div>
     `;
 
     // Event handlers
@@ -146,11 +146,11 @@ const StickyNote = {
 
   _showContextMenu(e, item) {
     ContextMenu.show(e.clientX, e.clientY, [
-      { icon: '✏️', label: 'Edit', action: () => {
+      { icon: Icons.edit, label: 'Edit', action: () => {
         const titleEl = document.querySelector(`[data-id="${item.id}"] .note-title`);
         if (titleEl) titleEl.focus();
       }},
-      { icon: '📋', label: 'Duplicate', action: async () => {
+      { icon: Icons.board, label: 'Duplicate', action: async () => {
         await ItemManager.createItem('sticky_note', {
           x: item.position_x + 20,
           y: item.position_y + 20,
@@ -161,14 +161,14 @@ const StickyNote = {
           color: item.color
         });
       }},
-      { icon: '📎', label: 'Copy', shortcut: 'Ctrl+C', action: () => {
+      { icon: Icons.file, label: 'Copy', shortcut: 'Ctrl+C', action: () => {
         navigator.clipboard?.writeText(item.content || '');
       }},
       { separator: true },
-      { icon: '⬆️', label: 'Bring to Front', action: () => ItemManager.bringToFront(item.id) },
-      { icon: '⬇️', label: 'Send to Back', action: () => ItemManager.sendToBack(item.id) },
+      { icon: Icons.arrowLeft, label: 'Bring to Front', action: () => ItemManager.bringToFront(item.id) },
+      { icon: Icons.arrowLeft, label: 'Send to Back', action: () => ItemManager.sendToBack(item.id) },
       { separator: true },
-      { icon: '🗑', label: 'Delete', shortcut: 'Del', danger: true, action: () => ItemManager.deleteItem(item.id) }
+      { icon: Icons.trash, label: 'Delete', shortcut: 'Del', danger: true, action: () => ItemManager.deleteItem(item.id) }
     ]);
   }
 };

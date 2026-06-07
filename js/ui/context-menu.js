@@ -54,8 +54,9 @@ class _ContextMenu {
 
       if (item.icon) {
         const icon = document.createElement('span');
-        icon.textContent = item.icon;
-        icon.style.cssText = 'width: 20px; text-align: center; font-size: var(--text-base);';
+        icon.className = 'context-menu-icon';
+        icon.style.cssText = 'width: 18px; height: 18px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: inherit;';
+        icon.innerHTML = item.icon;
         btn.appendChild(icon);
       }
 

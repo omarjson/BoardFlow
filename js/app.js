@@ -164,10 +164,10 @@ function renderDashboardMain() {
     container.innerHTML = `
       <div class="dashboard-main">
         <div class="dashboard-empty">
-          <div class="dashboard-empty-icon">📋</div>
+          <div class="dashboard-empty-icon" style="color: var(--primary);">${Icons.board}</div>
           <h2 data-i18n="no_boards_yet">No boards yet</h2>
           <p data-i18n="no_boards_desc">Create your first board to get started. You can choose a template or start blank.</p>
-          <button class="btn btn-primary" id="dashboard-new-board" data-i18n="new_board">+ New Board</button>
+          <button class="btn btn-primary" id="dashboard-new-board" style="display: flex; align-items: center; gap: var(--space-xs);">${Icons.plus} <span data-i18n="new_board">New Board</span></button>
         </div>
       </div>
     `;
@@ -179,21 +179,21 @@ function renderDashboardMain() {
       <div class="dashboard-main">
         <div class="dashboard-header">
           <h1 data-i18n="my_boards">My Boards</h1>
-          <button class="btn btn-primary" id="dashboard-new-board" data-i18n="new_board">+ New Board</button>
+          <button class="btn btn-primary" id="dashboard-new-board" style="display: flex; align-items: center; gap: var(--space-xs);">${Icons.plus} <span data-i18n="new_board">New Board</span></button>
         </div>
         <div class="dashboard-grid" id="dashboard-grid">
           ${boards.map(board => `
             <div class="board-card" data-id="${board.id}">
               <div class="board-card-preview">
-                <div class="board-icon">📋</div>
+                <div class="board-icon" style="color: var(--primary);">${Icons.board}</div>
               </div>
               <div class="board-card-body">
                 <div class="board-card-title">${Utils.escapeHtml(board.title)}</div>
                 <div class="board-card-date">${formatDate(board.updated_at)}</div>
               </div>
               <div class="board-card-actions">
-                <button class="btn board-rename" data-id="${board.id}" title="${I18n.__('rename')}">✏️</button>
-                <button class="btn board-delete" data-id="${board.id}" title="${I18n.__('delete')}">🗑</button>
+                <button class="btn board-rename" data-id="${board.id}" title="${I18n.__('rename')}">${Icons.edit}</button>
+                <button class="btn board-delete" data-id="${board.id}" title="${I18n.__('delete')}">${Icons.trash}</button>
               </div>
             </div>
           `).join('')}
@@ -360,26 +360,26 @@ async function initBoard(boardId) {
       e.preventDefault();
       const canvasPos = Canvas.screenToCanvas(e.clientX, e.clientY);
       ContextMenu.show(e.clientX, e.clientY, [
-        { icon: '📝', label: I18n.__('add_note'), action: async () => {
+        { icon: Icons.note, label: I18n.__('add_note'), action: async () => {
           await ItemManager.createItem('sticky_note', {
             x: canvasPos.x, y: canvasPos.y,
             title: 'New Note', content: '', color: '#fffde7'
           });
         }},
-        { icon: '📄', label: I18n.__('add_rich_note'), action: async () => {
+        { icon: Icons.richNote, label: I18n.__('add_rich_note'), action: async () => {
           await ItemManager.createItem('rich_note', {
             x: canvasPos.x - 150, y: canvasPos.y - 125,
             title: 'New Note', content: '', width: 300, height: 250
           });
         }},
-        { icon: '🎨', label: I18n.__('add_sketch'), action: async () => {
+        { icon: Icons.sketch, label: I18n.__('add_sketch'), action: async () => {
           await ItemManager.createItem('sketch', {
             x: canvasPos.x - 200, y: canvasPos.y - 150,
             title: 'Sketch', width: 400, height: 300
           });
         }},
-        { icon: '📁', label: I18n.__('upload_file'), action: () => FileManager.show() },
-        { icon: '🔗', label: I18n.__('add_link'), action: () => {
+        { icon: Icons.upload, label: I18n.__('upload_file'), action: () => FileManager.show() },
+        { icon: Icons.link, label: I18n.__('add_link'), action: () => {
           Modal.show({
             title: I18n.__('add_link'),
             content: `
@@ -395,9 +395,9 @@ async function initBoard(boardId) {
             }
           });
         }},
-        { icon: '🎤', label: I18n.__('record_audio'), action: () => AudioRecorder.recordAndUpload(canvasPos.x - 150, canvasPos.y - 40) },
-        { icon: '🎥', label: I18n.__('upload_video'), action: () => VideoUpload.uploadAndAdd(canvasPos.x - 200, canvasPos.y - 150) },
-        { icon: '📷', label: I18n.__('take_screenshot'), action: async () => {
+        { icon: Icons.mic, label: I18n.__('record_audio'), action: () => AudioRecorder.recordAndUpload(canvasPos.x - 150, canvasPos.y - 40) },
+        { icon: Icons.video, label: I18n.__('upload_video'), action: () => VideoUpload.uploadAndAdd(canvasPos.x - 200, canvasPos.y - 150) },
+        { icon: Icons.camera, label: I18n.__('take_screenshot'), action: async () => {
           Toast.show(I18n.__('loading'), 'info');
           const result = await ScreenshotCapture.captureAndUpload();
           if (result) {
@@ -412,15 +412,15 @@ async function initBoard(boardId) {
             Toast.show(I18n.__('done'), 'success');
           }
         }},
-        { icon: '🗺', label: I18n.__('add_roadmap'), action: () => Roadmap.create(canvasPos.x - 160, canvasPos.y - 200) },
-        { icon: '🤖', label: I18n.__('ai_assistant'), action: () => AIAssistant.toggle() },
-        { icon: '💬', label: I18n.__('board_chat'), action: () => BoardChat.open(ItemManager.boardId) },
-        { icon: '🔗', label: I18n.__('share_board'), action: () => ShareManager.showShareDialog(ItemManager.boardId) },
+        { icon: Icons.roadmap, label: I18n.__('add_roadmap'), action: () => Roadmap.create(canvasPos.x - 160, canvasPos.y - 200) },
+        { icon: Icons.brain, label: I18n.__('ai_assistant'), action: () => AIAssistant.toggle() },
+        { icon: Icons.chat, label: I18n.__('board_chat'), action: () => BoardChat.open(ItemManager.boardId) },
+        { icon: Icons.share, label: I18n.__('share_board'), action: () => ShareManager.showShareDialog(ItemManager.boardId) },
         { separator: true },
-        { icon: '⊞', label: Canvas.gridEnabled ? I18n.__('hide_grid') : I18n.__('show_grid'), action: () => Canvas.toggleGrid() },
-        { icon: '⊙', label: I18n.__('reset_view'), action: () => Canvas.resetView() },
+        { icon: Icons.grid, label: Canvas.gridEnabled ? I18n.__('hide_grid') : I18n.__('show_grid'), action: () => Canvas.toggleGrid() },
+        { icon: Icons.resetView, label: I18n.__('reset_view'), action: () => Canvas.resetView() },
         { separator: true },
-        { icon: '📋', label: I18n.__('select_all'), shortcut: 'Ctrl+A', action: () => {
+        { icon: Icons.check, label: I18n.__('select_all'), shortcut: 'Ctrl+A', action: () => {
           ItemManager.items.forEach(item => ItemManager.selectItem(item.id, true));
         }}
       ]);
@@ -433,35 +433,35 @@ function renderBoardToolbar(boardId) {
   if (!toolbar) return;
 
   toolbar.innerHTML = `
-    <button class="toolbar-btn" id="tb-add-note" title="${I18n.__('add_note')}">📝</button>
-    <button class="toolbar-btn" id="tb-add-rich-note" title="${I18n.__('add_rich_note')}">📄</button>
-    <button class="toolbar-btn" id="tb-add-sketch" title="${I18n.__('add_sketch')}">🎨</button>
-    <button class="toolbar-btn" id="tb-add-link" title="${I18n.__('add_link')}">🔗</button>
-    <button class="toolbar-btn" id="tb-audio-record" title="${I18n.__('record_audio')}">🎤</button>
-    <button class="toolbar-btn" id="tb-video-upload" title="${I18n.__('upload_video')}">🎥</button>
-    <button class="toolbar-btn" id="tb-roadmap" title="${I18n.__('add_roadmap')}">🗺</button>
-    <button class="toolbar-btn" id="tb-connect" title="${I18n.__('connect_items')}">🔗</button>
-    <button class="toolbar-btn" id="tb-upload" title="${I18n.__('upload_file')}">📁</button>
-    <button class="toolbar-btn" id="tb-screenshot" title="${I18n.__('take_screenshot')}">📷</button>
+    <button class="toolbar-btn" id="tb-add-note" title="${I18n.__('add_note')}">${Icons.note}</button>
+    <button class="toolbar-btn" id="tb-add-rich-note" title="${I18n.__('add_rich_note')}">${Icons.richNote}</button>
+    <button class="toolbar-btn" id="tb-add-sketch" title="${I18n.__('add_sketch')}">${Icons.sketch}</button>
+    <button class="toolbar-btn" id="tb-add-link" title="${I18n.__('add_link')}">${Icons.link}</button>
+    <button class="toolbar-btn" id="tb-audio-record" title="${I18n.__('record_audio')}">${Icons.mic}</button>
+    <button class="toolbar-btn" id="tb-video-upload" title="${I18n.__('upload_video')}">${Icons.video}</button>
+    <button class="toolbar-btn" id="tb-roadmap" title="${I18n.__('add_roadmap')}">${Icons.roadmap}</button>
+    <button class="toolbar-btn" id="tb-connect" title="${I18n.__('connect_items')}">${Icons.connect}</button>
+    <button class="toolbar-btn" id="tb-upload" title="${I18n.__('upload_file')}">${Icons.upload}</button>
+    <button class="toolbar-btn" id="tb-screenshot" title="${I18n.__('take_screenshot')}">${Icons.camera}</button>
     <div class="toolbar-divider"></div>
-    <button class="toolbar-btn" id="tb-zoom-in" title="${I18n.__('zoom_in')}">🔍</button>
+    <button class="toolbar-btn" id="tb-zoom-in" title="${I18n.__('zoom_in')}">${Icons.zoomIn}</button>
     <span class="toolbar-label" id="zoom-level">100%</span>
-    <button class="toolbar-btn" id="tb-zoom-out" title="${I18n.__('zoom_out')}">🔎</button>
-    <button class="toolbar-btn" id="tb-reset-view" title="${I18n.__('reset_view')}">⊙</button>
+    <button class="toolbar-btn" id="tb-zoom-out" title="${I18n.__('zoom_out')}">${Icons.zoomOut}</button>
+    <button class="toolbar-btn" id="tb-reset-view" title="${I18n.__('reset_view')}">${Icons.resetView}</button>
     <div class="toolbar-divider"></div>
-    <button class="toolbar-btn" id="tb-toggle-grid" title="${I18n.__('toggle_grid')}">⊞</button>
-    <button class="toolbar-btn" id="tb-search" title="Search (Ctrl+F)">🔍</button>
-    <button class="toolbar-btn" id="tb-undo" title="${I18n.__('undo')} (Ctrl+Z)" disabled>↶</button>
-    <button class="toolbar-btn" id="tb-redo" title="${I18n.__('redo')} (Ctrl+Y)" disabled>↷</button>
+    <button class="toolbar-btn" id="tb-toggle-grid" title="${I18n.__('toggle_grid')}">${Icons.grid}</button>
+    <button class="toolbar-btn" id="tb-search" title="Search (Ctrl+F)">${Icons.search}</button>
+    <button class="toolbar-btn" id="tb-undo" title="${I18n.__('undo')} (Ctrl+Z)" disabled>${Icons.undo}</button>
+    <button class="toolbar-btn" id="tb-redo" title="${I18n.__('redo')} (Ctrl+Y)" disabled>${Icons.redo}</button>
     <div class="toolbar-divider"></div>
-    <button class="toolbar-btn" id="tb-delete" title="${I18n.__('delete_selected')}">🗑</button>
-    <button class="toolbar-btn" id="tb-back" title="${I18n.__('back_to_dashboard')}">←</button>
+    <button class="toolbar-btn" id="tb-delete" title="${I18n.__('delete_selected')}">${Icons.trash}</button>
+    <button class="toolbar-btn" id="tb-back" title="${I18n.__('back_to_dashboard')}">${Icons.arrowLeft}</button>
     <div class="toolbar-divider"></div>
-    <button class="toolbar-btn" id="tb-export-png" title="Export PNG">📥</button>
-    <button class="toolbar-btn" id="tb-export-pdf" title="Export PDF">📄</button>
-    <button class="toolbar-btn" id="tb-ai" title="${I18n.__('ai_assistant')}">🤖</button>
-    <button class="toolbar-btn" id="tb-chat" title="${I18n.__('board_chat')}">💬</button>
-    <button class="toolbar-btn" id="tb-share" title="${I18n.__('share_board')}">🔗</button>
+    <button class="toolbar-btn" id="tb-export-png" title="Export PNG">${Icons.download}</button>
+    <button class="toolbar-btn" id="tb-export-pdf" title="Export PDF">${Icons.exportFile}</button>
+    <button class="toolbar-btn" id="tb-ai" title="${I18n.__('ai_assistant')}">${Icons.brain}</button>
+    <button class="toolbar-btn" id="tb-chat" title="${I18n.__('board_chat')}">${Icons.chat}</button>
+    <button class="toolbar-btn" id="tb-share" title="${I18n.__('share_board')}">${Icons.share}</button>
   `;
 
   document.getElementById('tb-add-note')?.addEventListener('click', async () => {
@@ -706,7 +706,7 @@ function createItemElement(item) {
     const imgUrl = item.file_url || '';
     el.innerHTML = `
       <div class="file-item-preview">
-        ${imgUrl ? `<img src="${Utils.escapeHtml(imgUrl)}" alt="${Utils.escapeHtml(item.title || '')}" loading="lazy">` : '<div class="file-icon">🖼</div>'}
+        ${imgUrl ? `<img src="${Utils.escapeHtml(imgUrl)}" alt="${Utils.escapeHtml(item.title || '')}" loading="lazy">` : `<div class="file-icon" style="color: var(--ink-muted);">${Icons.camera}</div>`}
       </div>
       <div class="file-item-info">${Utils.escapeHtml(item.title || 'Image')}</div>
     `;
@@ -725,7 +725,7 @@ function createItemElement(item) {
     `;
     el.innerHTML = `
       <div class="file-item-preview" style="background: #000; padding: 0; cursor: pointer;">
-        ${item.file_url ? `<video src="${Utils.escapeHtml(item.file_url)}" style="width:100%;height:100%;object-fit:contain;"></video>` : '<div class="file-icon">🎬</div>'}
+        ${item.file_url ? `<video src="${Utils.escapeHtml(item.file_url)}" style="width:100%;height:100%;object-fit:contain;"></video>` : `<div class="file-icon" style="color: var(--ink-muted);">${Icons.video}</div>`}
       </div>
       <div class="file-item-info">${Utils.escapeHtml(item.title || 'Video')}</div>
     `;
@@ -747,7 +747,7 @@ function createItemElement(item) {
     `;
     el.innerHTML = `
       <div class="file-item-preview" style="background: var(--canvas-soft); cursor: pointer;">
-        <div class="file-icon">🎵</div>
+        <div class="file-icon" style="color: var(--ink-muted);">${Icons.mic}</div>
       </div>
       <div class="file-item-info">${Utils.escapeHtml(item.title || 'Audio')}</div>
     `;
@@ -769,7 +769,7 @@ function createItemElement(item) {
     `;
     el.innerHTML = `
       <div class="file-item-preview">
-        <div class="file-icon" style="font-size: 48px;">📎</div>
+        <div class="file-icon" style="color: var(--ink-muted);">${Icons.file}</div>
       </div>
       <div class="file-item-info">${Utils.escapeHtml(item.title || 'File')}</div>
     `;

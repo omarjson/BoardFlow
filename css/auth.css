@@ -1,3 +1,7 @@
+/* ============================================
+   Auth Page — Styles only for login/signup
+   ============================================ */
+
 .auth-card {
   animation: fadeSlideUp 0.4s ease;
 }
@@ -48,19 +52,19 @@
   gap: var(--space-md);
 }
 
-.form-group {
+.auth-form .form-group {
   display: flex;
   flex-direction: column;
   gap: var(--space-xxs);
 }
 
-.form-group label {
+.auth-form .form-group label {
   font-size: var(--text-caption);
   font-weight: var(--weight-medium);
   color: var(--ink-secondary);
 }
 
-.form-group input {
+.auth-form .form-group input {
   width: 100%;
   padding: 10px var(--space-md);
   background: var(--canvas-soft);
@@ -70,100 +74,14 @@
   transition: var(--transition-fast);
 }
 
-.form-group input:focus {
+.auth-form .form-group input:focus {
   outline: none;
   border-color: var(--primary);
   box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
 }
 
-.form-group input::placeholder {
+.auth-form .form-group input::placeholder {
   color: var(--ink-muted);
-}
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-xs);
-  padding: 10px var(--space-lg);
-  border-radius: var(--radius-md);
-  font-size: var(--text-body-sm);
-  font-weight: var(--weight-medium);
-  transition: var(--transition-fast);
-  white-space: nowrap;
-}
-
-.btn-primary {
-  background: var(--primary);
-  color: var(--ink-inverse);
-}
-
-.btn-primary:hover {
-  background: var(--primary-active);
-}
-
-.btn-secondary {
-  background: var(--canvas-soft);
-  color: var(--ink);
-}
-
-.btn-secondary:hover {
-  background: var(--hairline);
-}
-
-.btn-outline {
-  background: transparent;
-  border: 1px solid var(--hairline);
-  color: var(--ink);
-}
-
-.btn-outline:hover {
-  background: var(--canvas-soft);
-}
-
-.btn-ghost {
-  background: transparent;
-  color: var(--ink-secondary);
-}
-
-.btn-ghost:hover {
-  background: var(--canvas-soft);
-  color: var(--ink);
-}
-
-.btn-block {
-  width: 100%;
-}
-
-.btn-danger {
-  background: var(--danger);
-  color: #ffffff;
-}
-
-.btn-danger:hover {
-  background: #e0342b;
-}
-
-.btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.btn-google {
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  color: var(--ink);
-  font-weight: var(--weight-medium);
-}
-
-.btn-google:hover {
-  background: var(--canvas-soft);
-  border-color: var(--ink-muted);
-}
-
-.btn-google svg {
-  width: 18px;
-  height: 18px;
 }
 
 .auth-divider {
@@ -220,4 +138,13 @@
 
 .auth-footer a:hover {
   text-decoration: underline;
+}
+
+/* Auth-specific button overrides — scoped to .auth-card */
+.auth-card .btn-primary {
+  margin-top: var(--space-xs);
+}
+
+.auth-card .btn-google {
+  margin-top: 0;
 }

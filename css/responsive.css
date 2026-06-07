@@ -1,7 +1,12 @@
+/* ============================================
+   Responsive — Mobile, Tablet, Desktop
+   ============================================ */
+
 /* Mobile: 320px - 767px */
 @media (max-width: 767px) {
   html { font-size: 15px; }
 
+  /* Sidebar slides down from top on mobile */
   .sidebar {
     width: 100%;
     max-width: 100%;
@@ -10,11 +15,13 @@
     left: 0;
     bottom: auto;
     height: auto;
-    z-index: var(--z-sticky);
+    max-height: 80vh;
+    z-index: calc(var(--z-sticky) + 10);
     transform: translateY(-100%);
     transition: transform var(--transition-base);
     border-right: none;
     border-bottom: 1px solid var(--hairline);
+    border-radius: 0 0 var(--radius-lg) var(--radius-lg);
   }
   .sidebar.open {
     transform: translateY(0);
@@ -23,24 +30,28 @@
     display: flex;
   }
 
+  /* Dashboard layout */
   .dashboard-main {
-    padding-top: var(--space-xxl);
+    padding-top: 56px;
   }
   .dashboard-grid {
     grid-template-columns: 1fr;
+    padding: var(--space-md);
   }
   .dashboard-header {
     flex-direction: column;
-    gap: var(--space-xs);
+    gap: var(--space-sm);
+    padding: var(--space-md);
   }
 
+  /* Board toolbar moves to bottom */
   .board-toolbar {
     position: fixed;
     bottom: 0;
     top: auto;
     left: 0;
     right: 0;
-    height: 48px;
+    height: 56px;
     overflow-x: auto;
     overflow-y: hidden;
     border-top: 1px solid var(--hairline);
@@ -48,28 +59,38 @@
     z-index: var(--z-sticky);
     background: var(--surface);
     -webkit-overflow-scrolling: touch;
+    transform: none !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    padding: var(--space-xs) var(--space-sm);
   }
   .board-toolbar::-webkit-scrollbar { display: none; }
+
   .board-canvas {
-    bottom: 48px;
+    bottom: 56px;
     top: 0;
   }
+
   .toolbar-label { display: none; }
   .toolbar-divider { margin: 0 2px; }
-  .toolbar-btn { min-width: 36px; }
+  .toolbar-btn { min-width: 40px; min-height: 40px; }
 
   .minimap {
     width: 100px;
     height: 70px;
-    bottom: 56px;
+    bottom: 64px;
     right: var(--space-xs);
   }
 
-  .modal-wrapper .modal {
-    width: 92vw;
-    max-width: 92vw;
-    margin: 0;
-    border-radius: var(--radius-lg);
+  /* Modals full-width on mobile */
+  .modal-backdrop {
+    padding: var(--space-sm);
+    align-items: flex-end;
+  }
+  .modal {
+    width: 100%;
+    max-width: 100%;
+    border-radius: var(--radius-xl) var(--radius-xl) 0 0;
+    max-height: 90vh;
   }
 
   .context-menu {
@@ -90,19 +111,11 @@
     border-radius: 0;
   }
 
-  .share-dialog .modal {
-    max-height: 80vh;
-  }
-
   .file-manager {
     width: 100%;
     max-width: 100%;
     right: 0;
     border-radius: 0;
-  }
-
-  .media-player-modal .modal {
-    width: 95vw;
   }
 
   .template-gallery-grid {
@@ -128,26 +141,18 @@
   html { font-size: 15px; }
 
   .sidebar { width: 220px; }
-  .dashboard-main { margin-left: 220px; }
 
   .dashboard-grid {
     grid-template-columns: repeat(2, 1fr);
-  }
-
-  .board-canvas {
-    top: var(--toolbar-height);
-    bottom: 0;
-    left: 0;
-    right: 0;
+    padding: var(--space-lg);
   }
 
   .template-gallery-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 
-  .modal-wrapper .modal {
-    width: 80vw;
-    max-width: 600px;
+  .modal {
+    max-width: 560px;
   }
 
   .ai-assistant-panel {
@@ -188,23 +193,31 @@
   }
 }
 
+/* Sidebar toggle button (hamburger) */
 .sidebar-toggle {
   display: none;
   position: fixed;
   top: var(--space-xs);
   left: var(--space-xs);
-  z-index: calc(var(--z-sticky) + 1);
-  width: 36px;
-  height: 36px;
+  z-index: calc(var(--z-sticky) + 11);
+  width: 40px;
+  height: 40px;
   border-radius: var(--radius-md);
   background: var(--surface);
   border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-soft);
   font-size: var(--text-body);
   cursor: pointer;
   align-items: center;
   justify-content: center;
+  transition: background var(--transition-fast);
 }
 
+.sidebar-toggle:hover {
+  background: var(--canvas-soft);
+}
+
+/* PWA install banner */
 .pwa-install-banner {
   display: flex;
   align-items: center;
@@ -220,10 +233,12 @@
   background: var(--primary-active);
 }
 
+/* Print styles */
 @media print {
   .sidebar, .board-toolbar, .minimap, .context-menu,
-  .modal-wrapper, .toast-container, .ai-assistant-panel,
-  .chat-panel, .file-manager, .media-player-modal {
+  .modal-backdrop, .toast-container, .ai-assistant-panel,
+  .chat-panel, .file-manager, .media-player-modal,
+  .sidebar-toggle {
     display: none !important;
   }
   .board-canvas {
@@ -236,6 +251,7 @@
   #canvas { overflow: visible; }
 }
 
+/* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -243,6 +259,7 @@
   }
 }
 
+/* High contrast */
 @media (prefers-contrast: high) {
   :root {
     --hairline: #000;

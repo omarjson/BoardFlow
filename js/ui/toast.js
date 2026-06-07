@@ -32,7 +32,7 @@ class _Toast {
   show(message, type = 'info', duration = 3000) {
     this._ensureContainer();
 
-    const icons = { success: '✓', error: '✗', warning: '⚠', info: 'ℹ' };
+    const icons = { success: Icons.success, error: Icons.error, warning: Icons.warning, info: Icons.info };
     const toast = document.createElement('div');
     toast.className = `toast toast-${type}`;
     toast.style.cssText = `
@@ -68,7 +68,7 @@ class _Toast {
     };
     iconSpan.style.background = colorMap[type] || colorMap.info;
     iconSpan.style.color = '#fff';
-    iconSpan.textContent = icons[type] || icons.info;
+    iconSpan.innerHTML = `<span style="width: 14px; height: 14px; display: flex; align-items: center; justify-content: center;">${icons[type] || icons.info}</span>`;
 
     const textSpan = document.createElement('span');
     textSpan.textContent = message;

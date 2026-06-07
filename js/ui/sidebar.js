@@ -24,7 +24,7 @@ class _Sidebar {
       toggle = document.createElement('button');
       toggle.id = 'sidebar-toggle';
       toggle.className = 'sidebar-toggle';
-      toggle.innerHTML = '☰';
+      toggle.innerHTML = Icons.menu;
       toggle.setAttribute('aria-label', 'Toggle sidebar');
       document.body.appendChild(toggle);
     }
@@ -47,7 +47,9 @@ class _Sidebar {
 
     this.contentEl.innerHTML = `
       <div style="padding: var(--space-sm) var(--space-md);">
-        <button class="btn btn-primary btn-block" id="sidebar-new-board" data-i18n="new_board">+ New Board</button>
+        <button class="btn btn-primary btn-block" id="sidebar-new-board" style="display: flex; align-items: center; justify-content: center; gap: var(--space-xs);">
+          ${Icons.plus} <span data-i18n="new_board">New Board</span>
+        </button>
       </div>
       <div class="sidebar-search" style="padding: var(--space-xs) var(--space-sm);">
         <input type="text" id="board-search" placeholder="${I18n.__('search_files')}" style="
@@ -76,7 +78,7 @@ class _Sidebar {
           <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</div>
           <div style="font-size: var(--text-xs); color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
         </div>
-        <button class="btn btn-ghost" id="sidebar-logout" title="${I18n.__('sign_out')}" style="padding: var(--space-xs); font-size: var(--text-lg);">⏻</button>
+        <button class="btn btn-ghost" id="sidebar-logout" title="${I18n.__('sign_out')}" style="padding: var(--space-xs);">${Icons.logout}</button>
       </div>
       <div style="padding: var(--space-xs) var(--space-md); border-top: 1px solid var(--hairline);">
         <select id="sidebar-lang" style="width: 100%; padding: 6px var(--space-sm); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--ink-secondary);">
@@ -175,14 +177,14 @@ class _Sidebar {
           border-radius: var(--radius-sm);
           background: ${this._getBoardColor(board)};
           display: flex; align-items: center; justify-content: center;
-          font-size: var(--text-lg);
           flex-shrink: 0;
-        ">📋</div>
+          color: white;
+        ">${Icons.board}</div>
         <div style="flex: 1; min-width: 0;">
           <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${this._escapeHtml(board.title)}</div>
           <div style="font-size: var(--text-xs); color: var(--ink-muted);">${this._formatDate(board.updated_at)}</div>
         </div>
-        <button class="btn btn-ghost board-delete-btn" data-id="${board.id}" title="${I18n.__('delete')}" style="padding: var(--space-xs); opacity: 0; transition: var(--transition-fast);">🗑</button>
+        <button class="btn btn-ghost board-delete-btn" data-id="${board.id}" title="${I18n.__('delete')}" style="padding: var(--space-xs); opacity: 0; transition: var(--transition-fast); display: flex; align-items: center; justify-content: center;">${Icons.trash}</button>
       </div>
     `).join('');
 

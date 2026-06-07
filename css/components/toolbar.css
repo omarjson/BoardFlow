@@ -1,66 +1,75 @@
-.toolbar {
-  display: flex;
-  align-items: center;
-  gap: var(--space-xxs);
-  padding: var(--space-xxs) var(--space-xs);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-soft);
-}
+/* ============================================
+   Board Toolbar — Additional Styles
+   ============================================ */
 
-.toolbar-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  font-size: var(--text-body);
-  color: var(--ink-secondary);
-  transition: var(--transition-fast);
-  cursor: pointer;
-  border: none;
-  background: none;
-}
-
-.toolbar-btn:hover {
-  background: var(--canvas-soft);
-  color: var(--ink);
-}
-
+/* Toolbar active state for toggle buttons */
 .toolbar-btn.active {
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
   color: var(--primary);
 }
 
-.toolbar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--hairline);
-  margin: 0 var(--space-xxs);
+/* Toolbar button with SVG icons */
+.toolbar-btn svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
-.toolbar-label {
-  font-size: var(--text-xs);
-  color: var(--ink-muted);
-  padding: 0 var(--space-xxs);
-  white-space: nowrap;
-}
-
+/* Mobile responsive — bottom toolbar */
 @media (max-width: 767px) {
   .board-toolbar {
     top: auto !important;
-    bottom: var(--space-md) !important;
-    left: var(--space-md) !important;
-    right: var(--space-md) !important;
+    bottom: 0 !important;
+    left: 0 !important;
+    right: 0 !important;
     transform: none !important;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: none;
     justify-content: center;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
+    padding: var(--space-xs) var(--space-sm);
+    gap: 2px;
+  }
+
+  .board-toolbar::-webkit-scrollbar {
+    display: none;
+  }
+
+  .board-canvas {
+    bottom: 56px;
+  }
+
+  .toolbar-label {
+    display: none;
+  }
+
+  .toolbar-divider {
+    margin: 0 2px;
   }
 
   .toolbar-btn {
-    width: 44px;
-    height: 44px;
+    min-width: 40px;
+    min-height: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .toolbar-btn svg {
+    width: 20px;
+    height: 20px;
+  }
+}
+
+/* Tablet — condensed toolbar */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .board-toolbar {
+    padding: var(--space-xs) var(--space-sm);
+  }
+
+  .toolbar-label {
+    display: none;
   }
 }

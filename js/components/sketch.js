@@ -40,9 +40,9 @@ class _SketchTool {
 
     wrapper.innerHTML = `
       <div class="sketch-toolbar">
-        <button class="sketch-tool-btn active" data-tool="pen" title="Pen">✏️</button>
-        <button class="sketch-tool-btn" data-tool="marker" title="Marker">🖊</button>
-        <button class="sketch-tool-btn" data-tool="eraser" title="Eraser">🧹</button>
+        <button class="sketch-tool-btn active" data-tool="pen" title="Pen" style="display: flex; align-items: center; justify-content: center;">${Icons.edit}</button>
+        <button class="sketch-tool-btn" data-tool="marker" title="Marker" style="display: flex; align-items: center; justify-content: center;">${Icons.richNote}</button>
+        <button class="sketch-tool-btn" data-tool="eraser" title="Eraser" style="display: flex; align-items: center; justify-content: center;">${Icons.close}</button>
         <div class="sketch-divider"></div>
         <input type="color" class="sketch-color" value="${this.color}" title="Color">
         <div class="sketch-divider"></div>
@@ -50,9 +50,9 @@ class _SketchTool {
         <button class="sketch-size-btn active" data-size="3" title="Medium">━</button>
         <button class="sketch-size-btn" data-size="6" title="Thick">▬</button>
         <div class="sketch-divider"></div>
-        <button class="sketch-undo-btn" title="Undo (Ctrl+Z)">↶</button>
-        <button class="sketch-redo-btn" title="Redo (Ctrl+Y)">↷</button>
-        <button class="sketch-clear-btn" title="Clear All">🗑</button>
+        <button class="sketch-undo-btn" title="Undo (Ctrl+Z)" style="display: flex; align-items: center; justify-content: center;">${Icons.undo}</button>
+        <button class="sketch-redo-btn" title="Redo (Ctrl+Y)" style="display: flex; align-items: center; justify-content: center;">${Icons.redo}</button>
+        <button class="sketch-clear-btn" title="Clear All" style="display: flex; align-items: center; justify-content: center;">${Icons.trash}</button>
       </div>
       <canvas class="sketch-canvas"></canvas>
     `;

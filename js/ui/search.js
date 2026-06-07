@@ -14,7 +14,7 @@ class _BoardSearch {
     this.overlay.className = 'board-search-overlay';
     this.overlay.innerHTML = `
       <div class="board-search-bar">
-        <span class="board-search-icon">🔍</span>
+         <span class="board-search-icon" style="display: flex; align-items: center; justify-content: center; width: 18px; height: 18px; color: var(--ink-muted);">${Icons.search}</span>
         <input type="text" class="board-search-input" placeholder="${I18n.__('search')}" autocomplete="off" autofocus>
         <span class="board-search-count"></span>
         <button class="board-search-close">✕</button>
@@ -125,11 +125,11 @@ class _BoardSearch {
 
   _iconForType(type) {
     const icons = {
-      sticky_note: '📝', rich_note: '📄', sketch: '🎨',
-      link_card: '🔗', roadmap: '🗺', image: '🖼',
-      video: '🎬', audio: '🎵', file: '📎'
+      sticky_note: Icons.note, rich_note: Icons.richNote, sketch: Icons.sketch,
+      link_card: Icons.link, roadmap: Icons.roadmap, image: Icons.camera,
+      video: Icons.video, audio: Icons.mic, file: Icons.file
     };
-    return icons[type] || '📋';
+    return icons[type] || Icons.board;
   }
 }
 

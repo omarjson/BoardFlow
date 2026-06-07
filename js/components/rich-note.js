@@ -35,7 +35,7 @@ const RichNote = {
         <div class="note-title" contenteditable="true" data-field="title" placeholder="Note title...">${Utils.escapeHtml(item.title)}</div>
         <div class="note-content rich-text-content" contenteditable="true" data-field="content" placeholder="Start writing...">${this._renderContent(item.content)}</div>
       </div>
-      <div class="item-type-badge">📄 Rich Note</div>
+      <div class="item-type-badge">Rich Note</div>
     `;
 
     this._bindEvents(el, item);
@@ -105,11 +105,11 @@ const RichNote = {
 
   _showContextMenu(e, item) {
     ContextMenu.show(e.clientX, e.clientY, [
-      { icon: '✏️', label: 'Edit', action: () => {
+      { icon: Icons.edit, label: 'Edit', action: () => {
         const titleEl = document.querySelector(`[data-id="${item.id}"] .note-title`);
         if (titleEl) titleEl.focus();
       }},
-      { icon: '📋', label: 'Duplicate', action: async () => {
+      { icon: Icons.board, label: 'Duplicate', action: async () => {
         await ItemManager.createItem('rich_note', {
           x: item.position_x + 20,
           y: item.position_y + 20,
@@ -119,14 +119,14 @@ const RichNote = {
           content: item.content
         });
       }},
-      { icon: '📎', label: 'Copy Content', shortcut: 'Ctrl+C', action: () => {
+      { icon: Icons.file, label: 'Copy Content', shortcut: 'Ctrl+C', action: () => {
         navigator.clipboard?.writeText(item.content || '');
       }},
       { separator: true },
-      { icon: '⬆️', label: 'Bring to Front', action: () => ItemManager.bringToFront(item.id) },
-      { icon: '⬇️', label: 'Send to Back', action: () => ItemManager.sendToBack(item.id) },
+      { icon: Icons.arrowLeft, label: 'Bring to Front', action: () => ItemManager.bringToFront(item.id) },
+      { icon: Icons.arrowLeft, label: 'Send to Back', action: () => ItemManager.sendToBack(item.id) },
       { separator: true },
-      { icon: '🗑', label: 'Delete', shortcut: 'Del', danger: true, action: () => ItemManager.deleteItem(item.id) }
+      { icon: Icons.trash, label: 'Delete', shortcut: 'Del', danger: true, action: () => ItemManager.deleteItem(item.id) }
     ]);
   }
 };

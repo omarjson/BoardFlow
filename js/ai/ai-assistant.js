@@ -171,10 +171,10 @@ class _AIAssistant {
         </div>
         <div class="ai-tab-content" id="ai-tab-voice">
           <div style="padding: var(--space-md);">
-            <button class="btn btn-primary btn-block" id="ai-tts-btn">🔊 Read Board Notes Aloud</button>
+            <button class="btn btn-primary btn-block" id="ai-tts-btn" style="display: flex; align-items: center; justify-content: center; gap: var(--space-xs);">${Icons.info} Read Board Notes Aloud</button>
             <div id="ai-tts-player" style="margin-top: var(--space-sm);"></div>
             <div style="margin-top: var(--space-md);">
-              <button class="btn btn-secondary btn-block" id="ai-stt-btn">🎤 Dictate Note</button>
+              <button class="btn btn-secondary btn-block" id="ai-stt-btn" style="display: flex; align-items: center; justify-content: center; gap: var(--space-xs);">${Icons.mic} Dictate Note</button>
               <div id="ai-stt-result" style="margin-top: var(--space-sm); font-size: var(--text-sm); color: var(--ink-secondary);"></div>
             </div>
           </div>
@@ -384,7 +384,7 @@ class _AIAssistant {
 
       this._isRecording = true;
       const btn = document.getElementById('ai-stt-btn');
-      btn.textContent = '🔴 Stop Recording';
+      btn.textContent = 'Stop Recording';
       btn.classList.add('btn-danger');
       Toast.show('Recording... Click "Stop Recording" when done', 'info');
       this._mediaRecorder.start();
@@ -398,7 +398,7 @@ class _AIAssistant {
       this._mediaRecorder.stop();
     }
     const btn = document.getElementById('ai-stt-btn');
-    btn.textContent = '🎤 Dictate Note';
+    btn.innerHTML = `${Icons.mic} Dictate Note`;
     btn.classList.remove('btn-danger');
   }
 
