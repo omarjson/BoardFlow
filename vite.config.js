@@ -16,12 +16,9 @@ function copyDir(src, dest) {
   }
 }
 
-const isGhPages = process.env.GITHUB_PAGES === 'true';
-const base = isGhPages ? '/BoardFlow/' : '/';
-
 export default defineConfig({
   root: '.',
-  base,
+  base: '/',
   build: {
     outDir: 'dist',
     assetsInlineLimit: 4096,
@@ -37,16 +34,6 @@ export default defineConfig({
     open: false,
   },
   plugins: [
-    {
-      name: 'fix-root-paths',
-      transformIndexHtml(html) {
-        if (!isGhPages) return html;
-        const prefix = base.replace(/\/$/, '');
-        return html
-          .replace(/((?:src|href)\s*=\s*)"\/((?:js|css|assets)\/)/g, `$1"${prefix}/$2`)
-          .replace(/((?:src|href)\s*=\s*)"\/((?:sw|manifest)\.\w+)"/g, `$1"${prefix}/$2"`);
-      },
-    },
     {
       name: 'copy-static-assets',
       closeBundle() {
