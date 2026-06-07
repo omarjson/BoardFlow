@@ -278,9 +278,6 @@
   padding: 100px 0 60px;
   text-align: center;
   position: relative;
-  min-height: 85vh;
-  display: flex;
-  align-items: center;
 }
 
 .landing-hero-bg {
@@ -1568,7 +1565,6 @@
 
   .landing-hero {
     padding: 48px 0 32px;
-    min-height: auto;
   }
 
   .landing-hero-title {
