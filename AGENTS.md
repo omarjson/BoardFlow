@@ -168,7 +168,13 @@ ALTER TABLE board_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "View members of own boards" ON board_members FOR SELECT USING (
   user_id = auth.uid()
 );
-CREATE POLICY "Owners manage members" ON board_members FOR ALL USING (
+CREATE POLICY "Owners add members" ON board_members FOR INSERT WITH CHECK (
+  EXISTS (SELECT 1 FROM boards WHERE id = board_id AND user_id = auth.uid())
+);
+CREATE POLICY "Owners update members" ON board_members FOR UPDATE USING (
+  EXISTS (SELECT 1 FROM boards WHERE id = board_id AND user_id = auth.uid())
+);
+CREATE POLICY "Owners remove members" ON board_members FOR DELETE USING (
   EXISTS (SELECT 1 FROM boards WHERE id = board_id AND user_id = auth.uid())
 );
 
