@@ -45,6 +45,10 @@ To use cloud sync, AI, and file uploads:
 
 Copy `config.example.js` to `js/config.js` and fill in your keys.
 
+> **Note:** the Supabase **publishable key** (`sb_publishable_...`) is safe
+> to commit (even in public repos) — it's RLS-protected. The only key
+> that must never be exposed is the **service_role / `sb_secret_*`** key.
+
 ## Deploy to Cloudflare Pages
 
 ```bash
