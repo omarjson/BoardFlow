@@ -16,7 +16,7 @@ class _Canvas {
     this.startY = 0;
     this.gridEnabled = true;
     this.gridSize = 20;
-    this.listeners = [];
+    this._bound = false;
     this.onZoomChange = null;
     this.onPanChange = null;
   }
@@ -26,15 +26,17 @@ class _Canvas {
     this.container = document.getElementById('canvas-container');
     if (!this.el || !this.container) return;
 
-    this._bindEvents();
+    if (!this._bound) {
+      this._bindEvents();
+      this._bound = true;
+    }
     this._applyTransform();
     this._renderGrid();
     this.centerCanvas();
   }
 
   _bindEvents() {
-    // Mouse pan
-    this.el.addEventListener('mousedown', (e) => {
+    this._onMouseDown = (e) => {
       if (e.target !== this.el && e.target !== this.container && !e.target.classList.contains('canvas-grid')) return;
       if (e.button !== 0) return;
       this.isPanning = true;
@@ -42,30 +44,28 @@ class _Canvas {
       this.startY = e.clientY - this.panY;
       this.el.style.cursor = 'grabbing';
       e.preventDefault();
-    });
+    };
 
-    window.addEventListener('mousemove', Utils.throttle((e) => {
+    this._onMouseMove = Utils.throttle((e) => {
       if (!this.isPanning) return;
       this.panX = e.clientX - this.startX;
       this.panY = e.clientY - this.startY;
       this._applyTransform();
       this.onPanChange?.(this.panX, this.panY);
-    }, 16));
+    }, 16);
 
-    window.addEventListener('mouseup', () => {
+    this._onMouseUp = () => {
       if (this.isPanning) {
         this.isPanning = false;
         this.el.style.cursor = 'grab';
       }
-    });
+    };
 
-    // Wheel zoom
-    this.el.addEventListener('wheel', (e) => {
+    this._onWheel = (e) => {
       e.preventDefault();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       const newZoom = Utils.clamp(this.zoom + delta * this.zoom, this.minZoom, this.maxZoom);
 
-      // Zoom toward mouse position
       const rect = this.el.getBoundingClientRect();
       const mouseX = e.clientX - rect.left;
       const mouseY = e.clientY - rect.top;
@@ -78,25 +78,24 @@ class _Canvas {
       this._applyTransform();
       this._renderGrid();
       this.onZoomChange?.(this.zoom);
-    }, { passive: false });
+    };
 
-    // Touch pan/zoom
-    let lastTouchDist = 0;
-    let lastTouchCenter = { x: 0, y: 0 };
+    this._lastTouchDist = 0;
+    this._lastTouchCenter = { x: 0, y: 0 };
 
-    this.el.addEventListener('touchstart', (e) => {
+    this._onTouchStart = (e) => {
       if (e.touches.length === 1) {
         this.isPanning = true;
         this.startX = e.touches[0].clientX - this.panX;
         this.startY = e.touches[0].clientY - this.panY;
       } else if (e.touches.length === 2) {
         this.isPanning = false;
-        lastTouchDist = this._getTouchDist(e.touches);
-        lastTouchCenter = this._getTouchCenter(e.touches);
+        this._lastTouchDist = this._getTouchDist(e.touches);
+        this._lastTouchCenter = this._getTouchCenter(e.touches);
       }
-    }, { passive: true });
+    };
 
-    this.el.addEventListener('touchmove', (e) => {
+    this._onTouchMove = (e) => {
       if (e.touches.length === 1 && this.isPanning) {
         this.panX = e.touches[0].clientX - this.startX;
         this.panY = e.touches[0].clientY - this.startY;
@@ -105,7 +104,7 @@ class _Canvas {
       } else if (e.touches.length === 2) {
         const dist = this._getTouchDist(e.touches);
         const center = this._getTouchCenter(e.touches);
-        const scale = dist / lastTouchDist;
+        const scale = dist / this._lastTouchDist;
         const newZoom = Utils.clamp(this.zoom * scale, this.minZoom, this.maxZoom);
 
         const rect = this.el.getBoundingClientRect();
@@ -117,20 +116,19 @@ class _Canvas {
         this.panY = cy - s * (cy - this.panY);
         this.zoom = newZoom;
 
-        lastTouchDist = dist;
-        lastTouchCenter = center;
+        this._lastTouchDist = dist;
+        this._lastTouchCenter = center;
         this._applyTransform();
         this._renderGrid();
         this.onZoomChange?.(this.zoom);
       }
       e.preventDefault();
-    }, { passive: false });
+    };
 
-    this.el.addEventListener('touchend', () => {
+    this._onTouchEnd = () => {
       this.isPanning = false;
-    });
+    };
 
-    // Keyboard shortcuts
     this._keyHandler = (e) => {
       if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
 
@@ -147,6 +145,14 @@ class _Canvas {
         this.toggleGrid();
       }
     };
+
+    this.el.addEventListener('mousedown', this._onMouseDown);
+    window.addEventListener('mousemove', this._onMouseMove);
+    window.addEventListener('mouseup', this._onMouseUp);
+    this.el.addEventListener('wheel', this._onWheel, { passive: false });
+    this.el.addEventListener('touchstart', this._onTouchStart, { passive: true });
+    this.el.addEventListener('touchmove', this._onTouchMove, { passive: false });
+    this.el.addEventListener('touchend', this._onTouchEnd);
     window.addEventListener('keydown', this._keyHandler);
   }
 
@@ -251,10 +257,18 @@ class _Canvas {
   }
 
   destroy() {
-    if (this._keyHandler) {
+    if (this._bound) {
+      this.el?.removeEventListener('mousedown', this._onMouseDown);
+      window.removeEventListener('mousemove', this._onMouseMove);
+      window.removeEventListener('mouseup', this._onMouseUp);
+      this.el?.removeEventListener('wheel', this._onWheel);
+      this.el?.removeEventListener('touchstart', this._onTouchStart);
+      this.el?.removeEventListener('touchmove', this._onTouchMove);
+      this.el?.removeEventListener('touchend', this._onTouchEnd);
       window.removeEventListener('keydown', this._keyHandler);
-      this._keyHandler = null;
+      this._bound = false;
     }
+    this.isPanning = false;
     this.el = null;
     this.container = null;
   }

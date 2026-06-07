@@ -2,7 +2,7 @@
   position: relative;
   width: 100%;
   height: 100%;
-  background: #ffffff;
+  background: var(--surface);
   border-radius: var(--radius-md);
   overflow: hidden;
 }
@@ -108,7 +108,7 @@
 }
 
 .sketch-item {
-  background: #ffffff;
+  background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   overflow: hidden;

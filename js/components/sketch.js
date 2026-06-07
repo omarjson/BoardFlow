@@ -277,4 +277,4 @@ class _SketchTool {
   }
 }
 
-window.SketchTool = SketchTool;
+window.SketchTool = _SketchTool;

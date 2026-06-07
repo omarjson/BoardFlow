@@ -56,7 +56,7 @@
 .chat-own {
   align-self: flex-end;
   background: var(--primary);
-  color: #fff;
+  color: var(--ink-inverse);
 }
 
 .chat-other {

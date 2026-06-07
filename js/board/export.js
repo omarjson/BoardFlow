@@ -11,7 +11,7 @@ const BoardExport = {
     try {
       Toast.show('Rendering board...', 'info');
       const canvas = await html2canvas(container, {
-        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--bg-canvas').trim() || '#fafafa',
+        backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim() || '#fafafa',
         useCORS: true,
         allowTaint: false,
         scale: 2,
