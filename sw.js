@@ -1,4 +1,12 @@
-const CACHE = 'boardflow-v2';
+const CACHE = 'boardflow-v3';
+const CRITICAL = [
+  '/js/config.js',
+  '/js/auth/auth.js',
+  '/js/app.js',
+  '/js/router.js',
+  '/js/i18n/i18n.js',
+  '/sw.js'
+];
 const STATIC = [
   '/',
   '/index.html',
@@ -98,6 +106,13 @@ self.addEventListener('fetch', (e) => {
       url.hostname.includes('supabase') ||
       url.hostname.includes('imgbb') ||
       url.hostname.includes('puter')) {
+    e.respondWith(networkFirst(e.request));
+    return;
+  }
+
+  // Network-first (with cache fallback) for critical files so a stale
+  // cached auth.js / app.js can never break the app
+  if (url.origin === self.location.origin && CRITICAL.includes(url.pathname)) {
     e.respondWith(networkFirst(e.request));
     return;
   }

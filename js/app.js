@@ -3,21 +3,54 @@
 // ============================================
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Init i18n
-  await I18n.init();
+  try {
+    if (typeof window.Auth === 'undefined' || typeof window.Auth.init !== 'function') {
+      showBootError('Auth module failed to load. This is usually caused by a stale service worker cache. Please unregister the service worker in DevTools (Application > Service Workers > Unregister) and hard-reload (Ctrl+Shift+R).');
+      return;
+    }
+    if (typeof window.I18n === 'undefined' || typeof window.I18n.init !== 'function') {
+      showBootError('I18n module failed to load. Please unregister the service worker in DevTools and hard-reload.');
+      return;
+    }
 
-  // Apply saved theme
-  const savedTheme = localStorage.getItem('boardflow_theme') ?? 'light';
-  document.documentElement.setAttribute('data-theme', savedTheme);
+    // Init i18n
+    await I18n.init();
 
-  // Init auth
-  await Auth.init();
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('boardflow_theme') ?? 'light';
+    document.documentElement.setAttribute('data-theme', savedTheme);
 
-  setupRoutes();
-  setupAuthListener();
+    // Init auth
+    await Auth.init();
 
-  AppRouter.start();
+    setupRoutes();
+    setupAuthListener();
+
+    AppRouter.start();
+  } catch (err) {
+    showBootError('Boot error: ' + (err?.message || String(err)));
+    console.error(err);
+  }
 });
+
+function showBootError(message) {
+  const pages = ['page-login', 'page-signup', 'page-dashboard', 'page-board'];
+  pages.forEach(id => document.getElementById(id)?.classList.remove('active'));
+  let box = document.getElementById('boot-error');
+  if (!box) {
+    box = document.createElement('div');
+    box.id = 'boot-error';
+    box.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--canvas-soft,#f6f5f4);z-index:9999;font-family:system-ui;';
+    document.body.appendChild(box);
+  }
+  box.innerHTML = `
+    <div style="max-width:480px;background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+      <h2 style="margin:0 0 8px;color:#d93025;font-size:18px;">BoardFlow failed to start</h2>
+      <p style="margin:0 0 16px;color:#555;font-size:14px;line-height:1.5;">${message}</p>
+      <button onclick="location.reload(true)" style="background:#0075de;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;">Reload</button>
+    </div>
+  `;
+}
 
 function setupRoutes() {
   const pages = {
