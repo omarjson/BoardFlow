@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function showBootError(message, diag, err) {
-  const pages = ['page-login', 'page-signup', 'page-dashboard', 'page-board'];
+  const pages = ['page-landing', 'page-about', 'page-privacy', 'page-terms', 'page-contact', 'page-login', 'page-signup', 'page-dashboard', 'page-board'];
   pages.forEach(id => document.getElementById(id)?.classList.remove('active'));
   let box = document.getElementById('boot-error');
   if (!box) {
@@ -75,6 +75,11 @@ function escapeHtml(s) {
 
 function setupRoutes() {
   const pages = {
+    landing: document.getElementById('page-landing'),
+    about: document.getElementById('page-about'),
+    privacy: document.getElementById('page-privacy'),
+    terms: document.getElementById('page-terms'),
+    contact: document.getElementById('page-contact'),
     login: document.getElementById('page-login'),
     signup: document.getElementById('page-signup'),
     dashboard: document.getElementById('page-dashboard'),
@@ -92,6 +97,21 @@ function setupRoutes() {
         AppRouter.navigate('/dashboard');
         return;
       }
+      showPage('landing');
+    })
+    .on('/about', (ctx) => {
+      showPage('about');
+    })
+    .on('/privacy', (ctx) => {
+      showPage('privacy');
+    })
+    .on('/terms', (ctx) => {
+      showPage('terms');
+    })
+    .on('/contact', (ctx) => {
+      showPage('contact');
+    })
+    .on('/login', (ctx) => {
       showPage('login');
       initLoginPage();
     })
@@ -129,8 +149,7 @@ function setupRoutes() {
       }
     })
     .on('*', (ctx) => {
-      showPage('login');
-      initLoginPage();
+      showPage('landing');
     });
 
   AppRouter.beforeEach = (ctx) => {
@@ -144,6 +163,15 @@ function setupAuthListener() {
       AppRouter.navigate('/');
     }
   });
+
+  // Landing page mobile nav toggle
+  const navToggle = document.getElementById('landing-nav-toggle');
+  if (navToggle) {
+    navToggle.addEventListener('click', () => {
+      const navLinks = document.querySelector('.landing-nav-links');
+      if (navLinks) navLinks.classList.toggle('open');
+    });
+  }
 }
 
 // ---- Dashboard ----
