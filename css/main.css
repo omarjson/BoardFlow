@@ -115,7 +115,7 @@ body::before {
 
 /* ---- Dashboard Layout ---- */
 
-.dashboard-page {
+.page.dashboard-page {
   flex-direction: row;
 }
 
