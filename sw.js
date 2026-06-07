@@ -1,99 +1,104 @@
-const CACHE = 'boardflow-v7';
+const CACHE = 'boardflow-v8';
+const BASE = self.location.pathname.replace(/sw\.js$/, '');
+
 const CRITICAL = [
-  '/js/config.js',
-  '/js/auth/auth.js',
-  '/js/app.js',
-  '/js/router.js',
-  '/js/i18n/i18n.js',
-  '/sw.js',
-  '/js/utils/helpers.js',
-  '/js/utils/dom.js',
-  '/js/ui/sidebar.js',
-  '/js/board/board-manager.js',
-  '/js/templates/template-engine.js',
-  '/js/templates/template-gallery.js',
-  '/js/ui/modal.js',
-  '/js/ui/toast.js',
-  '/js/ui/context-menu.js',
-  '/js/components/chat.js',
-  '/js/ai/ai-assistant.js',
-  '/js/sharing/share-manager.js',
-  '/js/sharing/permissions.js',
-  '/js/components/file-manager.js',
-  '/js/components/link-card.js',
-  '/js/components/roadmap.js',
-  '/js/components/sketch.js',
-  '/js/components/sticky-note.js',
-  '/js/components/rich-note.js',
-  '/js/components/screenshot.js',
-  '/js/components/media-player.js',
-  '/js/components/audio-record.js',
-  '/js/components/video-upload.js',
-  '/js/board/canvas.js',
-  '/js/board/item-manager.js',
-  '/js/board/drag-drop.js',
-  '/js/board/selection.js',
-  '/js/board/history.js',
-  '/js/board/connections.js',
-  '/js/board/export.js',
-  '/js/ui/minimap.js',
-  '/js/utils/storage.js',
-  '/js/utils/image-utils.js',
-  '/js/pwa.js'
-];
+  'js/config.js',
+  'js/auth/auth.js',
+  'js/app.js',
+  'js/router.js',
+  'js/i18n/i18n.js',
+  'sw.js',
+  'js/utils/helpers.js',
+  'js/utils/dom.js',
+  'js/ui/sidebar.js',
+  'js/board/board-manager.js',
+  'js/templates/template-engine.js',
+  'js/templates/template-gallery.js',
+  'js/ui/modal.js',
+  'js/ui/toast.js',
+  'js/ui/context-menu.js',
+  'js/components/chat.js',
+  'js/ai/ai-assistant.js',
+  'js/sharing/share-manager.js',
+  'js/sharing/permissions.js',
+  'js/components/file-manager.js',
+  'js/components/link-card.js',
+  'js/components/roadmap.js',
+  'js/components/sketch.js',
+  'js/components/sticky-note.js',
+  'js/components/rich-note.js',
+  'js/components/screenshot.js',
+  'js/components/media-player.js',
+  'js/components/audio-record.js',
+  'js/components/video-upload.js',
+  'js/board/canvas.js',
+  'js/board/item-manager.js',
+  'js/board/drag-drop.js',
+  'js/board/selection.js',
+  'js/board/history.js',
+  'js/board/connections.js',
+  'js/board/export.js',
+  'js/ui/minimap.js',
+  'js/utils/storage.js',
+  'js/utils/image-utils.js',
+  'js/pwa.js'
+].map(p => BASE + p);
+
 const STATIC = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/assets/icons/favicon.svg',
-  '/assets/icons/icon-192.svg',
-  '/assets/icons/icon-512.svg',
-  '/assets/icons/icon-192.png',
-  '/assets/icons/icon-512.png',
-  '/assets/icons/apple-touch-icon.png',
-  '/js/config.js',
-  '/js/i18n/i18n.js',
-  '/js/router.js',
-  '/js/auth/auth.js',
-  '/js/auth/login.js',
-  '/js/auth/signup.js',
-  '/js/ui/search.js',
-  '/js/ui/modal.js',
-  '/js/ui/toast.js',
-  '/js/board/board-manager.js',
-  '/js/ui/sidebar.js',
-  '/js/templates/template-engine.js',
-  '/js/templates/template-gallery.js',
-  '/js/utils/helpers.js',
-  '/js/utils/dom.js',
-  '/js/ui/context-menu.js',
-  '/js/components/sticky-note.js',
-  '/js/components/rich-note.js',
-  '/js/board/history.js',
-  '/js/components/sketch.js',
-  '/js/board/export.js',
-  '/js/board/canvas.js',
-  '/js/board/item-manager.js',
-  '/js/board/drag-drop.js',
-  '/js/board/selection.js',
-  '/js/ui/minimap.js',
-  '/js/utils/storage.js',
-  '/js/utils/image-utils.js',
-  '/js/components/screenshot.js',
-  '/js/components/file-manager.js',
-  '/js/components/link-card.js',
-  '/js/components/audio-record.js',
-  '/js/components/video-upload.js',
-  '/js/components/media-player.js',
-  '/js/components/roadmap.js',
-  '/js/board/connections.js',
-  '/js/ai/ai-assistant.js',
-  '/js/sharing/permissions.js',
-  '/js/sharing/share-manager.js',
-  '/js/components/chat.js',
-  '/js/pwa.js',
-  '/js/app.js'
-];
+  '',
+  'index.html',
+  'manifest.json',
+  'assets/icons/favicon.svg',
+  'assets/icons/icon-192.svg',
+  'assets/icons/icon-512.svg',
+  'assets/icons/icon-192.png',
+  'assets/icons/icon-512.png',
+  'assets/icons/apple-touch-icon.png',
+  'js/config.js',
+  'js/i18n/i18n.js',
+  'js/router.js',
+  'js/auth/auth.js',
+  'js/auth/login.js',
+  'js/auth/signup.js',
+  'js/ui/search.js',
+  'js/ui/modal.js',
+  'js/ui/toast.js',
+  'js/board/board-manager.js',
+  'js/ui/sidebar.js',
+  'js/templates/template-engine.js',
+  'js/templates/template-gallery.js',
+  'js/utils/helpers.js',
+  'js/utils/dom.js',
+  'js/ui/context-menu.js',
+  'js/components/sticky-note.js',
+  'js/components/rich-note.js',
+  'js/board/history.js',
+  'js/components/sketch.js',
+  'js/board/export.js',
+  'js/board/canvas.js',
+  'js/board/item-manager.js',
+  'js/board/drag-drop.js',
+  'js/board/selection.js',
+  'js/ui/minimap.js',
+  'js/utils/storage.js',
+  'js/utils/image-utils.js',
+  'js/components/screenshot.js',
+  'js/components/file-manager.js',
+  'js/components/link-card.js',
+  'js/components/audio-record.js',
+  'js/components/video-upload.js',
+  'js/components/media-player.js',
+  'js/components/roadmap.js',
+  'js/board/connections.js',
+  'js/ai/ai-assistant.js',
+  'js/sharing/permissions.js',
+  'js/sharing/share-manager.js',
+  'js/components/chat.js',
+  'js/pwa.js',
+  'js/app.js'
+].map(p => BASE + p);
+
+const CRITICAL_SET = new Set(CRITICAL);
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
@@ -114,29 +119,24 @@ self.addEventListener('activate', (e) => {
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
 
-  // Network-first for API, locales, Supabase, and external
-  if (url.pathname.startsWith('/js/i18n/locales/') ||
-      url.hostname.includes('supabase') ||
-      url.hostname.includes('imgbb') ||
-      url.hostname.includes('puter')) {
+  if (url.origin !== self.location.origin) return;
+
+  const path = url.pathname;
+
+  // Network-first for locales
+  if (path.startsWith(BASE + 'js/i18n/locales/')) {
     e.respondWith(networkFirst(e.request));
     return;
   }
 
-  // Network-only-no-store for critical files so a stale cached
-  // auth.js / config.js can never break the app (browser HTTP
-  // cache is bypassed AND SW cache is only used as offline fallback)
-  if (url.origin === self.location.origin && CRITICAL.includes(url.pathname)) {
+  // Network-only-no-store for critical files
+  if (CRITICAL_SET.has(path)) {
     e.respondWith(networkOnlyNoStore(e.request));
     return;
   }
 
-  // Cache-first for same-origin static assets
-  if (url.origin === self.location.origin) {
-    e.respondWith(cacheFirst(e.request));
-  }
-
-  // Network-only for everything else
+  // Cache-first for other same-origin assets
+  e.respondWith(cacheFirst(e.request));
 });
 
 async function cacheFirst(request) {

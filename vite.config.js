@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
-import { copyFileSync, cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'fs';
-import { join, relative } from 'path';
+import { copyFileSync, existsSync, mkdirSync, readdirSync, statSync } from 'fs';
+import { join } from 'path';
 
 function copyDir(src, dest) {
   if (!existsSync(src)) return;
@@ -16,9 +16,12 @@ function copyDir(src, dest) {
   }
 }
 
+const isGhPages = process.env.GITHUB_PAGES === 'true';
+const base = isGhPages ? '/BoardFlow/' : '/';
+
 export default defineConfig({
   root: '.',
-  base: '/',
+  base,
   build: {
     outDir: 'dist',
     assetsInlineLimit: 4096,
@@ -35,15 +38,23 @@ export default defineConfig({
   },
   plugins: [
     {
+      name: 'fix-root-paths',
+      transformIndexHtml(html) {
+        if (!isGhPages) return html;
+        const prefix = base.replace(/\/$/, '');
+        return html
+          .replace(/((?:src|href)\s*=\s*)"\/((?:js|css|assets)\/)/g, `$1"${prefix}/$2`)
+          .replace(/((?:src|href)\s*=\s*)"\/((?:sw|manifest)\.\w+)"/g, `$1"${prefix}/$2"`);
+      },
+    },
+    {
       name: 'copy-static-assets',
       closeBundle() {
         const out = 'dist';
-        const dirs = ['js', 'assets', 'css'];
-        for (const d of dirs) {
+        for (const d of ['js', 'assets', 'css']) {
           copyDir(d, join(out, d));
         }
-        const files = ['sw.js', 'manifest.json', '_headers', '_redirects'];
-        for (const f of files) {
+        for (const f of ['sw.js', 'manifest.json', '_headers', '_redirects']) {
           if (existsSync(f)) copyFileSync(f, join(out, f));
         }
       },
