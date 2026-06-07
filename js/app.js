@@ -4,18 +4,22 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
+    const bfProto = window.BoardFlowAuth ? Object.getPrototypeOf(window.BoardFlowAuth) : null;
+    const expectedMethods = ['init', 'signIn', 'signUp', 'signOut', 'isAuthenticated', 'getUser', 'getUserId', 'onAuthChange'];
+    const missingMethods = bfProto ? expectedMethods.filter(m => typeof bfProto[m] !== 'function') : expectedMethods;
     const diag = {
-      BoardFlowAuth: typeof window.BoardFlowAuth + (window.BoardFlowAuth ? ' keys=' + Object.keys(window.BoardFlowAuth).join(',') : ''),
+      BoardFlowAuth: typeof window.BoardFlowAuth + (window.BoardFlowAuth ? ' ownKeys=' + Object.keys(window.BoardFlowAuth).join(',') + ' missingMethods=' + (missingMethods.length ? missingMethods.join(',') : 'none') : ''),
       I18n: typeof window.I18n,
       supabase: typeof window.supabase,
       CONFIG: typeof window.CONFIG + (window.CONFIG ? ' url=' + (window.CONFIG.SUPABASE_URL || 'missing') : ''),
       CONFIG_URL_OK: window.CONFIG?.SUPABASE_URL?.includes('bqbxigifkazkqehmdyhn'),
-      scripts: Array.from(document.scripts).map(s => s.src.replace(location.origin, '')).join(',')
+      authLoadedAt: window.__BoardFlowAuth_loadedAt,
+      scripts: Array.from(document.scripts).map(s => s.src.replace(location.origin, '')).join('|')
     };
     console.log('[BoardFlow boot diag]', diag);
 
-    if (typeof window.BoardFlowAuth === 'undefined' || typeof window.BoardFlowAuth.init !== 'function') {
-      showBootError('BoardFlowAuth module failed to load.', diag);
+    if (typeof window.BoardFlowAuth !== 'object' || missingMethods.length > 0) {
+      showBootError('BoardFlowAuth module is broken (missing methods: ' + missingMethods.join(', ') + '). Try DevTools → Application → Service Workers → Unregister, then Ctrl+Shift+R.', diag);
       return;
     }
     if (typeof window.I18n === 'undefined' || typeof window.I18n.init !== 'function') {

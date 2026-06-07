@@ -1,11 +1,13 @@
-const CACHE = 'boardflow-v3';
+const CACHE = 'boardflow-v4';
 const CRITICAL = [
   '/js/config.js',
   '/js/auth/auth.js',
   '/js/app.js',
   '/js/router.js',
   '/js/i18n/i18n.js',
-  '/sw.js'
+  '/sw.js',
+  '/js/utils/helpers.js',
+  '/js/utils/dom.js'
 ];
 const STATIC = [
   '/',
@@ -110,10 +112,11 @@ self.addEventListener('fetch', (e) => {
     return;
   }
 
-  // Network-first (with cache fallback) for critical files so a stale
-  // cached auth.js / app.js can never break the app
+  // Network-only-no-store for critical files so a stale cached
+  // auth.js / config.js can never break the app (browser HTTP
+  // cache is bypassed AND SW cache is only used as offline fallback)
   if (url.origin === self.location.origin && CRITICAL.includes(url.pathname)) {
-    e.respondWith(networkFirst(e.request));
+    e.respondWith(networkOnlyNoStore(e.request));
     return;
   }
 
@@ -143,6 +146,20 @@ async function cacheFirst(request) {
 async function networkFirst(request) {
   try {
     const resp = await fetch(request);
+    if (resp.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, resp.clone());
+    }
+    return resp;
+  } catch {
+    const cached = await caches.match(request);
+    return cached || new Response('Offline', { status: 503 });
+  }
+}
+
+async function networkOnlyNoStore(request) {
+  try {
+    const resp = await fetch(request, { cache: 'no-store' });
     if (resp.ok) {
       const cache = await caches.open(CACHE);
       cache.put(request, resp.clone());
