@@ -2,7 +2,7 @@
 // BoardFlow Auth State Management
 // ============================================
 
-class Auth {
+class BoardFlowAuth {
   constructor() {
     this.user = null;
     this.session = null;
@@ -128,4 +128,4 @@ class Auth {
   }
 }
 
-window.Auth = new Auth();
+window.BoardFlowAuth = new BoardFlowAuth();

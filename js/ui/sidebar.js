@@ -41,7 +41,7 @@ class Sidebar {
   }
 
   render() {
-    const user = Auth.getUser();
+    const user = BoardFlowAuth.getUser();
     const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'User';
     const email = user?.email || '';
 
@@ -127,7 +127,7 @@ class Sidebar {
     });
 
     document.getElementById('sidebar-logout')?.addEventListener('click', () => {
-      Auth.signOut();
+      BoardFlowAuth.signOut();
     });
 
     document.getElementById('board-search')?.addEventListener('input', (e) => {

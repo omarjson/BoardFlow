@@ -27,7 +27,7 @@ function initLoginPage() {
     submitBtn.textContent = I18n.__('signing_in');
 
     try {
-      await Auth.signIn(email, password);
+      await BoardFlowAuth.signIn(email, password);
       showMessage(I18n.__('signed_in'), 'success');
       setTimeout(() => AppRouter.navigate('/dashboard'), 500);
     } catch (err) {
@@ -40,7 +40,7 @@ function initLoginPage() {
 
   googleBtn?.addEventListener('click', async () => {
     try {
-      await Auth.signInWithGoogle();
+      await BoardFlowAuth.signInWithGoogle();
     } catch (err) {
       showMessage(err.message || I18n.__('google_failed'), 'error');
     }

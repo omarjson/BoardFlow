@@ -10,7 +10,7 @@ class Permissions {
   canEdit(boardId) {
     const board = BoardManager.boards.find(b => b.id === boardId);
     if (!board) return false;
-    return board.user_id === Auth.user?.id;
+    return board.user_id === BoardFlowAuth.user?.id;
   }
 
   canShare(boardId) {
@@ -24,11 +24,11 @@ class Permissions {
   canAddMembers(boardId) {
     const board = BoardManager.boards.find(b => b.id === boardId);
     if (!board) return false;
-    return board.user_id === Auth.user?.id;
+    return board.user_id === BoardFlowAuth.user?.id;
   }
 
   async addMember(boardId, email, role = 'viewer') {
-    if (!Auth.supabase) {
+    if (!BoardFlowAuth.supabase) {
       Toast.show('Supabase required for member management', 'info');
       return false;
     }
@@ -39,7 +39,7 @@ class Permissions {
     }
 
     try {
-      const { data: profile } = await Auth.supabase
+      const { data: profile } = await BoardFlowAuth.supabase
         .from('profiles')
         .select('id')
         .eq('email', email)
@@ -50,7 +50,7 @@ class Permissions {
         return false;
       }
 
-      const { error } = await Auth.supabase
+      const { error } = await BoardFlowAuth.supabase
         .from('board_members')
         .insert({ board_id: boardId, user_id: profile.id, role });
 
@@ -73,11 +73,11 @@ class Permissions {
   }
 
   async removeMember(boardId, userId) {
-    if (!Auth.supabase) return false;
+    if (!BoardFlowAuth.supabase) return false;
     if (!this.canAddMembers(boardId)) return false;
 
     try {
-      await Auth.supabase
+      await BoardFlowAuth.supabase
         .from('board_members')
         .delete()
         .eq('board_id', boardId)
@@ -92,11 +92,11 @@ class Permissions {
   }
 
   async changeRole(boardId, userId, newRole) {
-    if (!Auth.supabase) return false;
+    if (!BoardFlowAuth.supabase) return false;
     if (!this.canAddMembers(boardId)) return false;
 
     try {
-      await Auth.supabase
+      await BoardFlowAuth.supabase
         .from('board_members')
         .update({ role: newRole })
         .eq('board_id', boardId)

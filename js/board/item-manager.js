@@ -17,8 +17,8 @@ class ItemManager {
     this.items = [];
     this.selectedItems.clear();
 
-    if (Auth.supabase) {
-      const { data, error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { data, error } = await BoardFlowAuth.supabase
         .from('items')
         .select('*')
         .eq('board_id', boardId);
@@ -62,8 +62,8 @@ class ItemManager {
       updated_at: new Date().toISOString()
     };
 
-    if (Auth.supabase) {
-      const { data, error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { data, error } = await BoardFlowAuth.supabase
         .from('items')
         .insert(item)
         .select()
@@ -79,8 +79,8 @@ class ItemManager {
   }
 
   async updateItem(id, updates) {
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase
         .from('items')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id);
@@ -99,8 +99,8 @@ class ItemManager {
   }
 
   async deleteItem(id) {
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase
         .from('items')
         .delete()
         .eq('id', id);
@@ -121,8 +121,8 @@ class ItemManager {
     if (ids.length === 0) return;
 
     // Delete from Supabase in parallel
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase.from('items').delete().in('id', ids);
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase.from('items').delete().in('id', ids);
       if (error) throw error;
     }
 
@@ -187,7 +187,7 @@ class ItemManager {
   }
 
   _saveLocal() {
-    if (!this.boardId || Auth.supabase) return;
+    if (!this.boardId || BoardFlowAuth.supabase) return;
     try {
       localStorage.setItem(`boardflow_items_${this.boardId}`, JSON.stringify(this.items));
     } catch {

@@ -4,12 +4,22 @@
 
 document.addEventListener('DOMContentLoaded', async () => {
   try {
-    if (typeof window.Auth === 'undefined' || typeof window.Auth.init !== 'function') {
-      showBootError('Auth module failed to load. This is usually caused by a stale service worker cache. Please unregister the service worker in DevTools (Application > Service Workers > Unregister) and hard-reload (Ctrl+Shift+R).');
+    const diag = {
+      BoardFlowAuth: typeof window.BoardFlowAuth + (window.BoardFlowAuth ? ' keys=' + Object.keys(window.BoardFlowAuth).join(',') : ''),
+      I18n: typeof window.I18n,
+      supabase: typeof window.supabase,
+      CONFIG: typeof window.CONFIG + (window.CONFIG ? ' url=' + (window.CONFIG.SUPABASE_URL || 'missing') : ''),
+      CONFIG_URL_OK: window.CONFIG?.SUPABASE_URL?.includes('bqbxigifkazkqehmdyhn'),
+      scripts: Array.from(document.scripts).map(s => s.src.replace(location.origin, '')).join(',')
+    };
+    console.log('[BoardFlow boot diag]', diag);
+
+    if (typeof window.BoardFlowAuth === 'undefined' || typeof window.BoardFlowAuth.init !== 'function') {
+      showBootError('BoardFlowAuth module failed to load.', diag);
       return;
     }
     if (typeof window.I18n === 'undefined' || typeof window.I18n.init !== 'function') {
-      showBootError('I18n module failed to load. Please unregister the service worker in DevTools and hard-reload.');
+      showBootError('I18n module failed to load.', diag);
       return;
     }
 
@@ -21,35 +31,42 @@ document.addEventListener('DOMContentLoaded', async () => {
     document.documentElement.setAttribute('data-theme', savedTheme);
 
     // Init auth
-    await Auth.init();
+    await BoardFlowAuth.init();
 
     setupRoutes();
     setupAuthListener();
 
     AppRouter.start();
   } catch (err) {
-    showBootError('Boot error: ' + (err?.message || String(err)));
+    showBootError('Boot error: ' + (err?.message || String(err)), null, err);
     console.error(err);
   }
 });
 
-function showBootError(message) {
+function showBootError(message, diag, err) {
   const pages = ['page-login', 'page-signup', 'page-dashboard', 'page-board'];
   pages.forEach(id => document.getElementById(id)?.classList.remove('active'));
   let box = document.getElementById('boot-error');
   if (!box) {
     box = document.createElement('div');
     box.id = 'boot-error';
-    box.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:var(--canvas-soft,#f6f5f4);z-index:9999;font-family:system-ui;';
+    box.style.cssText = 'position:fixed;inset:0;display:flex;align-items:center;justify-content:center;padding:24px;background:#f6f5f4;z-index:9999;font-family:system-ui;overflow:auto;';
     document.body.appendChild(box);
   }
+  const diagHtml = diag ? `<pre style="background:#1e1e1e;color:#d4d4d4;padding:12px;border-radius:6px;font-size:11px;overflow:auto;margin:0 0 16px;line-height:1.5;max-height:320px;">${escapeHtml(JSON.stringify(diag, null, 2))}${err ? '\n\nSTACK:\n' + escapeHtml(err.stack || '') : ''}</pre>` : '';
   box.innerHTML = `
-    <div style="max-width:480px;background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+    <div style="max-width:640px;width:100%;background:#fff;border:1px solid #e6e6e6;border-radius:12px;padding:24px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
       <h2 style="margin:0 0 8px;color:#d93025;font-size:18px;">BoardFlow failed to start</h2>
-      <p style="margin:0 0 16px;color:#555;font-size:14px;line-height:1.5;">${message}</p>
+      <p style="margin:0 0 12px;color:#555;font-size:14px;line-height:1.5;">${escapeHtml(message)}</p>
+      <p style="margin:0 0 16px;color:#888;font-size:13px;line-height:1.5;">Fix: open DevTools (F12) → Application → Service Workers → Unregister. Then hard-reload (Ctrl+Shift+R).</p>
+      ${diagHtml}
       <button onclick="location.reload(true)" style="background:#0075de;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;">Reload</button>
     </div>
   `;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
 
 function setupRoutes() {
@@ -67,7 +84,7 @@ function setupRoutes() {
 
   AppRouter
     .on('/', (ctx) => {
-      if (Auth.isAuthenticated()) {
+      if (BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/dashboard');
         return;
       }
@@ -79,7 +96,7 @@ function setupRoutes() {
       initSignupPage();
     })
     .on('/dashboard', (ctx) => {
-      if (!Auth.isAuthenticated()) {
+      if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
         return;
       }
@@ -87,7 +104,7 @@ function setupRoutes() {
       initDashboard();
     })
     .on('/board/:id', (ctx) => {
-      if (!Auth.isAuthenticated()) {
+      if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
         return;
       }
@@ -95,7 +112,7 @@ function setupRoutes() {
       initBoard(ctx.params.id);
     })
     .on('/board/shared/:token', async (ctx) => {
-      if (!Auth.isAuthenticated()) {
+      if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
         return;
       }
@@ -118,7 +135,7 @@ function setupRoutes() {
 }
 
 function setupAuthListener() {
-  Auth.onAuthChange((event, user) => {
+  BoardFlowAuth.onAuthChange((event, user) => {
     if (event === 'SIGNED_OUT') {
       AppRouter.navigate('/');
     }

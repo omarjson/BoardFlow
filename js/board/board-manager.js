@@ -10,7 +10,7 @@ class BoardManager {
   }
 
   async init() {
-    if (Auth.supabase) {
+    if (BoardFlowAuth.supabase) {
       await this._loadFromSupabase();
     } else {
       this._loadFromLocal();
@@ -21,7 +21,7 @@ class BoardManager {
   async create(title = 'Untitled Board', templateId = null) {
     const board = {
       id: 'board-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
-      user_id: Auth.getUserId(),
+      user_id: BoardFlowAuth.getUserId(),
       title,
       description: '',
       is_public: false,
@@ -32,8 +32,8 @@ class BoardManager {
       updated_at: new Date().toISOString()
     };
 
-    if (Auth.supabase) {
-      const { data, error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { data, error } = await BoardFlowAuth.supabase
         .from('boards')
         .insert({ ...board, id: undefined })
         .select()
@@ -48,15 +48,15 @@ class BoardManager {
   }
 
   async getAll() {
-    if (Auth.supabase) {
+    if (BoardFlowAuth.supabase) {
       await this._loadFromSupabase();
     }
     return this.boards;
   }
 
   async getById(id) {
-    if (Auth.supabase) {
-      const { data } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { data } = await BoardFlowAuth.supabase
         .from('boards')
         .select('*')
         .eq('id', id)
@@ -68,8 +68,8 @@ class BoardManager {
 
   async getByShareToken(token) {
     if (!token) return null;
-    if (Auth.supabase) {
-      const { data } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { data } = await BoardFlowAuth.supabase
         .from('boards')
         .select('*')
         .eq('share_token', token)
@@ -80,8 +80,8 @@ class BoardManager {
   }
 
   async update(id, updates) {
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase
         .from('boards')
         .update({ ...updates, updated_at: new Date().toISOString() })
         .eq('id', id);
@@ -97,8 +97,8 @@ class BoardManager {
   }
 
   async delete(id) {
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase
         .from('boards')
         .delete()
         .eq('id', id);
@@ -110,11 +110,11 @@ class BoardManager {
   }
 
   async _loadFromSupabase() {
-    if (!Auth.supabase || !Auth.getUserId()) return;
-    const { data, error } = await Auth.supabase
+    if (!BoardFlowAuth.supabase || !BoardFlowAuth.getUserId()) return;
+    const { data, error } = await BoardFlowAuth.supabase
       .from('boards')
       .select('*')
-      .eq('user_id', Auth.getUserId())
+      .eq('user_id', BoardFlowAuth.getUserId())
       .order('updated_at', { ascending: false });
     if (error) {
       console.error('Failed to load boards:', error.message);

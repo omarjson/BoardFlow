@@ -103,7 +103,7 @@ class ShareManager {
   }
 
   async _loadMembers(board) {
-    if (!Auth.supabase) {
+    if (!BoardFlowAuth.supabase) {
       const membersList = document.getElementById('share-members-list');
       if (membersList) {
         membersList.innerHTML = `<div style="font-size: var(--text-sm); color: var(--ink-muted);">${I18n.__('connect_supabase_members')}</div>`;
@@ -112,7 +112,7 @@ class ShareManager {
     }
 
     try {
-      const { data } = await Auth.supabase
+      const { data } = await BoardFlowAuth.supabase
         .from('board_members')
         .select('*, profiles(email, display_name)')
         .eq('board_id', board.id);

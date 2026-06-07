@@ -649,8 +649,8 @@ class TemplateEngine {
       };
     });
 
-    if (Auth.supabase) {
-      const { error } = await Auth.supabase
+    if (BoardFlowAuth.supabase) {
+      const { error } = await BoardFlowAuth.supabase
         .from('items')
         .insert(items);
 

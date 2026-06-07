@@ -99,7 +99,7 @@ class BoardChat {
     const msg = {
       id: Utils.generateId('msg'),
       board_id: this.boardId,
-      user_id: Auth.user?.id || 'anonymous',
+      user_id: BoardFlowAuth.user?.id || 'anonymous',
       content,
       message_type: 'text',
       created_at: new Date().toISOString()
@@ -108,9 +108,9 @@ class BoardChat {
     this.messages.push(msg);
     this._renderMessage(msg);
 
-    if (Auth.supabase) {
+    if (BoardFlowAuth.supabase) {
       try {
-        const { error } = await Auth.supabase
+        const { error } = await BoardFlowAuth.supabase
           .from('chat_messages')
           .insert(msg);
         if (error) throw error;
@@ -123,9 +123,9 @@ class BoardChat {
   async _loadMessages() {
     this.messages = [];
 
-    if (Auth.supabase && this.boardId) {
+    if (BoardFlowAuth.supabase && this.boardId) {
       try {
-        const { data } = await Auth.supabase
+        const { data } = await BoardFlowAuth.supabase
           .from('chat_messages')
           .select('*')
           .eq('board_id', this.boardId)
@@ -155,13 +155,13 @@ class BoardChat {
   }
 
   _subscribeRealtime() {
-    if (!Auth.supabase || !this.boardId) return;
+    if (!BoardFlowAuth.supabase || !this.boardId) return;
 
     if (this._subscription) {
       this._subscription.unsubscribe();
     }
 
-    this._subscription = Auth.supabase
+    this._subscription = BoardFlowAuth.supabase
       .channel(`chat-${this.boardId}`)
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `board_id=eq.${this.boardId}` },
@@ -193,7 +193,7 @@ class BoardChat {
     const container = document.getElementById('chat-messages');
     if (!container) return;
 
-    const isOwn = msg.user_id === Auth.user?.id || msg.user_id === 'anonymous';
+    const isOwn = msg.user_id === BoardFlowAuth.user?.id || msg.user_id === 'anonymous';
     const el = document.createElement('div');
     el.className = `chat-message ${isOwn ? 'chat-own' : 'chat-other'}`;
     const userId = String(msg.user_id ?? '');

@@ -38,7 +38,7 @@ function initSignupPage() {
     submitBtn.textContent = I18n.__('creating_account');
 
     try {
-      await Auth.signUp(email, password, name);
+      await BoardFlowAuth.signUp(email, password, name);
       showMessage(I18n.__('account_created'), 'success');
       setTimeout(() => AppRouter.navigate('/dashboard'), 1500);
     } catch (err) {
