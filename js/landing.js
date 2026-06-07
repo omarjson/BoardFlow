@@ -38,7 +38,15 @@
           rootMargin: '0px 0px -40px 0px'
         });
 
-        els.forEach(el => observer.observe(el));
+        els.forEach(el => {
+          const rect = el.getBoundingClientRect();
+          const isInView = rect.top < window.innerHeight - 60;
+          if (isInView) {
+            el.classList.add('in-view');
+          } else {
+            observer.observe(el);
+          }
+        });
       } else {
         els.forEach(el => el.classList.add('in-view'));
       }
@@ -132,10 +140,13 @@
 
     initNavScroll() {
       const nav = document.querySelector('.landing-nav');
-      if (!nav) return;
+      const legalNav = document.querySelector('.legal-nav');
+
+      if (!nav && !legalNav) return;
 
       window.addEventListener('scroll', () => {
-        nav.classList.toggle('scrolled', window.scrollY > 20);
+        if (nav) nav.classList.toggle('scrolled', window.scrollY > 20);
+        if (legalNav) legalNav.classList.toggle('scrolled', window.scrollY > 20);
       }, { passive: true });
     },
 
