@@ -63,9 +63,10 @@ class _ItemManager {
     };
 
     if (BoardFlowAuth.supabase) {
+      const { id: _localId, ...row } = item;
       const { data, error } = await BoardFlowAuth.supabase
         .from('items')
-        .insert(item)
+        .insert(row)
         .select()
         .single();
       if (error) throw error;
