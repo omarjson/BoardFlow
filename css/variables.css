@@ -285,7 +285,22 @@
   --font-body: 'Tajawal', sans-serif;
 }
 
-:lang(ja), :lang(zh-CN), :lang(ko) {
-  --font-heading: 'Inter', sans-serif;
-  --font-body: 'Inter', sans-serif;
+:lang(ja) {
+  --font-heading: 'Noto Sans JP', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body: 'Noto Sans JP', 'Inter', sans-serif;
+}
+
+:lang(zh-CN) {
+  --font-heading: 'Noto Sans SC', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body: 'Noto Sans SC', 'Inter', sans-serif;
+}
+
+:lang(ko) {
+  --font-heading: 'Noto Sans KR', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body: 'Noto Sans KR', 'Inter', sans-serif;
+}
+
+:lang(hi) {
+  --font-heading: 'Noto Sans Devanagari', 'Plus Jakarta Sans', 'Inter', sans-serif;
+  --font-body: 'Noto Sans Devanagari', 'Inter', sans-serif;
 }
