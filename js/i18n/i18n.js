@@ -116,6 +116,7 @@ const I18n = {
       sign_in: 'Sign In',
       sign_up: 'Sign Up',
       sign_out: 'Sign Out',
+      back_to_home: 'Back to Home',
       email: 'Email',
       password: 'Password',
       confirm_password: 'Confirm Password',
