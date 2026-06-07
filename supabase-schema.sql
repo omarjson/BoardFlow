@@ -214,15 +214,24 @@ CREATE POLICY "Users delete own boards" ON public.boards
 ALTER TABLE public.board_members ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "View members" ON public.board_members;
 DROP POLICY IF EXISTS "Owners manage members" ON public.board_members;
+DROP POLICY IF EXISTS "Owners add members" ON public.board_members;
+DROP POLICY IF EXISTS "Owners update members" ON public.board_members;
+DROP POLICY IF EXISTS "Owners remove members" ON public.board_members;
 
 CREATE POLICY "View members" ON public.board_members
-  FOR SELECT USING (
-    auth.uid() = user_id
-    OR EXISTS (SELECT 1 FROM public.boards
-               WHERE id = board_members.board_id AND user_id = auth.uid())
+  FOR SELECT USING (auth.uid() = user_id);
+CREATE POLICY "Owners add members" ON public.board_members
+  FOR INSERT WITH CHECK (
+    EXISTS (SELECT 1 FROM public.boards
+            WHERE id = board_members.board_id AND user_id = auth.uid())
   );
-CREATE POLICY "Owners manage members" ON public.board_members
-  FOR ALL USING (
+CREATE POLICY "Owners update members" ON public.board_members
+  FOR UPDATE USING (
+    EXISTS (SELECT 1 FROM public.boards
+            WHERE id = board_members.board_id AND user_id = auth.uid())
+  );
+CREATE POLICY "Owners remove members" ON public.board_members
+  FOR DELETE USING (
     EXISTS (SELECT 1 FROM public.boards
             WHERE id = board_members.board_id AND user_id = auth.uid())
   );
