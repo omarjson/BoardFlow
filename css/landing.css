@@ -28,6 +28,10 @@
   --font-body: 'Inter', sans-serif;
 }
 
+:lang(ar) .landing-hero-text {
+  text-align: right;
+}
+
 /* ============================================
    Scroll Animation System
    ============================================ */
@@ -1926,6 +1930,10 @@
 
   .landing-hero-text {
     text-align: center;
+  }
+
+  :lang(ar) .landing-hero-text {
+    text-align: right;
   }
 
   .landing-hero-title {
