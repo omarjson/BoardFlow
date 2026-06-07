@@ -166,7 +166,7 @@ CREATE POLICY "Users delete own boards" ON boards FOR DELETE USING (auth.uid() =
 -- board_members
 ALTER TABLE board_members ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "View members of own boards" ON board_members FOR SELECT USING (
-  EXISTS (SELECT 1 FROM boards WHERE id = board_id AND user_id = auth.uid())
+  user_id = auth.uid()
 );
 CREATE POLICY "Owners manage members" ON board_members FOR ALL USING (
   EXISTS (SELECT 1 FROM boards WHERE id = board_id AND user_id = auth.uid())
