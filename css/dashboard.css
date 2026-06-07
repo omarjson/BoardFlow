@@ -12,17 +12,26 @@
 
 .dashboard-header {
   padding: var(--space-lg) var(--space-xxl);
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--glass-border);
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: var(--space-md);
   flex-shrink: 0;
+  background: var(--glass-1);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  box-shadow: var(--glass-highlight);
 }
 
 .dashboard-header h1 {
   font-size: var(--text-title);
   font-weight: var(--weight-semibold);
+  background: linear-gradient(135deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 70%, var(--primary)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: var(--tracking-title);
 }
 
 .dashboard-grid {
@@ -36,34 +45,72 @@
 }
 
 .board-card {
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  border-radius: var(--radius-lg);
+  background: var(--glass-2);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
   overflow: hidden;
   cursor: pointer;
-  transition: var(--transition-base);
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
   position: relative;
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+}
+
+.board-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: var(--radius-xl);
+  padding: 1px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  opacity: 0.6;
 }
 
 .board-card:hover {
-  border-color: var(--primary);
-  box-shadow: var(--shadow-soft);
-  transform: translateY(-2px);
+  border-color: var(--glass-border-strong);
+  box-shadow: var(--shadow-glass-hover), var(--glass-highlight);
+  transform: translateY(-4px);
+  background: var(--glass-3);
 }
 
 .board-card-preview {
   height: 140px;
-  background: var(--canvas-soft);
+  background:
+    radial-gradient(at 30% 30%, color-mix(in srgb, var(--primary) 8%, transparent) 0px, transparent 60%),
+    radial-gradient(at 70% 70%, color-mix(in srgb, var(--accent-purple) 10%, transparent) 0px, transparent 60%),
+    var(--glass-1);
   display: flex;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid var(--hairline);
+  border-bottom: 1px solid var(--glass-border);
   overflow: hidden;
+  position: relative;
+}
+
+.board-card-preview::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='40' height='40'><circle cx='1' cy='1' r='0.5' fill='%23000' fill-opacity='0.08'/></svg>");
+  background-size: 16px 16px;
+  opacity: 0.5;
+  pointer-events: none;
 }
 
 .board-card-preview .board-icon {
   font-size: 48px;
-  opacity: 0.6;
+  opacity: 0.7;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.1));
+  transition: transform var(--transition-base);
+}
+
+.board-card:hover .board-icon {
+  transform: scale(1.1) rotate(-3deg);
 }
 
 .board-card-body {
@@ -77,6 +124,7 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  color: var(--ink);
 }
 
 .board-card-date {
@@ -91,24 +139,29 @@
   display: flex;
   gap: var(--space-xxs);
   opacity: 0;
-  transition: var(--transition-fast);
+  transform: translateY(-4px);
+  transition: var(--transition-base);
 }
 
 .board-card:hover .board-card-actions {
   opacity: 1;
+  transform: translateY(0);
 }
 
 .board-card-actions .btn {
   padding: var(--space-xxs) var(--space-xs);
   font-size: var(--text-caption);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
+  background: var(--glass-3);
+  -webkit-backdrop-filter: blur(var(--blur-md));
+  backdrop-filter: blur(var(--blur-md));
+  border: 1px solid var(--glass-border);
   border-radius: var(--radius-xs);
-  box-shadow: var(--shadow-flat);
+  box-shadow: var(--shadow-soft);
 }
 
 .board-card-actions .btn:hover {
-  background: var(--canvas-soft);
+  background: var(--surface);
+  border-color: var(--glass-border-strong);
 }
 
 .dashboard-empty {
@@ -118,18 +171,54 @@
   justify-content: center;
   padding: var(--space-4xl);
   text-align: center;
+  margin: var(--space-3xl) auto;
+  max-width: 560px;
+  background: var(--glass-2);
+  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  backdrop-filter: blur(var(--blur-lg)) saturate(180%);
+  border: 1px solid var(--glass-border);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  position: relative;
+  overflow: hidden;
+}
+
+.dashboard-empty::before {
+  content: '';
+  position: absolute;
+  inset: -50%;
+  background:
+    radial-gradient(circle at 30% 30%, color-mix(in srgb, var(--primary) 18%, transparent), transparent 50%),
+    radial-gradient(circle at 70% 70%, color-mix(in srgb, var(--accent-purple) 14%, transparent), transparent 50%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+.dashboard-empty > * {
+  position: relative;
+  z-index: 1;
 }
 
 .dashboard-empty-icon {
-  font-size: 64px;
+  font-size: 72px;
   margin-bottom: var(--space-lg);
-  opacity: 0.5;
+  filter: drop-shadow(0 8px 16px rgba(0, 117, 222, 0.2));
+  animation: float 4s ease-in-out infinite;
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-8px); }
 }
 
 .dashboard-empty h2 {
   font-size: var(--text-heading-3);
   font-weight: var(--weight-semibold);
   margin-bottom: var(--space-xs);
+  background: linear-gradient(135deg, var(--ink) 0%, color-mix(in srgb, var(--ink) 60%, var(--primary)) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
 }
 
 .dashboard-empty p {

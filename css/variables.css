@@ -58,6 +58,43 @@
     0 4px 18px rgba(0,0,0,0.05),
     0 23px 52px rgba(0,0,0,0.05);
 
+  /* ---- Glass System ---- */
+  --blur-sm: 8px;
+  --blur-md: 14px;
+  --blur-lg: 22px;
+  --blur-xl: 32px;
+  --blur-2xl: 48px;
+
+  /* Glass surfaces (light) */
+  --glass-1: rgba(255, 255, 255, 0.55);
+  --glass-2: rgba(255, 255, 255, 0.7);
+  --glass-3: rgba(255, 255, 255, 0.85);
+  --glass-border: rgba(255, 255, 255, 0.5);
+  --glass-border-strong: rgba(255, 255, 255, 0.7);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.65);
+
+  /* Glass shadow (the lifted glow underneath) */
+  --shadow-glass:
+    0 1px 1px rgba(15, 23, 42, 0.04),
+    0 4px 8px rgba(15, 23, 42, 0.04),
+    0 12px 24px rgba(15, 23, 42, 0.06),
+    0 24px 48px rgba(15, 23, 42, 0.08);
+  --shadow-glass-hover:
+    0 1px 1px rgba(15, 23, 42, 0.04),
+    0 8px 16px rgba(15, 23, 42, 0.06),
+    0 20px 40px rgba(15, 23, 42, 0.1),
+    0 32px 64px rgba(15, 23, 42, 0.12);
+
+  /* Accent glow */
+  --glow-primary: 0 0 0 1px rgba(0, 117, 222, 0.12), 0 8px 24px rgba(0, 117, 222, 0.18);
+  --glow-primary-strong: 0 0 0 1px rgba(0, 117, 222, 0.2), 0 12px 32px rgba(0, 117, 222, 0.28);
+
+  /* Gradient mesh background stops */
+  --mesh-blob-1: rgba(0, 117, 222, 0.10);
+  --mesh-blob-2: rgba(124, 58, 237, 0.08);
+  --mesh-blob-3: rgba(236, 72, 153, 0.06);
+  --mesh-blob-4: rgba(34, 211, 238, 0.07);
+
   /* ---- Spacing (8px base) ---- */
   --space-xxs: 4px;
   --space-xs: 8px;
@@ -182,6 +219,33 @@
     0 2.025px 7.847px rgba(0,0,0,0.25),
     0 4px 18px rgba(0,0,0,0.3),
     0 23px 52px rgba(0,0,0,0.35);
+
+  /* Dark glass surfaces */
+  --glass-1: rgba(28, 28, 30, 0.55);
+  --glass-2: rgba(28, 28, 30, 0.72);
+  --glass-3: rgba(28, 28, 30, 0.86);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-border-strong: rgba(255, 255, 255, 0.14);
+  --glass-highlight: inset 0 1px 0 0 rgba(255, 255, 255, 0.06);
+
+  --shadow-glass:
+    0 1px 1px rgba(0,0,0,0.3),
+    0 4px 8px rgba(0,0,0,0.35),
+    0 12px 24px rgba(0,0,0,0.4),
+    0 24px 48px rgba(0,0,0,0.5);
+  --shadow-glass-hover:
+    0 1px 1px rgba(0,0,0,0.3),
+    0 8px 16px rgba(0,0,0,0.4),
+    0 20px 40px rgba(0,0,0,0.5),
+    0 32px 64px rgba(0,0,0,0.6);
+
+  --glow-primary: 0 0 0 1px rgba(10, 132, 255, 0.25), 0 8px 24px rgba(10, 132, 255, 0.3);
+  --glow-primary-strong: 0 0 0 1px rgba(10, 132, 255, 0.4), 0 12px 32px rgba(10, 132, 255, 0.45);
+
+  --mesh-blob-1: rgba(10, 132, 255, 0.18);
+  --mesh-blob-2: rgba(124, 58, 237, 0.16);
+  --mesh-blob-3: rgba(236, 72, 153, 0.12);
+  --mesh-blob-4: rgba(34, 211, 238, 0.14);
 
   --canvas-grid-color: #3a3a3c;
 }

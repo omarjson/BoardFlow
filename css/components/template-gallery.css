@@ -10,12 +10,50 @@
   height: 4px;
 }
 
+.template-card {
+  background: var(--glass-2) !important;
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(180%) !important;
+  backdrop-filter: blur(var(--blur-md)) saturate(180%) !important;
+  border: 1px solid var(--glass-border) !important;
+  box-shadow: var(--shadow-glass), var(--glass-highlight) !important;
+  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base) !important;
+}
+
 .template-card:hover {
-  border-color: var(--primary) !important;
-  box-shadow: var(--shadow-flat);
+  border-color: var(--glass-border-strong) !important;
+  box-shadow: var(--shadow-glass-hover), var(--glass-highlight) !important;
+  transform: translateY(-3px) !important;
 }
 
 .template-card.selected {
-  border-color: var(--primary) !important;
-  background: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+  border-color: color-mix(in srgb, var(--primary) 60%, transparent) !important;
+  background: color-mix(in srgb, var(--primary) 14%, var(--glass-2)) !important;
+  box-shadow: var(--glow-primary), var(--glass-highlight) !important;
+}
+
+.template-gallery-search input {
+  background: var(--glass-3) !important;
+  -webkit-backdrop-filter: blur(var(--blur-sm)) !important;
+  backdrop-filter: blur(var(--blur-sm)) !important;
+  border: 1px solid var(--glass-border) !important;
+}
+
+.template-category-chip {
+  background: var(--glass-2) !important;
+  -webkit-backdrop-filter: blur(var(--blur-sm)) !important;
+  backdrop-filter: blur(var(--blur-sm)) !important;
+  border: 1px solid var(--glass-border) !important;
+  transition: all var(--transition-fast) !important;
+}
+
+.template-category-chip:hover {
+  background: var(--glass-3) !important;
+  border-color: var(--glass-border-strong) !important;
+}
+
+.template-category-chip.active {
+  background: color-mix(in srgb, var(--primary) 14%, var(--glass-3)) !important;
+  color: var(--primary) !important;
+  border-color: color-mix(in srgb, var(--primary) 35%, transparent) !important;
+  box-shadow: var(--glow-primary) !important;
 }
