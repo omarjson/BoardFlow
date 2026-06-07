@@ -1,0 +1,21 @@
+.media-player-item {
+  user-select: none;
+  transition: box-shadow var(--transition-fast);
+}
+
+.media-player-item.selected {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.media-player-item video,
+.media-player-item audio {
+  width: 100%;
+  border-radius: var(--radius-xs);
+}
+
+.media-player-item audio {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}

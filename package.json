@@ -1,0 +1,14 @@
+{
+  "name": "boardflow",
+  "version": "1.0.0",
+  "description": "Personal board/whiteboard web app",
+  "private": true,
+  "scripts": {
+    "dev": "npx serve .",
+    "deploy": "npx wrangler pages deploy . --project-name boardflow"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0",
+    "wrangler": "^3.0.0"
+  }
+}

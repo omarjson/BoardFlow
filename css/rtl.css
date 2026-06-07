@@ -1,0 +1,105 @@
+html[dir="rtl"] .auth-card {
+  text-align: right;
+}
+
+html[dir="rtl"] .auth-form label {
+  text-align: right;
+}
+
+html[dir="rtl"] .sidebar {
+  border-right: none;
+  border-left: 1px solid var(--hairline);
+}
+
+html[dir="rtl"] .sidebar-header h2 {
+  margin-right: 0;
+  margin-left: auto;
+}
+
+html[dir="rtl"] .board-toolbar {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .toolbar-label {
+  direction: ltr;
+}
+
+html[dir="rtl"] .modal-footer {
+  flex-direction: row-reverse;
+}
+
+html[dir="rtl"] .toast {
+  left: auto;
+  right: var(--space-md);
+}
+
+html[dir="rtl"] #chat-panel {
+  right: auto;
+  left: 0;
+}
+
+html[dir="rtl"] #ai-panel {
+  right: auto;
+  left: 0;
+  border-left: none;
+  border-right: 1px solid var(--hairline);
+}
+
+html[dir="rtl"] .minimap {
+  right: auto;
+  left: var(--space-md);
+}
+
+html[dir="rtl"] .context-menu {
+  transform-origin: top right;
+}
+
+html[dir="rtl"] .ai-messages {
+  direction: rtl;
+}
+
+html[dir="rtl"] .chat-messages {
+  direction: rtl;
+}
+
+html[dir="rtl"] .dashboard-grid {
+  direction: rtl;
+}
+
+html[dir="rtl"] .board-card {
+  text-align: right;
+}
+
+html[dir="rtl"] .roadmap-timeline {
+  padding-right: 24px;
+  padding-left: var(--space-md);
+}
+
+html[dir="rtl"] .roadmap-milestones {
+  padding-left: 0;
+  padding-right: 24px;
+}
+
+html[dir="rtl"] .roadmap-dot {
+  left: auto;
+  right: -18px;
+}
+
+html[dir="rtl"] .roadmap-milestone {
+  padding-left: 0;
+  padding-right: var(--space-md);
+}
+
+html[dir="rtl"] .link-card {
+  text-align: right;
+}
+
+html[dir="rtl"] input,
+html[dir="rtl"] textarea,
+html[dir="rtl"] select {
+  text-align: right;
+}
+
+html[dir="rtl"] .auth-input-group {
+  flex-direction: row-reverse;
+}

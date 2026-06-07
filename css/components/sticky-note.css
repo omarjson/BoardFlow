@@ -1,0 +1,106 @@
+.sticky-note-item {
+  cursor: move;
+  user-select: none;
+}
+
+.sticky-note {
+  background: #fffde7;
+  border-radius: 2px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  padding: 0;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.sticky-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-xxs) var(--space-xs);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.sticky-note-item:hover .sticky-note-header {
+  opacity: 1;
+}
+
+.sticky-note-color-picker {
+  cursor: pointer;
+  padding: 2px;
+  border-radius: var(--radius-xs);
+  transition: background 0.1s ease;
+}
+
+.sticky-note-color-picker:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.sticky-note-color-picker .color-dot {
+  display: block;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.15);
+}
+
+.sticky-note-menu-btn {
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  font-size: var(--text-body-sm);
+  color: var(--ink-secondary);
+  transition: background 0.1s ease;
+  line-height: 1;
+}
+
+.sticky-note-menu-btn:hover {
+  background: rgba(0,0,0,0.1);
+}
+
+.sticky-note .note-title {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+  padding: 0 var(--space-md);
+  margin-bottom: var(--space-xxs);
+  outline: none;
+  border: none;
+  background: transparent;
+  line-height: var(--leading-tight);
+}
+
+.sticky-note .note-content {
+  font-size: var(--text-caption);
+  color: var(--ink-secondary);
+  padding: 0 var(--space-md) var(--space-md);
+  outline: none;
+  border: none;
+  background: transparent;
+  white-space: pre-wrap;
+  flex: 1;
+  overflow-y: auto;
+  line-height: var(--leading-body);
+}
+
+.sticky-note .note-title:empty::before,
+.sticky-note .note-content:empty::before {
+  content: attr(placeholder);
+  color: var(--ink-muted);
+  pointer-events: none;
+}
+
+.sticky-note-color-dropdown {
+  position: absolute;
+  top: 28px;
+  left: 4px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-elevated);
+  padding: var(--space-xs);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-xxs);
+  z-index: 100;
+}

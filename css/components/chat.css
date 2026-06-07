@@ -1,0 +1,106 @@
+#chat-panel {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  width: 340px;
+  height: 420px;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+  box-shadow: -4px -4px 20px rgba(0, 0, 0, 0.1);
+  z-index: 8000;
+  display: flex;
+  flex-direction: column;
+  font-size: var(--text-caption);
+  animation: chatSlideIn 0.2s ease;
+}
+
+@keyframes chatSlideIn {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-xs) var(--space-md);
+  border-bottom: 1px solid var(--hairline);
+  font-weight: 600;
+  background: var(--canvas-soft);
+  border-radius: var(--radius-md) var(--radius-md) 0 0;
+}
+
+.chat-close {
+  font-size: 18px;
+  line-height: 1;
+  padding: 2px 6px;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-xs) var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xxs);
+}
+
+.chat-message {
+  max-width: 85%;
+  padding: var(--space-xxs) var(--space-xs);
+  border-radius: var(--radius-xs);
+  line-height: 1.4;
+}
+
+.chat-own {
+  align-self: flex-end;
+  background: var(--primary);
+  color: #fff;
+}
+
+.chat-other {
+  align-self: flex-start;
+  background: var(--canvas-soft);
+  color: var(--ink);
+}
+
+.chat-system {
+  align-self: center;
+  background: var(--canvas-soft);
+  color: var(--ink-muted);
+  font-size: var(--text-xs);
+  max-width: 100%;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  border-top: 1px solid var(--hairline);
+}
+
+.chat-input {
+  flex: 1;
+  padding: var(--space-xs);
+  background: var(--canvas-soft);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-xs);
+  font-size: var(--text-caption);
+  color: var(--ink);
+}
+
+.chat-input:focus {
+  outline: none;
+  border-color: var(--primary);
+}
+
+@media (max-width: 767px) {
+  #chat-panel {
+    width: 100vw;
+    height: 50vh;
+    right: 0;
+    bottom: 0;
+    border-radius: var(--radius-md) var(--radius-md) 0 0;
+  }
+}

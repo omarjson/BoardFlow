@@ -1,0 +1,91 @@
+.board-search-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: calc(var(--z-modal) + 50);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-top: 80px;
+  background: var(--bg-overlay);
+}
+.board-search-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  width: min(500px, 90vw);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-elevated);
+}
+.board-search-icon {
+  font-size: var(--text-body);
+  flex-shrink: 0;
+}
+.board-search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: none;
+  font-size: var(--text-body-sm);
+  color: var(--ink);
+}
+.board-search-count {
+  font-size: var(--text-xs);
+  color: var(--ink-muted);
+  white-space: nowrap;
+}
+.board-search-close {
+  background: none;
+  border: none;
+  font-size: var(--text-body);
+  cursor: pointer;
+  color: var(--ink-secondary);
+  padding: var(--space-xxs);
+}
+.board-search-close:hover {
+  color: var(--ink);
+}
+.board-search-results {
+  width: min(500px, 90vw);
+  max-height: 300px;
+  overflow-y: auto;
+  margin-top: var(--space-xs);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
+}
+.board-search-result {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: var(--space-xs) var(--space-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+.board-search-result:hover,
+.board-search-result.active {
+  background: var(--canvas-soft);
+}
+.board-search-result-icon {
+  font-size: var(--text-body-sm);
+  flex-shrink: 0;
+}
+.board-search-result-title {
+  font-size: var(--text-caption);
+  color: var(--ink);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.board-search-empty {
+  padding: var(--space-lg);
+  text-align: center;
+  color: var(--ink-muted);
+  font-size: var(--text-caption);
+}

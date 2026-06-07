@@ -1,0 +1,21 @@
+.template-gallery {
+  min-height: 300px;
+}
+
+.template-categories {
+  -webkit-overflow-scrolling: touch;
+}
+
+.template-categories::-webkit-scrollbar {
+  height: 4px;
+}
+
+.template-card:hover {
+  border-color: var(--primary) !important;
+  box-shadow: var(--shadow-flat);
+}
+
+.template-card.selected {
+  border-color: var(--primary) !important;
+  background: color-mix(in srgb, var(--primary) 10%, transparent) !important;
+}

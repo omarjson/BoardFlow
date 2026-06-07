@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.wrangler/
+.env
+.env.local
+js/config.js
+.DS_Store
+Thumbs.db
+*.log

@@ -1,0 +1,169 @@
+.board-page {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.board-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  overflow: hidden;
+  cursor: grab;
+  background: var(--canvas-soft);
+  touch-action: none;
+}
+
+.board-canvas:active {
+  cursor: grabbing;
+}
+
+.canvas-container {
+  position: absolute;
+  transform-origin: 0 0;
+  will-change: transform;
+}
+
+.canvas-grid {
+  position: absolute;
+  top: -5000px;
+  left: -5000px;
+  width: 10000px;
+  height: 10000px;
+  pointer-events: none;
+}
+
+.board-item {
+  position: absolute;
+  cursor: move;
+  user-select: none;
+  transition: box-shadow 0.15s ease;
+}
+
+.board-item:hover {
+  box-shadow: var(--shadow-soft);
+}
+
+.board-item.selected {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
+}
+
+.board-item.dragging {
+  opacity: 0.9;
+  z-index: 9999 !important;
+}
+
+.item-resize-handle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: var(--primary);
+  border: 2px solid var(--surface);
+  border-radius: 2px;
+  z-index: 10;
+}
+
+.item-resize-handle.nw { top: -5px; left: -5px; cursor: nw-resize; }
+.item-resize-handle.ne { top: -5px; right: -5px; cursor: ne-resize; }
+.item-resize-handle.sw { bottom: -5px; left: -5px; cursor: sw-resize; }
+.item-resize-handle.se { bottom: -5px; right: -5px; cursor: se-resize; }
+
+.item-rotate-handle {
+  position: absolute;
+  top: -30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 20px;
+  height: 20px;
+  background: var(--primary);
+  border: 2px solid var(--surface);
+  border-radius: 50%;
+  cursor: grab;
+  z-index: 10;
+}
+
+.item-rotate-handle::after {
+  content: '';
+  position: absolute;
+  bottom: -12px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: 12px;
+  background: var(--primary);
+}
+
+.sticky-note {
+  background: #fffde7;
+  padding: var(--space-md);
+  border-radius: 2px;
+  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  font-family: var(--font-sans);
+  overflow: hidden;
+}
+
+.sticky-note .note-title {
+  font-size: var(--text-body-sm);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-xs);
+  outline: none;
+}
+
+.sticky-note .note-content {
+  font-size: var(--text-caption);
+  color: var(--ink-secondary);
+  white-space: pre-wrap;
+  outline: none;
+  min-height: 60px;
+}
+
+.rich-note {
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-md);
+  padding: var(--space-md);
+  overflow: hidden;
+}
+
+.rich-note .note-title {
+  font-size: var(--text-body);
+  font-weight: var(--weight-semibold);
+  margin-bottom: var(--space-xs);
+  outline: none;
+}
+
+.rich-note .note-content {
+  font-size: var(--text-caption);
+  outline: none;
+  min-height: 100px;
+  white-space: pre-wrap;
+}
+
+.selection-box {
+  position: absolute;
+  border: 2px dashed var(--primary);
+  background: rgba(0, 122, 255, 0.1);
+  pointer-events: none;
+  z-index: 10000;
+}
+
+.item-type-badge {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 10px;
+  background: rgba(0,0,0,0.5);
+  color: white;
+  padding: 2px 6px;
+  border-radius: var(--radius-xs);
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.board-item:hover .item-type-badge {
+  opacity: 1;
+}

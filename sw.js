@@ -1,0 +1,140 @@
+const CACHE = 'boardflow-v2';
+const STATIC = [
+  '/',
+  '/index.html',
+  '/manifest.json',
+  '/css/variables.css',
+  '/css/reset.css',
+  '/css/main.css',
+  '/css/auth.css',
+  '/css/dashboard.css',
+  '/css/board.css',
+  '/css/rtl.css',
+  '/css/components/toolbar.css',
+  '/css/components/template-gallery.css',
+  '/css/components/minimap.css',
+  '/css/components/sticky-note.css',
+  '/css/components/rich-note.css',
+  '/css/components/sketch.css',
+  '/css/components/file-manager.css',
+  '/css/components/link-card.css',
+  '/css/components/media-player.css',
+  '/css/components/roadmap.css',
+  '/css/components/ai-assistant.css',
+  '/css/components/chat.css',
+  '/css/responsive.css',
+  '/css/components/search.css',
+  '/assets/icons/favicon.svg',
+  '/assets/icons/icon-192.svg',
+  '/assets/icons/icon-512.svg',
+  '/assets/icons/icon-192.png',
+  '/assets/icons/icon-512.png',
+  '/assets/icons/apple-touch-icon.png',
+  '/js/config.js',
+  '/js/i18n/i18n.js',
+  '/js/router.js',
+  '/js/auth/auth.js',
+  '/js/auth/login.js',
+  '/js/auth/signup.js',
+  '/js/ui/search.js',
+  '/js/ui/modal.js',
+  '/js/ui/toast.js',
+  '/js/board/board-manager.js',
+  '/js/ui/sidebar.js',
+  '/js/templates/template-engine.js',
+  '/js/templates/template-gallery.js',
+  '/js/utils/helpers.js',
+  '/js/utils/dom.js',
+  '/js/ui/context-menu.js',
+  '/js/components/sticky-note.js',
+  '/js/components/rich-note.js',
+  '/js/board/history.js',
+  '/js/components/sketch.js',
+  '/js/board/export.js',
+  '/js/board/canvas.js',
+  '/js/board/item-manager.js',
+  '/js/board/drag-drop.js',
+  '/js/board/selection.js',
+  '/js/ui/minimap.js',
+  '/js/utils/storage.js',
+  '/js/utils/image-utils.js',
+  '/js/components/screenshot.js',
+  '/js/components/file-manager.js',
+  '/js/components/link-card.js',
+  '/js/components/audio-record.js',
+  '/js/components/video-upload.js',
+  '/js/components/media-player.js',
+  '/js/components/roadmap.js',
+  '/js/board/connections.js',
+  '/js/ai/ai-assistant.js',
+  '/js/sharing/permissions.js',
+  '/js/sharing/share-manager.js',
+  '/js/components/chat.js',
+  '/js/pwa.js',
+  '/js/app.js'
+];
+
+self.addEventListener('install', (e) => {
+  e.waitUntil(
+    caches.open(CACHE).then(cache => cache.addAll(STATIC))
+  );
+  self.skipWaiting();
+});
+
+self.addEventListener('activate', (e) => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+
+self.addEventListener('fetch', (e) => {
+  const url = new URL(e.request.url);
+
+  // Network-first for API, locales, Supabase, and external
+  if (url.pathname.startsWith('/js/i18n/locales/') ||
+      url.hostname.includes('supabase') ||
+      url.hostname.includes('imgbb') ||
+      url.hostname.includes('puter')) {
+    e.respondWith(networkFirst(e.request));
+    return;
+  }
+
+  // Cache-first for same-origin static assets
+  if (url.origin === self.location.origin) {
+    e.respondWith(cacheFirst(e.request));
+  }
+
+  // Network-only for everything else
+});
+
+async function cacheFirst(request) {
+  const cached = await caches.match(request);
+  if (cached) return cached;
+  try {
+    const resp = await fetch(request);
+    if (resp.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, resp.clone());
+    }
+    return resp;
+  } catch {
+    return new Response('Offline', { status: 503 });
+  }
+}
+
+async function networkFirst(request) {
+  try {
+    const resp = await fetch(request);
+    if (resp.ok) {
+      const cache = await caches.open(CACHE);
+      cache.put(request, resp.clone());
+    }
+    return resp;
+  } catch {
+    const cached = await caches.match(request);
+    return cached || new Response('Offline', { status: 503 });
+  }
+}

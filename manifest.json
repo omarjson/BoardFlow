@@ -1,0 +1,50 @@
+{
+  "name": "BoardFlow",
+  "short_name": "BoardFlow",
+  "description": "Personal board and whiteboard app with infinite canvas, AI, and real-time collaboration",
+  "start_url": "/",
+  "display": "standalone",
+  "display_override": ["window-controls-overlay", "standalone"],
+  "orientation": "any",
+  "background_color": "#1c1c1e",
+  "theme_color": "#007aff",
+  "scope": "/",
+  "categories": ["productivity", "creativity", "education"],
+  "lang": "en",
+  "dir": "ltr",
+  "prefer_related_applications": false,
+  "icons": [
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "New Board",
+      "short_name": "New Board",
+      "description": "Create a new board",
+      "url": "/#/dashboard"
+    },
+    {
+      "name": "Dashboard",
+      "short_name": "Dashboard",
+      "description": "View your boards",
+      "url": "/#/dashboard"
+    }
+  ]
+}
