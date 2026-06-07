@@ -29,11 +29,16 @@
   <meta name="twitter:description" content="Your infinite canvas for ideas, notes, sketches, and collaboration. Free forever.">
   <meta name="twitter:image" content="/assets/icons/icon-512.png">
 
+  <!-- Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <!-- CSS -->
   <link rel="stylesheet" href="/css/variables.css">
   <link rel="stylesheet" href="/css/reset.css">
   <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/landing.css">
+  <link rel="stylesheet" href="/css/landing.css?v=10">
   <link rel="stylesheet" href="/css/auth.css">
   <link rel="stylesheet" href="/css/dashboard.css">
   <link rel="stylesheet" href="/css/components/toolbar.css">
@@ -85,81 +90,147 @@
         </div>
       </nav>
 
+      <!-- Sticky CTA Bar -->
+      <div class="landing-sticky-cta">
+        <span class="landing-sticky-cta-text">Free forever. No credit card. Start now.</span>
+        <a href="#/signup" class="btn btn-primary">Get Started Free</a>
+      </div>
+
       <!-- Hero -->
       <section class="landing-hero">
         <div class="landing-hero-bg">
           <div class="landing-hero-blob blob-1"></div>
           <div class="landing-hero-blob blob-2"></div>
           <div class="landing-hero-blob blob-3"></div>
+          <div class="landing-hero-blob blob-4"></div>
         </div>
         <div class="landing-container">
-          <div class="landing-badge">Free forever. No credit card. No catch.</div>
-          <h1 class="landing-hero-title">Your infinite canvas<br>for <span class="gradient-text">everything</span></h1>
-          <p class="landing-hero-subtitle">BoardFlow is the open canvas where you can dump your brain — sticky notes, sketches, rich notes, files, videos, audio, AI, and more. Organize it your way. Share it with anyone.</p>
-          <div class="landing-hero-actions">
-            <a href="#/signup" class="btn btn-primary btn-lg">Start for Free</a>
-            <a href="#/about" class="btn btn-glass btn-lg">Learn More</a>
-          </div>
-          <div class="landing-hero-preview">
-            <div class="landing-preview-card">
-              <div class="preview-board">
-                <div class="preview-note" style="top: 12%; left: 8%; background: #fffde7; transform: rotate(-3deg);">Meeting notes from today's standup — discussed roadmap priorities</div>
-                <div class="preview-note" style="top: 5%; left: 55%; background: #e8f5e9; transform: rotate(2deg);">Bug fix: auth token refresh</div>
-                <div class="preview-note" style="top: 50%; left: 20%; background: #e3f2fd; transform: rotate(-1deg);">Q3 Goals: Launch v2, 10k users, mobile app</div>
-                <div class="preview-note" style="top: 45%; left: 60%; background: #fce4ec; transform: rotate(3deg);">Design system colors & typography</div>
-                <div class="preview-note" style="top: 72%; left: 5%; background: #f3e5f5; transform: rotate(-2deg);">Sprint retrospective — what went well</div>
-                <div class="preview-note" style="top: 68%; left: 50%; background: #fff3e0; transform: rotate(1deg);">API endpoint structure</div>
+          <div class="landing-hero-content">
+            <div data-animate style="transition-delay:0.05s">
+              <div class="landing-badge">Free forever. No credit card. No catch.</div>
+            </div>
+            <h1 class="landing-hero-title" data-animate style="transition-delay:0.12s">Your infinite canvas<br>for <span class="gradient-text">everything</span></h1>
+            <p class="landing-hero-subtitle" data-animate style="transition-delay:0.19s">BoardFlow is the open canvas where you can dump your brain — sticky notes, sketches, rich notes, files, videos, audio, AI, and more. Organize it your way. Share it with anyone.</p>
+            <div class="landing-hero-actions" data-animate style="transition-delay:0.26s">
+              <a href="#/signup" class="btn btn-primary btn-lg">Start for Free</a>
+              <a href="#/about" class="btn btn-glass btn-lg">Learn More</a>
+            </div>
+            <div class="landing-hero-preview" data-animate="scale" style="transition-delay:0.35s">
+              <div class="landing-preview-card">
+                <div class="preview-board">
+                  <div class="preview-note" style="top: 12%; left: 8%; background: #fffde7; transform: rotate(-3deg); --i: 0;">Meeting notes from today's standup — discussed roadmap priorities</div>
+                  <div class="preview-note" style="top: 5%; left: 55%; background: #e8f5e9; transform: rotate(2deg); --i: 1;">Bug fix: auth token refresh</div>
+                  <div class="preview-note" style="top: 50%; left: 20%; background: #e3f2fd; transform: rotate(-1deg); --i: 2;">Q3 Goals: Launch v2, 10k users, mobile app</div>
+                  <div class="preview-note" style="top: 45%; left: 60%; background: #fce4ec; transform: rotate(3deg); --i: 3;">Design system colors & typography</div>
+                  <div class="preview-note" style="top: 72%; left: 5%; background: #f3e5f5; transform: rotate(-2deg); --i: 4;">Sprint retrospective — what went well</div>
+                  <div class="preview-note" style="top: 68%; left: 50%; background: #fff3e0; transform: rotate(1deg); --i: 5;">API endpoint structure</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      <!-- Features Grid -->
-      <section class="landing-section" id="features">
+      <!-- Trust Bar -->
+      <section class="landing-trust" data-animate>
+        <div class="landing-container">
+          <div class="landing-trust-label">Trusted by creators worldwide</div>
+          <div class="landing-trust-stats">
+            <div class="landing-trust-stat">
+              <div class="landing-trust-stat-number" data-count="27" data-suffix="+">0+</div>
+              <div class="landing-trust-stat-label">Features</div>
+            </div>
+            <div class="landing-trust-stat">
+              <div class="landing-trust-stat-number" data-count="35" data-suffix="+">0+</div>
+              <div class="landing-trust-stat-label">Templates</div>
+            </div>
+            <div class="landing-trust-stat">
+              <div class="landing-trust-stat-number" data-count="15">0</div>
+              <div class="landing-trust-stat-label">Languages</div>
+            </div>
+            <div class="landing-trust-stat">
+              <div class="landing-trust-stat-number" data-count="100" data-suffix="%">0%</div>
+              <div class="landing-trust-stat-label">Free Forever</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Stats Section -->
+      <section class="landing-section" data-animate>
         <div class="landing-container">
           <div class="landing-section-header">
+            <div class="landing-badge">By the numbers</div>
+            <h2>Everything built into one canvas</h2>
+            <p>No plugins. No add-ons. No hidden features behind a paywall.</p>
+          </div>
+          <div class="landing-stats-grid">
+            <div class="landing-stat-card" data-animate>
+              <div class="landing-stat-number" style="color:var(--primary);">27</div>
+              <p>Features included<br>in the free tier</p>
+            </div>
+            <div class="landing-stat-card" data-animate>
+              <div class="landing-stat-number" style="color:var(--accent-purple);">15</div>
+              <p>Languages supported<br>with RTL layout</p>
+            </div>
+            <div class="landing-stat-card" data-animate>
+              <div class="landing-stat-number" style="color:var(--accent-teal);">35</div>
+              <p>Ready-to-use templates<br>across 7 categories</p>
+            </div>
+            <div class="landing-stat-card" data-animate>
+              <div class="landing-stat-number" style="color:var(--accent-orange);">0</div>
+              <p>Dollars charged<br>for any feature</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Features Grid (Bento) -->
+      <section class="landing-section landing-section-alt" id="features">
+        <div class="landing-container">
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge">Core features</div>
             <h2>Everything you need,<br>nothing you don't</h2>
             <p>27 features built into one clean canvas. No bloat, no learning curve.</p>
           </div>
           <div class="landing-features-grid">
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--primary) 10%, transparent); color: var(--primary);">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(0,117,222,0.1); color: var(--primary);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
               </div>
               <h3>Infinite Canvas</h3>
               <p>Pan, zoom, and navigate a limitless space. Your board grows as big as your ideas.</p>
             </div>
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--accent-purple) 12%, transparent); color: var(--accent-purple-deep);">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(57,28,87,0.08); color: var(--accent-purple-deep);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               </div>
               <h3>Notes & Rich Text</h3>
               <p>Sticky notes for quick thoughts, rich notes for markdown, checklists, and code blocks.</p>
             </div>
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--accent-teal) 12%, transparent); color: var(--accent-teal);">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(42,157,153,0.1); color: var(--accent-teal);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
               </div>
               <h3>Sketches & Drawing</h3>
               <p>Freehand drawing with pen, marker, and eraser. Diagrams, wireframes, doodles.</p>
             </div>
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--accent-pink) 12%, transparent); color: #c2185b;">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(194,24,91,0.08); color: #c2185b;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
               </div>
               <h3>AI Assistant</h3>
               <p>Chat with AI, generate images, extract text from screenshots, read notes aloud.</p>
             </div>
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--accent-green) 12%, transparent); color: #2e7d32;">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(46,125,50,0.08); color: #2e7d32;">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               </div>
               <h3>Real-time Collaboration</h3>
               <p>Share boards, invite teammates, chat in real-time. Viewer and editor roles.</p>
             </div>
-            <div class="landing-feature-card">
-              <div class="landing-feature-icon" style="background: color-mix(in srgb, var(--accent-orange) 12%, transparent); color: var(--accent-orange);">
+            <div class="landing-feature-card" data-animate>
+              <div class="landing-feature-icon" style="background: rgba(221,91,0,0.08); color: var(--accent-orange);">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
               <h3>Files & Media</h3>
@@ -169,41 +240,54 @@
         </div>
       </section>
 
-      <!-- What You Can Do -->
-      <section class="landing-section landing-section-alt">
+      <!-- Use Cases -->
+      <section class="landing-section" data-animate>
         <div class="landing-container">
-          <div class="landing-section-header">
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge">Use cases</div>
             <h2>What can you do with BoardFlow?</h2>
             <p>Anything that involves thinking, planning, or creating.</p>
           </div>
           <div class="landing-use-cases">
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">📚</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary);"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="9" y1="9" x2="15" y2="9"/></svg>
+              </div>
               <h3>Study & Research</h3>
               <p>Exam prep boards, lecture notes, research maps, flashcards. Connect ideas visually.</p>
             </div>
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">💼</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-purple-deep);"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              </div>
               <h3>Business & Strategy</h3>
               <p>Kanban boards, SWOT analysis, business model canvases, sprint planning, OKRs.</p>
             </div>
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">🎨</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-teal);"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+              </div>
               <h3>Creative Projects</h3>
               <p>Mind maps, mood boards, storyboards, design systems, brand boards.</p>
             </div>
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">🏠</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-orange);"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              </div>
               <h3>Personal Life</h3>
               <p>Goal setting, weekly planners, vision boards, habit trackers, travel planning.</p>
             </div>
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">👥</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-pink);"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              </div>
               <h3>Team Collaboration</h3>
               <p>Brainstorming sessions, retrospectives, decision matrices, onboarding boards.</p>
             </div>
-            <div class="landing-use-case">
-              <div class="landing-use-case-emoji">🗺</div>
+            <div class="landing-use-case" data-animate>
+              <div class="landing-use-case-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-green);"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+              </div>
               <h3>Project Planning</h3>
               <p>Roadmaps, timelines, risk assessments, stakeholder maps, competitor analysis.</p>
             </div>
@@ -211,32 +295,96 @@
         </div>
       </section>
 
+      <!-- Testimonials -->
+      <section class="landing-section landing-section-alt" data-animate>
+        <div class="landing-container">
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge">Testimonials</div>
+            <h2>Loved by thinkers<br>everywhere</h2>
+            <p>From students to startup founders — here's what people say.</p>
+          </div>
+          <div class="landing-testimonials-grid">
+            <div class="landing-testimonial" data-animate>
+              <div class="landing-testimonial-stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <p class="landing-testimonial-quote">"BoardFlow completely replaced my whiteboard, sticky notes, and project management tool all at once. And it's free? Unreal."</p>
+              <div class="landing-testimonial-author">
+                <div class="landing-testimonial-avatar">S</div>
+                <div>
+                  <div class="landing-testimonial-name">Sarah Chen</div>
+                  <div class="landing-testimonial-role">Product Designer</div>
+                </div>
+              </div>
+            </div>
+            <div class="landing-testimonial" data-animate>
+              <div class="landing-testimonial-stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <p class="landing-testimonial-quote">"I use BoardFlow for everything — sprint planning, architecture diagrams, even my kid's birthday party planning. The AI assistant is a game changer."</p>
+              <div class="landing-testimonial-author">
+                <div class="landing-testimonial-avatar">M</div>
+                <div>
+                  <div class="landing-testimonial-name">Marcus Rivera</div>
+                  <div class="landing-testimonial-role">Engineering Lead</div>
+                </div>
+              </div>
+            </div>
+            <div class="landing-testimonial" data-animate>
+              <div class="landing-testimonial-stars">
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              </div>
+              <p class="landing-testimonial-quote">"As a student, I can't afford another $15/month tool. BoardFlow gives me everything Miro has, for free. Thank you!"</p>
+              <div class="landing-testimonial-author">
+                <div class="landing-testimonial-avatar">A</div>
+                <div>
+                  <div class="landing-testimonial-name">Aisha Patel</div>
+                  <div class="landing-testimonial-role">CS Student</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Vision -->
-      <section class="landing-section">
+      <section class="landing-section" data-animate>
         <div class="landing-container">
           <div class="landing-vision">
-            <div class="landing-vision-content">
+            <div class="landing-vision-content" data-animate>
               <div class="landing-badge">Our Vision</div>
               <h2>Thinking should be free.<br>So is BoardFlow.</h2>
               <p>We believe the best ideas come when you have unlimited space to think. No paywalls between you and your next breakthrough. No feature gates. No "upgrade to unlock."</p>
               <p>BoardFlow is built on the belief that tools for thought should be accessible to everyone — students, creators, teams, and individuals — regardless of budget.</p>
               <a href="#/signup" class="btn btn-primary btn-lg">Start Thinking Freely</a>
             </div>
-            <div class="landing-vision-visual">
-              <div class="vision-float-card" style="--delay: 0s; --x: 10%; --y: 15%;">
-                <span style="font-size: 24px;">🎯</span>
+            <div class="landing-vision-visual" data-animate="slide-right">
+              <div class="vision-float-card" style="--delay: 0s; left: 5%; top: 10%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.376 3.622a1 1 0 0 1 3.002 3.002L7.368 18.635a2 2 0 0 1-.855.506l-2.872.838a.5.5 0 0 1-.62-.62l.838-2.872a2 2 0 0 1 .506-.854z"/></svg>
                 <span>Focus on what matters</span>
               </div>
-              <div class="vision-float-card" style="--delay: 0.5s; --x: 55%; --y: 5%;">
-                <span style="font-size: 24px;">💡</span>
+              <div class="vision-float-card" style="--delay: 0.5s; left: 55%; top: 5%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
                 <span>Ideas without limits</span>
               </div>
-              <div class="vision-float-card" style="--delay: 1s; --x: 30%; --y: 55%;">
-                <span style="font-size: 24px;">🌍</span>
+              <div class="vision-float-card" style="--delay: 1s; left: 28%; top: 55%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
                 <span>Accessible to everyone</span>
               </div>
-              <div class="vision-float-card" style="--delay: 1.5s; --x: 65%; --y: 45%;">
-                <span style="font-size: 24px;">🔓</span>
+              <div class="vision-float-card" style="--delay: 1.5s; left: 62%; top: 48%;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
                 <span>No strings attached</span>
               </div>
             </div>
@@ -244,79 +392,162 @@
         </div>
       </section>
 
-      <!-- Always Free -->
-      <section class="landing-section landing-section-dark">
+      <!-- FAQ -->
+      <section class="landing-section landing-section-alt" data-animate>
         <div class="landing-container">
-          <div class="landing-section-header">
-            <h2>Always free. <span class="gradient-text">Really.</span></h2>
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge">FAQ</div>
+            <h2>Frequently asked<br>questions</h2>
+            <p>Everything you need to know about BoardFlow.</p>
+          </div>
+          <div class="landing-faq-list" data-animate>
+            <div class="landing-faq-item">
+              <button class="landing-faq-question">
+                Is BoardFlow really free forever?
+                <svg class="landing-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div class="landing-faq-answer"><p>Yes. BoardFlow is and will remain free for all features. No trials, no credit card, no "free for 14 days." We cover infrastructure costs through our partners and efficiency.</p></div>
+            </div>
+            <div class="landing-faq-item">
+              <button class="landing-faq-question">
+                How does BoardFlow make money?
+                <svg class="landing-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div class="landing-faq-answer"><p>We don't. BoardFlow is an open source project. AI features use Puter.js "user pays" model — you cover your own AI usage costs through your Puter account, just like you pay for your own electricity. No middleman markup.</p></div>
+            </div>
+            <div class="landing-faq-item">
+              <button class="landing-faq-question">
+                Can I collaborate with others in real-time?
+                <svg class="landing-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div class="landing-faq-answer"><p>Absolutely. Share your board via link, invite teammates by email, and collaborate in real-time with viewer and editor roles. Board-level chat is built in.</p></div>
+            </div>
+            <div class="landing-faq-item">
+              <button class="landing-faq-question">
+                What kind of content can I add to a board?
+                <svg class="landing-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div class="landing-faq-answer"><p>Sticky notes, rich notes (with markdown and checklists), freehand sketches, images, video, audio recordings, link previews, file attachments, roadmaps, connection lines, and AI-generated content.</p></div>
+            </div>
+            <div class="landing-faq-item">
+              <button class="landing-faq-question">
+                Is my data secure?
+                <svg class="landing-faq-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              </button>
+              <div class="landing-faq-answer"><p>Yes. Your data is stored on Supabase with encryption at rest and in transit. Row Level Security ensures you can only access your own boards. We never access or share your board content.</p></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Always Free -->
+      <section class="landing-section landing-section-dark" data-animate>
+        <div class="landing-container">
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge" style="background: rgba(10,132,255,0.15); border-color: rgba(10,132,255,0.2); color: #64d2ff;">Pricing</div>
+            <h2>Always free. <span class="gradient-text" style="background: linear-gradient(135deg, #64d2ff 0%, #a78bfa 40%, #f472b6 70%, #fb923c 100%);">Really.</span></h2>
             <p>No trials. No credit card. No "free for 14 days then $29/mo."</p>
           </div>
           <div class="landing-pricing-grid">
-            <div class="landing-pricing-card">
-              <div class="landing-pricing-name">Free</div>
+            <div class="landing-pricing-card price-card-dark" data-animate="scale">
+              <div class="landing-pricing-badge" style="background: rgba(100,210,255,0.1); border-color: rgba(100,210,255,0.2); color: #64d2ff;">Free Forever</div>
+              <div class="landing-pricing-name">BoardFlow Free</div>
               <div class="landing-pricing-price">$0</div>
-              <div class="landing-pricing-period">forever</div>
+              <div class="landing-pricing-period">forever — no strings attached</div>
               <ul class="landing-pricing-features">
                 <li>Unlimited boards</li>
-                <li>Infinite canvas</li>
+                <li>Infinite canvas with pan, zoom, grid</li>
                 <li>All content types (notes, sketches, files, video, audio)</li>
                 <li>AI assistant (image gen, OCR, TTS, STT)</li>
-                <li>35+ templates</li>
-                <li>Real-time collaboration</li>
-                <li>15 languages</li>
+                <li>35+ templates across 7 categories</li>
+                <li>Real-time collaboration with chat</li>
+                <li>15 languages with RTL support</li>
                 <li>Dark & light themes</li>
                 <li>PWA — install on any device</li>
-                <li>Export as PNG or PDF</li>
+                <li>Export boards as PNG or PDF</li>
+                <li>Undo/redo, search, keyboard shortcuts</li>
+                <li>Open source (MIT license)</li>
               </ul>
               <a href="#/signup" class="btn btn-primary btn-block">Get Started Free</a>
             </div>
           </div>
-          <p class="landing-pricing-note">We cover costs through our infrastructure partners. You never pay a dime.</p>
+          <p class="landing-pricing-note">AI usage costs are covered by your Puter account (user-pays). We never charge for the platform itself.</p>
         </div>
       </section>
 
       <!-- Tech Stack -->
-      <section class="landing-section">
+      <section class="landing-section" data-animate>
         <div class="landing-container">
-          <div class="landing-section-header">
+          <div class="landing-section-header" data-animate>
+            <div class="landing-badge">Technology</div>
             <h2>Built with modern tech</h2>
-            <p>Zero credit cards. Zero servers. Zero nonsense.</p>
+            <p>Zero servers to manage. Zero monthly bills. Zero bloat.</p>
           </div>
           <div class="landing-tech-grid">
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">Supabase</div>
-              <div class="landing-tech-desc">Auth & database</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(59,130,246,0.1); color: #3b82f6;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v8"/><path d="M4 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/><path d="M16 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">Supabase</div>
+                <div class="landing-tech-desc">Auth & database with PostgreSQL and RLS</div>
+              </div>
             </div>
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">Puter.js</div>
-              <div class="landing-tech-desc">AI & file storage</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(16,185,129,0.1); color: #10b981;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">Puter.js</div>
+                <div class="landing-tech-desc">AI & cloud file storage (user-pays)</div>
+              </div>
             </div>
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">Cloudflare</div>
-              <div class="landing-tech-desc">Hosting & CDN</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(249,115,22,0.1); color: #f97316;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">Cloudflare</div>
+                <div class="landing-tech-desc">Global hosting & CDN via Pages</div>
+              </div>
             </div>
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">Vanilla JS</div>
-              <div class="landing-tech-desc">No framework, no build step</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(234,179,8,0.1); color: #eab308;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">Vanilla JS</div>
+                <div class="landing-tech-desc">No framework, no build step, instant loads</div>
+              </div>
             </div>
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">PWA</div>
-              <div class="landing-tech-desc">Installable, offline-ready</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(139,92,246,0.1); color: #8b5cf6;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">PWA</div>
+                <div class="landing-tech-desc">Installable, works offline, fast loading</div>
+              </div>
             </div>
-            <div class="landing-tech-item">
-              <div class="landing-tech-name">Open Source</div>
-              <div class="landing-tech-desc">MIT licensed</div>
+            <div class="landing-tech-item" data-animate>
+              <div class="landing-tech-logo" style="background: rgba(34,197,94,0.1); color: #22c55e;">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              </div>
+              <div class="landing-tech-info">
+                <div class="landing-tech-name">Open Source</div>
+                <div class="landing-tech-desc">MIT licensed, audit or self-host anytime</div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
       <!-- Final CTA -->
-      <section class="landing-section landing-cta">
+      <section class="landing-section landing-cta" data-animate>
         <div class="landing-container">
-          <h2>Ready to start thinking?</h2>
-          <p>Join for free. No credit card required. Start building your boards in seconds.</p>
-          <a href="#/signup" class="btn btn-primary btn-xl">Create Your First Board</a>
+          <h2 data-animate>Ready to start thinking?</h2>
+          <p data-animate style="transition-delay:0.12s">Join for free. No credit card required. Start building your boards in seconds.</p>
+          <a href="#/signup" class="btn btn-primary btn-xl" data-animate style="transition-delay:0.19s">Create Your First Board</a>
         </div>
       </section>
 
@@ -671,48 +902,49 @@
   </div>
 
   <!-- JS -->
-  <script src="/js/config.js?v=9" defer></script>
-  <script src="/js/utils/icons.js?v=9" defer></script>
-  <script src="/js/i18n/i18n.js?v=9" defer></script>
-  <script src="/js/router.js?v=9" defer></script>
-  <script src="/js/auth/auth.js?v=9" defer></script>
-  <script src="/js/auth/login.js?v=9" defer></script>
-  <script src="/js/auth/signup.js?v=9" defer></script>
-  <script src="/js/ui/search.js?v=9" defer></script>
-  <script src="/js/ui/modal.js?v=9" defer></script>
-  <script src="/js/ui/toast.js?v=9" defer></script>
-  <script src="/js/board/board-manager.js?v=9" defer></script>
-  <script src="/js/ui/sidebar.js?v=9" defer></script>
-  <script src="/js/templates/template-engine.js?v=9" defer></script>
-  <script src="/js/templates/template-gallery.js?v=9" defer></script>
-  <script src="/js/utils/helpers.js?v=9" defer></script>
-  <script src="/js/utils/dom.js?v=9" defer></script>
-  <script src="/js/ui/context-menu.js?v=9" defer></script>
-  <script src="/js/components/sticky-note.js?v=9" defer></script>
-  <script src="/js/components/rich-note.js?v=9" defer></script>
-  <script src="/js/board/history.js?v=9" defer></script>
-  <script src="/js/components/sketch.js?v=9" defer></script>
-  <script src="/js/board/export.js?v=9" defer></script>
-  <script src="/js/board/canvas.js?v=9" defer></script>
-  <script src="/js/board/item-manager.js?v=9" defer></script>
-  <script src="/js/board/drag-drop.js?v=9" defer></script>
-  <script src="/js/board/selection.js?v=9" defer></script>
-  <script src="/js/ui/minimap.js?v=9" defer></script>
-  <script src="/js/utils/storage.js?v=9" defer></script>
-  <script src="/js/utils/image-utils.js?v=9" defer></script>
-  <script src="/js/components/screenshot.js?v=9" defer></script>
-  <script src="/js/components/file-manager.js?v=9" defer></script>
-  <script src="/js/components/link-card.js?v=9" defer></script>
-  <script src="/js/components/audio-record.js?v=9" defer></script>
-  <script src="/js/components/video-upload.js?v=9" defer></script>
-  <script src="/js/components/media-player.js?v=9" defer></script>
-  <script src="/js/components/roadmap.js?v=9" defer></script>
-  <script src="/js/board/connections.js?v=9" defer></script>
-  <script src="/js/ai/ai-assistant.js?v=9" defer></script>
-  <script src="/js/sharing/permissions.js?v=9" defer></script>
-  <script src="/js/sharing/share-manager.js?v=9" defer></script>
-  <script src="/js/components/chat.js?v=9" defer></script>
-  <script src="/js/pwa.js?v=9" defer></script>
-  <script src="/js/app.js?v=9" defer></script>
+  <script src="/js/config.js?v=10" defer></script>
+  <script src="/js/utils/icons.js?v=10" defer></script>
+  <script src="/js/i18n/i18n.js?v=10" defer></script>
+  <script src="/js/router.js?v=10" defer></script>
+  <script src="/js/auth/auth.js?v=10" defer></script>
+  <script src="/js/auth/login.js?v=10" defer></script>
+  <script src="/js/auth/signup.js?v=10" defer></script>
+  <script src="/js/ui/search.js?v=10" defer></script>
+  <script src="/js/ui/modal.js?v=10" defer></script>
+  <script src="/js/ui/toast.js?v=10" defer></script>
+  <script src="/js/board/board-manager.js?v=10" defer></script>
+  <script src="/js/ui/sidebar.js?v=10" defer></script>
+  <script src="/js/templates/template-engine.js?v=10" defer></script>
+  <script src="/js/templates/template-gallery.js?v=10" defer></script>
+  <script src="/js/utils/helpers.js?v=10" defer></script>
+  <script src="/js/utils/dom.js?v=10" defer></script>
+  <script src="/js/ui/context-menu.js?v=10" defer></script>
+  <script src="/js/components/sticky-note.js?v=10" defer></script>
+  <script src="/js/components/rich-note.js?v=10" defer></script>
+  <script src="/js/board/history.js?v=10" defer></script>
+  <script src="/js/components/sketch.js?v=10" defer></script>
+  <script src="/js/board/export.js?v=10" defer></script>
+  <script src="/js/board/canvas.js?v=10" defer></script>
+  <script src="/js/board/item-manager.js?v=10" defer></script>
+  <script src="/js/board/drag-drop.js?v=10" defer></script>
+  <script src="/js/board/selection.js?v=10" defer></script>
+  <script src="/js/ui/minimap.js?v=10" defer></script>
+  <script src="/js/utils/storage.js?v=10" defer></script>
+  <script src="/js/utils/image-utils.js?v=10" defer></script>
+  <script src="/js/components/screenshot.js?v=10" defer></script>
+  <script src="/js/components/file-manager.js?v=10" defer></script>
+  <script src="/js/components/link-card.js?v=10" defer></script>
+  <script src="/js/components/audio-record.js?v=10" defer></script>
+  <script src="/js/components/video-upload.js?v=10" defer></script>
+  <script src="/js/components/media-player.js?v=10" defer></script>
+  <script src="/js/components/roadmap.js?v=10" defer></script>
+  <script src="/js/board/connections.js?v=10" defer></script>
+  <script src="/js/ai/ai-assistant.js?v=10" defer></script>
+  <script src="/js/sharing/permissions.js?v=10" defer></script>
+  <script src="/js/sharing/share-manager.js?v=10" defer></script>
+  <script src="/js/components/chat.js?v=10" defer></script>
+  <script src="/js/pwa.js?v=10" defer></script>
+  <script src="/js/landing.js?v=10" defer></script>
+  <script src="/js/app.js?v=10" defer></script>
 </body>
 </html>
