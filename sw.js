@@ -1,4 +1,4 @@
-const CACHE = 'boardflow-v4';
+const CACHE = 'boardflow-v5';
 const CRITICAL = [
   '/js/config.js',
   '/js/auth/auth.js',
@@ -7,7 +7,39 @@ const CRITICAL = [
   '/js/i18n/i18n.js',
   '/sw.js',
   '/js/utils/helpers.js',
-  '/js/utils/dom.js'
+  '/js/utils/dom.js',
+  '/js/ui/sidebar.js',
+  '/js/board/board-manager.js',
+  '/js/templates/template-engine.js',
+  '/js/templates/template-gallery.js',
+  '/js/ui/modal.js',
+  '/js/ui/toast.js',
+  '/js/ui/context-menu.js',
+  '/js/components/chat.js',
+  '/js/ai/ai-assistant.js',
+  '/js/sharing/share-manager.js',
+  '/js/sharing/permissions.js',
+  '/js/components/file-manager.js',
+  '/js/components/link-card.js',
+  '/js/components/roadmap.js',
+  '/js/components/sketch.js',
+  '/js/components/sticky-note.js',
+  '/js/components/rich-note.js',
+  '/js/components/screenshot.js',
+  '/js/components/media-player.js',
+  '/js/components/audio-record.js',
+  '/js/components/video-upload.js',
+  '/js/board/canvas.js',
+  '/js/board/item-manager.js',
+  '/js/board/drag-drop.js',
+  '/js/board/selection.js',
+  '/js/board/history.js',
+  '/js/board/connections.js',
+  '/js/board/export.js',
+  '/js/ui/minimap.js',
+  '/js/utils/storage.js',
+  '/js/utils/image-utils.js',
+  '/js/pwa.js'
 ];
 const STATIC = [
   '/',
@@ -146,7 +178,7 @@ async function cacheFirst(request) {
 async function networkFirst(request) {
   try {
     const resp = await fetch(request);
-    if (resp.ok) {
+    if (resp.ok && request.method === 'GET') {
       const cache = await caches.open(CACHE);
       cache.put(request, resp.clone());
     }
@@ -160,7 +192,7 @@ async function networkFirst(request) {
 async function networkOnlyNoStore(request) {
   try {
     const resp = await fetch(request, { cache: 'no-store' });
-    if (resp.ok) {
+    if (resp.ok && request.method === 'GET') {
       const cache = await caches.open(CACHE);
       cache.put(request, resp.clone());
     }
