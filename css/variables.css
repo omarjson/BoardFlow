@@ -119,8 +119,8 @@
   --font-heading: 'Plus Jakarta Sans', 'Inter', sans-serif;
   --font-body: 'Inter', sans-serif;
   --font-weight-heading: 800;
-  --font-weight-heading-xl: 800;
-  --font-weight-bold-display: 800;
+  --font-weight-heading-xl: 900;
+  --font-weight-bold-display: 900;
 
   /* New bolder accent colors */
   --accent-blue-bright: #0066ff;
@@ -145,11 +145,11 @@
   --text-3xl: var(--text-heading-2);
 
   /* ---- Typography: Scale ---- */
-  --text-display-1: 64px;
-  --text-display-2: 54px;
-  --text-heading-1: 40px;
-  --text-heading-2: 26px;
-  --text-heading-3: 22px;
+  --text-display-1: 80px;
+  --text-display-2: 64px;
+  --text-heading-1: 48px;
+  --text-heading-2: 32px;
+  --text-heading-3: 24px;
   --text-title: 20px;
   --text-body: 16px;
   --text-body-sm: 15px;
@@ -172,11 +172,11 @@
   --leading-tight: 1.2;
 
   /* ---- Typography: Letter Spacing ---- */
-  --tracking-display-1: -2.125px;
-  --tracking-display-2: -1.875px;
-  --tracking-heading-1: -1px;
-  --tracking-heading-2: -0.625px;
-  --tracking-heading-3: -0.25px;
+  --tracking-display-1: -3px;
+  --tracking-display-2: -2.5px;
+  --tracking-heading-1: -1.5px;
+  --tracking-heading-2: -0.75px;
+  --tracking-heading-3: -0.35px;
   --tracking-title: -0.125px;
   --tracking-eyebrow: 0.125px;
 

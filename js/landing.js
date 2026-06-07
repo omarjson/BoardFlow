@@ -18,7 +18,9 @@
       this.initCounters();
       this.initThemeToggle();
       this.initLangSelector();
-      this.initPreviewTilt();
+      this.initHeroParallax();
+      this.initStaggeredReveal();
+      this.initGlitchEffects();
     },
 
     // ---- Theme Toggle ----
@@ -271,29 +273,74 @@
       requestAnimationFrame(update);
     },
 
-    // ---- Hero Preview Card 3D Tilt ----
+    // ---- Hero Board Mouse Parallax ----
 
-    initPreviewTilt() {
-      const card = document.querySelector('.landing-preview-card');
-      if (!card) return;
+    initHeroParallax() {
+      const board = document.querySelector('.landing-hero-board');
+      if (!board) return;
 
-      if (window.matchMedia('(hover: hover)').matches) {
-        card.addEventListener('mousemove', (e) => {
-          const rect = card.getBoundingClientRect();
-          const x = (e.clientX - rect.left) / rect.width;
-          const y = (e.clientY - rect.top) / rect.height;
+      board.addEventListener('mousemove', (e) => {
+        const rect = board.getBoundingClientRect();
+        const x = (e.clientX - rect.left) / rect.width;
+        const y = (e.clientY - rect.top) / rect.height;
 
-          const tiltX = (y - 0.5) * -6;
-          const tiltY = (x - 0.5) * 6;
+        const stickies = board.querySelectorAll('.hero-sticky');
+        stickies.forEach(s => {
+          const depth = parseFloat(s.style.getPropertyValue('--i') || 0) * 0.3 + 0.3;
+          const dx = (x - 0.5) * depth * 12;
+          const dy = (y - 0.5) * depth * 12;
+          s.style.setProperty('--parallax-x', `${dx}px`);
+          s.style.setProperty('--parallax-y', `${dy}px`);
+        });
+      });
 
-          card.style.transform = `rotateX(${tiltX}deg) rotateY(${tiltY}deg)`;
+      board.addEventListener('mouseleave', () => {
+        document.querySelectorAll('.hero-sticky').forEach(s => {
+          s.style.setProperty('--parallax-x', '0px');
+          s.style.setProperty('--parallax-y', '0px');
+        });
+      });
+    },
+
+    // ---- Staggered Cascade Reveals ----
+
+    initStaggeredReveal() {
+      const containers = document.querySelectorAll('[data-stagger]');
+      containers.forEach(container => {
+        const children = container.children;
+        Array.from(children).forEach((child, i) => {
+          child.style.setProperty('--stagger-i', i);
+          child.classList.add('stagger-item');
         });
 
-        card.addEventListener('mouseleave', () => {
-          card.style.transform = 'rotateX(2deg) rotateY(-1deg)';
+        if ('IntersectionObserver' in window) {
+          const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+              if (entry.isIntersecting) {
+                container.classList.add('stagger-visible');
+                observer.unobserve(container);
+              }
+            });
+          }, { threshold: 0.15 });
+          observer.observe(container);
+        } else {
+          container.classList.add('stagger-visible');
+        }
+      });
+    },
+
+    // ---- Glitch Hover Effect ----
+
+    initGlitchEffects() {
+      document.querySelectorAll('[data-glitch]').forEach(el => {
+        el.addEventListener('mouseenter', () => {
+          el.classList.add('glitch-active');
         });
-      }
-    }
+        el.addEventListener('mouseleave', () => {
+          el.classList.remove('glitch-active');
+        });
+      });
+    },
   };
 
   if (document.readyState === 'loading') {

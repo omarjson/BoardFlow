@@ -32,7 +32,7 @@
   <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Tajawal:wght@400;500;700;800;900&display=swap" rel="stylesheet">
 
   <!-- Stylesheets (also bundled via Vite for production) -->
   <link rel="stylesheet" href="/css/tokens.css">
@@ -129,39 +129,35 @@
 
       <!-- Hero -->
       <section class="landing-hero">
-        <div class="landing-hero-grid"></div>
-        <div class="landing-hero-bg">
-          <div class="landing-hero-blob blob-1"></div>
-          <div class="landing-hero-blob blob-2"></div>
-          <div class="landing-hero-blob blob-3"></div>
-          <div class="landing-hero-blob blob-4"></div>
-          <div class="landing-hero-blob blob-5"></div>
+        <div class="landing-hero-shapes" aria-hidden="true">
+          <div class="hero-shape hero-shape-1"></div>
+          <div class="hero-shape hero-shape-2"></div>
+          <div class="hero-shape hero-shape-3"></div>
         </div>
-        <div class="landing-container">
-          <div class="landing-hero-content">
+        <div class="landing-hero-content">
+          <div class="landing-hero-text">
             <div data-animate>
               <div class="landing-badge landing-badge-hero" data-i18n="hero_badge">Free forever. No credit card. No catch.</div>
             </div>
             <h1 class="landing-hero-title" data-animate data-i18n="hero_title">Your infinite canvas<br>for <span class="gradient-text">everything</span></h1>
             <p class="landing-hero-subtitle" data-animate data-i18n="hero_subtitle">BoardFlow is the open canvas where you can dump your brain — sticky notes, sketches, rich notes, files, videos, audio, AI, and more. Organize it your way. Share it with anyone.</p>
             <div class="landing-hero-actions" data-animate>
-              <a href="#/signup" class="btn btn-primary btn-lg btn-hero-primary" data-i18n="start_for_free">Start for Free</a>
-              <a href="#/about" class="btn btn-secondary btn-lg btn-hero-secondary" data-i18n="learn_more">Learn More</a>
+              <a href="#/signup" class="btn btn-primary btn-xl btn-hero-primary" data-i18n="start_for_free">Start for Free</a>
+              <a href="#/about" class="btn btn-secondary btn-xl btn-hero-secondary" data-i18n="learn_more">Learn More</a>
             </div>
-            <div class="landing-hero-preview" data-animate="scale">
-              <div class="landing-preview-card">
-                <div class="preview-board">
-                  <div class="preview-note preview-note-1" style="--i: 0;">Meeting notes from today's standup — discussed roadmap priorities</div>
-                  <div class="preview-note preview-note-2" style="--i: 1;">Bug fix: auth token refresh</div>
-                  <div class="preview-note preview-note-3" style="--i: 2;">Q3 Goals: Launch v2, 10k users, mobile app</div>
-                  <div class="preview-note preview-note-4" style="--i: 3;">Design system colors & typography</div>
-                  <div class="preview-note preview-note-5" style="--i: 4;">Sprint retrospective — what went well</div>
-                  <div class="preview-note preview-note-6" style="--i: 5;">API endpoint structure</div>
-                  <div class="preview-note preview-note-7" style="--i: 6;">Launch week checklist</div>
-                  <div class="preview-note preview-note-8" style="--i: 7;">User feedback dashboard</div>
-                </div>
-              </div>
-            </div>
+          </div>
+          <div class="landing-hero-board" data-animate="scale">
+            <div class="hero-sticky hero-sticky-1" style="--i: 0;" data-glitch data-glitch-text="Meeting notes — roadmap">Meeting notes standup — roadmap priorities</div>
+            <div class="hero-sticky hero-sticky-2" style="--i: 1;" data-glitch data-glitch-text="Bug fix: auth token">Bug fix: auth token refresh</div>
+            <div class="hero-sticky hero-sticky-3" style="--i: 2;" data-glitch data-glitch-text="Q3 Goals: 10k users">Q3 Goals: 10k users, mobile app</div>
+            <div class="hero-sticky hero-sticky-4" style="--i: 3;" data-glitch data-glitch-text="Design system colors">Design system colors</div>
+            <div class="hero-sticky hero-sticky-5" style="--i: 4;" data-glitch data-glitch-text="Sprint retrospective">Sprint retrospective</div>
+            <div class="hero-sticky hero-sticky-6" style="--i: 5;" data-glitch data-glitch-text="API endpoint structure">API endpoint structure</div>
+            <div class="hero-sticky hero-sticky-7" style="--i: 6;" data-glitch data-glitch-text="Launch week checklist">Launch week checklist</div>
+            <div class="hero-sticky hero-sticky-8" style="--i: 7;" data-glitch data-glitch-text="User feedback dashboard">User feedback dashboard</div>
+            <div class="hero-sticky hero-sticky-9" style="--i: 8;" data-glitch data-glitch-text="UI component library">UI component library</div>
+            <div class="hero-sticky hero-sticky-10" style="--i: 9;" data-glitch data-glitch-text="Database migration plan">Database migration plan</div>
+            <div class="hero-board-dotgrid" aria-hidden="true"></div>
           </div>
         </div>
       </section>
@@ -199,20 +195,20 @@
             <h2 data-i18n="stats_heading">Everything built into one canvas</h2>
             <p data-i18n="stats_sub">No plugins. No add-ons. No hidden features behind a paywall.</p>
           </div>
-          <div class="landing-stats-grid landing-stats-grid-drama">
-            <div class="landing-stat-card" data-animate>
+          <div class="landing-stats-grid landing-stats-grid-drama" data-stagger>
+            <div class="landing-stat-card">
               <div class="stat-value"><span class="landing-stat-number stat-blue">27</span></div>
               <p data-i18n="stat_features">Features included<br>in the free tier</p>
             </div>
-            <div class="landing-stat-card" data-animate>
+            <div class="landing-stat-card">
               <div class="stat-value"><span class="landing-stat-number stat-purple">15</span></div>
               <p data-i18n="stat_languages">Languages supported<br>with RTL layout</p>
             </div>
-            <div class="landing-stat-card" data-animate>
+            <div class="landing-stat-card">
               <div class="stat-value"><span class="landing-stat-number stat-teal">35</span></div>
               <p data-i18n="stat_templates">Ready-to-use templates<br>across 7 categories</p>
             </div>
-            <div class="landing-stat-card" data-animate>
+            <div class="landing-stat-card">
               <div class="stat-value"><span class="landing-stat-number stat-orange">0</span></div>
               <p data-i18n="stat_price">Dollars charged<br>for any feature</p>
             </div>
@@ -228,45 +224,45 @@
             <h2 data-i18n="features_heading">Everything you need,<br>nothing you don't</h2>
             <p data-i18n="features_sub">27 features built into one clean canvas. No bloat, no learning curve.</p>
           </div>
-          <div class="landing-features-grid landing-features-grid-bento">
-            <div class="landing-feature-card" data-animate>
+          <div class="landing-features-grid" data-stagger>
+            <div class="landing-feature-card landing-feature-card-wide">
               <div class="landing-feature-icon feature-icon-blue">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
               </div>
               <h3 data-i18n="feat_infinite_canvas">Infinite Canvas</h3>
               <p data-i18n="feat_infinite_canvas_desc">Pan, zoom, and navigate a limitless space. Your board grows as big as your ideas.</p>
             </div>
-            <div class="landing-feature-card" data-animate>
+            <div class="landing-feature-card">
               <div class="landing-feature-icon feature-icon-purple">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
               </div>
               <h3 data-i18n="feat_notes_rich_text">Notes & Rich Text</h3>
               <p data-i18n="feat_notes_rich_text_desc">Sticky notes for quick thoughts, rich notes for markdown, checklists, and code blocks.</p>
             </div>
-            <div class="landing-feature-card" data-animate>
+            <div class="landing-feature-card">
               <div class="landing-feature-icon feature-icon-teal">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/></svg>
               </div>
               <h3 data-i18n="feat_sketches_drawing">Sketches & Drawing</h3>
               <p data-i18n="feat_sketches_drawing_desc">Freehand drawing with pen, marker, and eraser. Diagrams, wireframes, doodles.</p>
             </div>
-            <div class="landing-feature-card" data-animate>
+            <div class="landing-feature-card">
               <div class="landing-feature-icon feature-icon-pink">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></svg>
               </div>
               <h3 data-i18n="feat_ai_assistant">AI Assistant</h3>
               <p data-i18n="feat_ai_assistant_desc">Chat with AI, generate images, extract text from screenshots, read notes aloud.</p>
             </div>
-            <div class="landing-feature-card" data-animate>
+            <div class="landing-feature-card landing-feature-card-wide">
               <div class="landing-feature-icon feature-icon-green">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
               </div>
               <h3 data-i18n="feat_realtime_collaboration">Real-time Collaboration</h3>
               <p data-i18n="feat_realtime_collaboration_desc">Share boards, invite teammates, chat in real-time. Viewer and editor roles.</p>
             </div>
-            <div class="landing-feature-card" data-animate>
+            <div class="landing-feature-card">
               <div class="landing-feature-icon feature-icon-orange">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
               </div>
               <h3 data-i18n="feat_files_media">Files & Media</h3>
               <p data-i18n="feat_files_media_desc">Upload anything — images, videos, audio, documents. Record audio in-browser.</p>
@@ -283,43 +279,43 @@
             <h2 data-i18n="use_cases_heading">What can you do with BoardFlow?</h2>
             <p data-i18n="use_cases_sub">Anything that involves thinking, planning, or creating.</p>
           </div>
-          <div class="landing-use-cases">
-            <div class="landing-use-case-card" data-animate>
+          <div class="landing-use-cases" data-stagger>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-blue">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="12" y1="6" x2="12" y2="12"/><line x1="9" y1="9" x2="15" y2="9"/></svg>
               </div>
               <h3 data-i18n="use_case_study_research">Study & Research</h3>
               <p data-i18n="use_case_study_research_desc">Exam prep boards, lecture notes, research maps, flashcards. Connect ideas visually.</p>
             </div>
-            <div class="landing-use-case-card" data-animate>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-purple">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
               </div>
               <h3 data-i18n="use_case_business_strategy">Business & Strategy</h3>
               <p data-i18n="use_case_business_strategy_desc">Kanban boards, SWOT analysis, business model canvases, sprint planning, OKRs.</p>
             </div>
-            <div class="landing-use-case-card" data-animate>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-teal">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
               </div>
               <h3 data-i18n="use_case_creative_projects">Creative Projects</h3>
               <p data-i18n="use_case_creative_projects_desc">Mind maps, mood boards, storyboards, design systems, brand boards.</p>
             </div>
-            <div class="landing-use-case-card" data-animate>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-orange">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
               </div>
               <h3 data-i18n="use_case_personal_life">Personal Life</h3>
               <p data-i18n="use_case_personal_life_desc">Goal setting, weekly planners, vision boards, habit trackers, travel planning.</p>
             </div>
-            <div class="landing-use-case-card" data-animate>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-pink">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
               </div>
               <h3 data-i18n="use_case_team_collaboration">Team Collaboration</h3>
               <p data-i18n="use_case_team_collaboration_desc">Brainstorming sessions, retrospectives, decision matrices, onboarding boards.</p>
             </div>
-            <div class="landing-use-case-card" data-animate>
+            <div class="landing-use-case-card">
               <div class="landing-use-case-icon usecase-icon-green">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
               </div>
@@ -338,8 +334,8 @@
             <h2 data-i18n="testimonials_heading">Loved by thinkers<br>everywhere</h2>
             <p data-i18n="testimonials_sub">From students to startup founders — here's what people say.</p>
           </div>
-          <div class="landing-testimonials-grid">
-            <div class="landing-testimonial" data-animate>
+          <div class="landing-testimonials-grid" data-stagger>
+            <div class="landing-testimonial">
               <div class="landing-testimonial-stars" role="img" aria-label="5 out of 5 stars">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -356,7 +352,7 @@
                 </div>
               </div>
             </div>
-            <div class="landing-testimonial" data-animate>
+            <div class="landing-testimonial">
               <div class="landing-testimonial-stars" role="img" aria-label="5 out of 5 stars">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -373,7 +369,7 @@
                 </div>
               </div>
             </div>
-            <div class="landing-testimonial" data-animate>
+            <div class="landing-testimonial">
               <div class="landing-testimonial-stars" role="img" aria-label="5 out of 5 stars">
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
                 <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
@@ -520,55 +516,55 @@
             <h2 data-i18n="tech_heading">Built with modern tech</h2>
             <p data-i18n="tech_sub">Zero servers to manage. Zero monthly bills. Zero bloat.</p>
           </div>
-          <div class="landing-tech-grid">
-            <div class="landing-tech-item" data-animate>
+          <div class="landing-tech-grid" data-stagger>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v8"/><path d="M4 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/><path d="M16 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3"/><path d="M9 20h6"/><path d="M12 4v8"/><path d="M4 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/><path d="M16 15c0 1.1.9 4 4 4s4-2.9 4-4c0-1.1-.9-4-4-4s-4 2.9-4 4z"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_supabase">Supabase</div>
                 <div class="landing-tech-desc" data-i18n="tech_supabase_desc">Auth & database with PostgreSQL and RLS</div>
               </div>
             </div>
-            <div class="landing-tech-item" data-animate>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_puterjs">Puter.js</div>
                 <div class="landing-tech-desc" data-i18n="tech_puterjs_desc">AI & cloud file storage (user-pays)</div>
               </div>
             </div>
-            <div class="landing-tech-item" data-animate>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_cloudflare">Cloudflare</div>
                 <div class="landing-tech-desc" data-i18n="tech_cloudflare_desc">Global hosting & CDN via Pages</div>
               </div>
             </div>
-            <div class="landing-tech-item" data-animate>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_vanilla_js">Vanilla JS</div>
                 <div class="landing-tech-desc" data-i18n="tech_vanilla_js_desc">No framework, no build step, instant loads</div>
               </div>
             </div>
-            <div class="landing-tech-item" data-animate>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_pwa">PWA</div>
                 <div class="landing-tech-desc" data-i18n="tech_pwa_desc">Installable, works offline, fast loading</div>
               </div>
             </div>
-            <div class="landing-tech-item" data-animate>
+            <div class="landing-tech-item">
               <div class="landing-tech-logo tech-logo">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
               </div>
               <div class="landing-tech-info">
                 <div class="landing-tech-name" data-i18n="tech_open_source">Open Source</div>
