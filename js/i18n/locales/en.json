@@ -130,7 +130,7 @@
   "get_started_free": "Get Started Free",
   "sticky_cta": "Free forever. No credit card. Start now.",
   "hero_badge": "Free forever. No credit card. No catch.",
-  "hero_title": "Your infinite canvas<br>for everything",
+  "hero_title": "Your infinite canvas<br>for <span class=\"gradient-text\">everything</span>",
   "hero_subtitle": "BoardFlow is the open canvas where you can dump your brain — sticky notes, sketches, rich notes, files, videos, audio, AI, and more. Organize it your way. Share it with anyone.",
   "start_for_free": "Start for Free",
   "learn_more": "Learn More",
@@ -212,7 +212,7 @@
   "faq_q_5": "Is my data secure?",
 
   "pricing_badge": "Pricing",
-  "pricing_heading": "Always free.",
+  "pricing_heading": "Always free. <span class=\"gradient-text gradient-text-rainbow\">Really.</span>",
   "pricing_really": "Really.",
   "pricing_sub": "No trials. No credit card. No \"free for 14 days then $29/mo.\"",
   "pricing_card_badge": "Free Forever",

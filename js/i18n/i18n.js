@@ -90,7 +90,7 @@ const I18n = {
   _translatePage() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
-      el.textContent = this.__(key);
+      el.innerHTML = this.__(key);
     });
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
@@ -222,6 +222,8 @@ const I18n = {
       select_source_first: 'Select a source item first',
       connection_created: 'Connection created',
       click_to_connect: 'Click another item to connect',
+      hero_title: 'Your infinite canvas<br>for <span class="gradient-text">everything</span>',
+      pricing_heading: 'Always free. <span class="gradient-text gradient-text-rainbow">Really.</span>',
       fill_fields: 'Please fill in all fields.',
       signing_in: 'Signing in...',
       signed_in: 'Signed in successfully!',
