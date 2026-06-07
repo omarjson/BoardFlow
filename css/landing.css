@@ -1087,6 +1087,10 @@
   gap: 10px;
 }
 
+.landing-section-dark .landing-pricing-features li {
+  color: rgba(255,255,255,0.65);
+}
+
 .landing-pricing-features li::before {
   content: '';
   width: 20px;
