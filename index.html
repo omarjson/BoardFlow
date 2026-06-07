@@ -34,29 +34,8 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <!-- CSS -->
-  <link rel="stylesheet" href="/css/variables.css">
-  <link rel="stylesheet" href="/css/reset.css">
-  <link rel="stylesheet" href="/css/main.css">
-  <link rel="stylesheet" href="/css/landing.css?v=11">
-  <link rel="stylesheet" href="/css/auth.css">
-  <link rel="stylesheet" href="/css/dashboard.css">
-  <link rel="stylesheet" href="/css/components/toolbar.css">
-  <link rel="stylesheet" href="/css/components/template-gallery.css">
-  <link rel="stylesheet" href="/css/board.css">
-  <link rel="stylesheet" href="/css/components/minimap.css">
-  <link rel="stylesheet" href="/css/components/sticky-note.css">
-  <link rel="stylesheet" href="/css/components/rich-note.css">
-  <link rel="stylesheet" href="/css/components/sketch.css">
-  <link rel="stylesheet" href="/css/components/file-manager.css">
-  <link rel="stylesheet" href="/css/components/link-card.css">
-  <link rel="stylesheet" href="/css/components/media-player.css">
-  <link rel="stylesheet" href="/css/components/roadmap.css">
-  <link rel="stylesheet" href="/css/components/ai-assistant.css">
-  <link rel="stylesheet" href="/css/components/chat.css">
-  <link rel="stylesheet" href="/css/rtl.css">
-  <link rel="stylesheet" href="/css/responsive.css">
-  <link rel="stylesheet" href="/css/components/search.css">
+  <!-- Vite entry — bundles all CSS into one file -->
+  <script type="module" src="/src/main.js"></script>
 
   <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -66,26 +45,33 @@
 </head>
 <body>
 
+  <!-- Skip link for keyboard users -->
+  <a href="#main-content" class="skip-link">Skip to main content</a>
+
   <div id="app">
 
     <!-- ========== LANDING PAGE ========== -->
     <div id="page-landing" class="page landing-page">
 
-      <!-- Nav -->
-      <nav class="landing-nav">
+      <!-- Nav (WCAG 2.2 accessible) -->
+      <nav class="landing-nav" aria-label="Main navigation">
         <div class="landing-nav-inner">
-          <a href="#/" class="landing-logo">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          <a href="#/" class="landing-logo" aria-label="BoardFlow home">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
             <span>BoardFlow</span>
           </a>
-          <div class="landing-nav-links">
+          <div class="landing-nav-links" id="landing-nav-links" role="navigation" aria-label="Main menu">
             <a href="#/about">About</a>
             <a href="#/contact">Contact</a>
             <a href="#/login" class="btn btn-ghost">Log In</a>
             <a href="#/signup" class="btn btn-primary">Get Started Free</a>
           </div>
-          <button class="landing-nav-toggle" id="landing-nav-toggle" aria-label="Menu">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+          <button class="landing-nav-toggle" id="landing-nav-toggle"
+                  aria-label="Toggle menu"
+                  aria-expanded="false"
+                  aria-controls="landing-nav-links"
+                  type="button">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
           </button>
         </div>
       </nav>
@@ -113,7 +99,7 @@
             <p class="landing-hero-subtitle" data-animate style="transition-delay:0.19s">BoardFlow is the open canvas where you can dump your brain — sticky notes, sketches, rich notes, files, videos, audio, AI, and more. Organize it your way. Share it with anyone.</p>
             <div class="landing-hero-actions" data-animate style="transition-delay:0.26s">
               <a href="#/signup" class="btn btn-primary btn-lg">Start for Free</a>
-              <a href="#/about" class="btn btn-glass btn-lg">Learn More</a>
+              <a href="#/about" class="btn btn-secondary btn-lg">Learn More</a>
             </div>
             <div class="landing-hero-preview" data-animate="scale" style="transition-delay:0.35s">
               <div class="landing-preview-card">
@@ -589,14 +575,14 @@
 
     <!-- ========== ABOUT PAGE ========== -->
     <div id="page-about" class="page legal-page">
-      <div class="legal-nav">
-        <a href="#/" class="landing-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <nav class="legal-nav" aria-label="Legal page navigation">
+        <a href="#/" class="landing-logo" aria-label="BoardFlow home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
           <span>BoardFlow</span>
         </a>
-        <a href="#/" class="btn btn-ghost">Back to Home</a>
-      </div>
-      <div class="legal-content">
+        <a href="#/" class="btn btn-secondary">Back to Home</a>
+      </nav>
+      <main class="legal-content" id="main-content">
         <h1>About BoardFlow</h1>
         <p class="legal-lead">BoardFlow was born from a simple belief: tools for thinking should be free and accessible to everyone.</p>
 
@@ -622,19 +608,19 @@
         <h2>Our Vision</h2>
         <p>We envision a world where the tools you use to think, plan, and create don't depend on your ability to pay. Where a student in any country has the same access to a powerful whiteboard as a funded startup. Where "free" means free — not "free until we change our mind."</p>
         <p>BoardFlow is our contribution to that world.</p>
-      </div>
+      </main>
     </div>
 
     <!-- ========== PRIVACY PAGE ========== -->
     <div id="page-privacy" class="page legal-page">
-      <div class="legal-nav">
-        <a href="#/" class="landing-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <nav class="legal-nav" aria-label="Legal page navigation">
+        <a href="#/" class="landing-logo" aria-label="BoardFlow home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
           <span>BoardFlow</span>
         </a>
-        <a href="#/" class="btn btn-ghost">Back to Home</a>
-      </div>
-      <div class="legal-content">
+        <a href="#/" class="btn btn-secondary">Back to Home</a>
+      </nav>
+      <main class="legal-content">
         <h1>Privacy Policy</h1>
         <p class="legal-lead">Last updated: June 7, 2026</p>
 
@@ -691,19 +677,19 @@
 
         <h2>Contact Us</h2>
         <p>If you have questions about this Privacy Policy, please <a href="#/contact">contact us</a>.</p>
-      </div>
+      </main>
     </div>
 
     <!-- ========== TERMS PAGE ========== -->
     <div id="page-terms" class="page legal-page">
-      <div class="legal-nav">
-        <a href="#/" class="landing-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <nav class="legal-nav" aria-label="Legal page navigation">
+        <a href="#/" class="landing-logo" aria-label="BoardFlow home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
           <span>BoardFlow</span>
         </a>
-        <a href="#/" class="btn btn-ghost">Back to Home</a>
-      </div>
-      <div class="legal-content">
+        <a href="#/" class="btn btn-secondary">Back to Home</a>
+      </nav>
+      <main class="legal-content">
         <h1>Terms of Service</h1>
         <p class="legal-lead">Last updated: June 7, 2026</p>
 
@@ -752,19 +738,19 @@
 
         <h2>Contact</h2>
         <p>For questions about these Terms of Service, please <a href="#/contact">contact us</a>.</p>
-      </div>
+      </main>
     </div>
 
     <!-- ========== CONTACT PAGE ========== -->
     <div id="page-contact" class="page legal-page">
-      <div class="legal-nav">
-        <a href="#/" class="landing-logo">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+      <nav class="legal-nav" aria-label="Legal page navigation">
+        <a href="#/" class="landing-logo" aria-label="BoardFlow home">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
           <span>BoardFlow</span>
         </a>
-        <a href="#/" class="btn btn-ghost">Back to Home</a>
-      </div>
-      <div class="legal-content">
+        <a href="#/" class="btn btn-secondary">Back to Home</a>
+      </nav>
+      <main class="legal-content">
         <h1>Contact Us</h1>
         <p class="legal-lead">Have a question, suggestion, or just want to say hi? We'd love to hear from you.</p>
 
@@ -794,7 +780,7 @@
             <a href="mailto:feedback@boardflow.app" class="btn btn-secondary">Send Feedback</a>
           </div>
         </div>
-      </div>
+      </main>
     </div>
 
     <!-- ========== LOGIN PAGE ========== -->
@@ -822,8 +808,8 @@
 
           <div class="auth-divider">or</div>
 
-          <button id="login-google" class="btn btn-google btn-block">
-            <svg viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+          <button id="login-google" class="btn btn-secondary btn-block">
+            <svg viewBox="0 0 24 24" width="20" height="20"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
             <span data-i18n="continue_google">Continue with Google</span>
           </button>
 

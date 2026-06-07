@@ -9,6 +9,15 @@
 }
 
 /* Toolbar button with SVG icons */
+.toolbar-btn {
+  position: relative;
+  border-radius: var(--radius-sm);
+}
+
+.toolbar-btn:focus-visible {
+  box-shadow: var(--focus-ring);
+}
+
 .toolbar-btn svg {
   width: 18px;
   height: 18px;
@@ -51,10 +60,10 @@
   }
 
   .toolbar-btn {
-    min-width: 40px;
-    min-height: 40px;
-    width: 40px;
-    height: 40px;
+    min-width: 44px;
+    min-height: 44px;
+    width: 44px;
+    height: 44px;
   }
 
   .toolbar-btn svg {

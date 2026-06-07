@@ -1,14 +1,18 @@
 {
   "name": "boardflow",
-  "version": "1.0.0",
-  "description": "Personal board/whiteboard web app",
+  "version": "2.0.0",
+  "description": "Personal board/whiteboard web app — refactored",
   "private": true,
+  "type": "module",
   "scripts": {
-    "dev": "npx serve .",
-    "deploy": "npx wrangler pages deploy . --project-name boardflow"
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "deploy": "npx wrangler pages deploy dist/ --project-name boardflow"
   },
   "devDependencies": {
-    "serve": "^14.2.0",
+    "vite": "^6.0.0",
+    "vite-plugin-static-copy": "^4.1.1",
     "wrangler": "^3.0.0"
   }
 }

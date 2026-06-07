@@ -164,14 +164,6 @@ function setupAuthListener() {
     }
   });
 
-  // Landing page mobile nav toggle
-  const navToggle = document.getElementById('landing-nav-toggle');
-  if (navToggle) {
-    navToggle.addEventListener('click', () => {
-      const navLinks = document.querySelector('.landing-nav-links');
-      if (navLinks) navLinks.classList.toggle('open');
-    });
-  }
 }
 
 // ---- Dashboard ----
