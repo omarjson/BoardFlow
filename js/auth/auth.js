@@ -17,7 +17,7 @@ class Auth {
       return;
     }
 
-    this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_ANON_KEY);
+    this.supabase = supabase.createClient(CONFIG.SUPABASE_URL, CONFIG.SUPABASE_PUBLISHABLE_KEY);
 
     const { data: { session } } = await this.supabase.auth.getSession();
     this.session = session;

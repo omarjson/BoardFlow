@@ -34,7 +34,7 @@ Users can create multiple boards, share them with others, chat in real-time, and
 
 ### Supabase Keys
 
-- **Anon key (publishable key)**: Safe in frontend. Protected by Row Level Security (RLS).
+- **Publishable key (`sb_publishable_...`)**: Safe in frontend, replaces the legacy anon JWT. Protected by Row Level Security (RLS).
 - **Service role key**: NEVER in frontend code. Only for server-side Edge Functions.
 - **JWT Secret**: Never expose. Used internally by Supabase Auth.
 
@@ -593,7 +593,7 @@ boardflow/
 const CONFIG = {
   // Supabase
   SUPABASE_URL: 'https://your-project.supabase.co',
-  SUPABASE_ANON_KEY: 'your-anon-key',
+  SUPABASE_PUBLISHABLE_KEY: 'your-publishable-key',
 
   // Puter.js (no config needed, just include the script)
   PUTER_ENABLED: true,
