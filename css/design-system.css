@@ -202,8 +202,8 @@
 
 .ds-color-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: var(--space-4);
+  grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+  gap: var(--space-2);
 }
 
 .ds-color-card {
@@ -221,10 +221,10 @@
 }
 
 .ds-color-swatch {
-  height: 80px;
+  height: 56px;
   display: flex;
   align-items: flex-end;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-1) var(--space-2);
 }
 
 .ds-color-swatch label {
@@ -239,14 +239,15 @@
 }
 
 .ds-color-info {
-  padding: var(--space-2) var(--space-3) var(--space-3);
+  padding: var(--space-1) var(--space-2) var(--space-2);
 }
 
 .ds-color-name {
-  font-size: var(--text-caption-size);
+  font-size: 12px;
   font-weight: 600;
   color: var(--ink);
-  margin: 0 0 2px;
+  margin: 0 0 1px;
+  line-height: 1.3;
 }
 
 .ds-color-hex {
@@ -562,7 +563,7 @@
     padding: var(--space-8) var(--space-4);
   }
   .ds-color-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   }
   .ds-type-item {
     flex-direction: column;

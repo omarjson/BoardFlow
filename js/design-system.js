@@ -129,10 +129,11 @@
       grid.innerHTML = this.spacingMeta.map(m => {
         const val = this._get(m.var);
         const px = parseInt(val) || 0;
+        const h = Math.max(8, Math.min(px, 20));
         return `
           <div class="ds-spacing-item">
             <div class="ds-spacing-label">${m.name}</div>
-            <div class="ds-spacing-block" style="width: ${px}px; height: 16px;"></div>
+            <div class="ds-spacing-block" style="width: ${px}px; height: ${h}px;"></div>
             <div class="ds-spacing-value">${val}</div>
           </div>
         `;
