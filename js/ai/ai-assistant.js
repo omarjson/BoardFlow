@@ -32,7 +32,13 @@ class _AIAssistant {
         { role: 'user', content: message }
       ]);
 
-      return response?.message?.content || response?.toString() || 'No response';
+      if (typeof response === 'string') return response;
+      if (response?.message?.content) return response.message.content;
+      if (response?.choices?.[0]?.message?.content) return response.choices[0].message.content;
+      if (response?.text) return response.text;
+      if (response?.data) return typeof response.data === 'string' ? response.data : JSON.stringify(response.data);
+      if (typeof response === 'object') return JSON.stringify(response);
+      return 'No response';
     } catch (err) {
       console.error('AI chat failed:', err);
       Toast.show('AI chat failed', 'error');
