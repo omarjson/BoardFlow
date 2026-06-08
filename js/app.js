@@ -19,7 +19,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     console.log('[BoardFlow boot diag]', diag);
 
     if (typeof window.BoardFlowAuth !== 'object' || missingMethods.length > 0) {
-      showBootError('BoardFlowAuth module is broken (missing methods: ' + missingMethods.join(', ') + '). Try DevTools → Application → Service Workers → Unregister, then Ctrl+Shift+R.', diag);
+      showBootError(`BoardFlowAuth module is broken (missing methods: ${missingMethods.join(', ')}). Try DevTools → Application → Service Workers → Unregister, then Ctrl+Shift+R.`, diag);
       return;
     }
     if (typeof window.I18n === 'undefined' || typeof window.I18n.init !== 'function') {
@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     AppRouter.start();
   } catch (err) {
-    showBootError('Boot error: ' + (err?.message || String(err)), null, err);
+    showBootError(`Boot error: ${err?.message || String(err)}`, null, err);
     console.error(err);
   }
 });
@@ -93,38 +93,38 @@ function setupRoutes() {
   }
 
   AppRouter
-    .on('/', (ctx) => {
+    .on('/', () => {
       if (BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/dashboard');
         return;
       }
       showPage('landing');
     })
-    .on('/about', (ctx) => {
+    .on('/about', () => {
       showPage('about');
     })
-    .on('/privacy', (ctx) => {
+    .on('/privacy', () => {
       showPage('privacy');
     })
-    .on('/terms', (ctx) => {
+    .on('/terms', () => {
       showPage('terms');
     })
-    .on('/design-system', (ctx) => {
+    .on('/design-system', () => {
       showPage('designSystem');
       if (window.DesignSystem) DesignSystem.init();
     })
-    .on('/contact', (ctx) => {
+    .on('/contact', () => {
       showPage('contact');
     })
-    .on('/login', (ctx) => {
+    .on('/login', () => {
       showPage('login');
       initLoginPage();
     })
-    .on('/signup', (ctx) => {
+    .on('/signup', () => {
       showPage('signup');
       initSignupPage();
     })
-    .on('/dashboard', (ctx) => {
+    .on('/dashboard', () => {
       if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
         return;
@@ -132,7 +132,7 @@ function setupRoutes() {
       showPage('dashboard');
       initDashboard();
     })
-    .on('/settings', (ctx) => {
+    .on('/settings', () => {
       if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
         return;
@@ -150,22 +150,24 @@ function setupRoutes() {
       initBoard(ctx.params.id);
     })
     .on('/board/shared/:token', async (ctx) => {
-      const board = await BoardManager.getByShareToken(ctx.params.token);
-      if (board) {
-        showPage('board');
-        initBoard(board.id);
-      } else {
-        Toast.show('Share link not found', 'error');
+      try {
+        const board = await BoardManager.getByShareToken(ctx.params.token);
+        if (board) {
+          showPage('board');
+          initBoard(board.id);
+        } else {
+          Toast.show('Share link not found', 'error');
+          AppRouter.navigate('/');
+        }
+      } catch (err) {
+        console.error('Failed to load shared board:', err);
+        Toast.show('Failed to load shared board', 'error');
         AppRouter.navigate('/');
       }
     })
-    .on('*', (ctx) => {
+    .on('*', () => {
       showPage('landing');
     });
-
-  AppRouter.beforeEach = (ctx) => {
-    return true;
-  };
 }
 
 function setupAuthListener() {
@@ -174,7 +176,6 @@ function setupAuthListener() {
       AppRouter.navigate('/');
     }
   });
-
 }
 
 // ---- Dashboard ----
@@ -240,7 +241,7 @@ function renderDashboardMain() {
     container.querySelectorAll('.board-card').forEach(card => {
       card.addEventListener('click', (e) => {
         if (e.target.closest('.board-rename') || e.target.closest('.board-delete')) return;
-        AppRouter.navigate('/board/' + card.dataset.id);
+        AppRouter.navigate(`/board/${card.dataset.id}`);
       });
     });
 
@@ -279,7 +280,7 @@ async function renameBoard(boardId) {
         await BoardManager.update(boardId, { title });
         Toast.show('Board renamed!', 'success');
         renderDashboardMain();
-        Sidebar.loadBoards();
+        Sidebar.loadBoards().catch(() => {});
       }
     }
   });
@@ -298,7 +299,7 @@ async function deleteBoard(boardId) {
       await BoardManager.delete(boardId);
       Toast.show('Board deleted', 'success');
       renderDashboardMain();
-      Sidebar.loadBoards();
+      Sidebar.loadBoards().catch(() => {});
     }
   });
 }
@@ -376,7 +377,7 @@ async function initBoard(boardId) {
   // Update zoom display
   Canvas.onZoomChange = (zoom) => {
     const zoomEl = document.getElementById('zoom-level');
-    if (zoomEl) zoomEl.textContent = Math.round(zoom * 100) + '%';
+    if (zoomEl) zoomEl.textContent = `${Math.round(zoom * 100)}%`;
     Minimap.render();
   };
 
@@ -673,13 +674,19 @@ function renderBoardToolbar(boardId) {
   document.getElementById('tb-sync')?.addEventListener('click', async () => {
     const btn = document.getElementById('tb-sync');
     if (btn) btn.style.pointerEvents = 'none';
-    if (BoardFlowAuth.supabase) {
-      await BoardManager.update(ItemManager.boardId, {});
-    }
-    ItemManager._markSynced();
-    Toast.show(I18n.__('synced_just_now'), 'success');
-    if (btn) {
-      setTimeout(() => { btn.style.pointerEvents = ''; }, 1500);
+    try {
+      if (BoardFlowAuth.supabase) {
+        await BoardManager.update(ItemManager.boardId, {});
+      }
+      ItemManager._markSynced();
+      Toast.show(I18n.__('synced_just_now'), 'success');
+    } catch (err) {
+      console.error('Sync failed:', err);
+      Toast.show(I18n.__('error_occurred'), 'error');
+    } finally {
+      if (btn) {
+        setTimeout(() => { btn.style.pointerEvents = ''; }, 1500);
+      }
     }
   });
 
@@ -927,8 +934,8 @@ function startResize(item, dir, e) {
 
     const el = document.querySelector(`[data-id="${item.id}"]`);
     if (el) {
-      el.style.width = newW + 'px';
-      el.style.height = newH + 'px';
+      el.style.width = `${newW}px`;
+      el.style.height = `${newH}px`;
       el.style.transform = `translate(${newX}px, ${newY}px) rotate(${item.rotation}deg)`;
     }
   }
@@ -1018,12 +1025,12 @@ function pushHistoryState() {
 function handleBoardKeyboard(e) {
   if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.isContentEditable) return;
 
-    if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey)) {
-      e.preventDefault();
-      BoardSearch.show();
-      return;
-    }
-    if (e.key === 'Delete' || e.key === 'Backspace') {
+  if ((e.key === 'f' || e.key === 'F') && (e.ctrlKey || e.metaKey)) {
+    e.preventDefault();
+    BoardSearch.show();
+    return;
+  }
+  if (e.key === 'Delete' || e.key === 'Backspace') {
     if (ItemManager.selectedItems.size > 0) {
       ItemManager.deleteSelected();
     }

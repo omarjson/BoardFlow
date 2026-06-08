@@ -85,7 +85,7 @@ class _Connections {
     // Shared defs for arrow markers
     const defs = document.createElementNS('http://www.w3.org/2000/svg', 'defs');
     const markerColors = new Set(this.connections.map(c => c.color || '#6e6e73'));
-    markerColors.forEach((color, i) => {
+    markerColors.forEach((color) => {
       const marker = document.createElementNS('http://www.w3.org/2000/svg', 'marker');
       const markerId = `arrowhead-${color.replace('#', '')}`;
       marker.setAttribute('id', markerId);

@@ -3,10 +3,6 @@
 // ============================================
 
 class _Permissions {
-  constructor() {
-    this.roles = ['owner', 'editor', 'viewer'];
-  }
-
   canEdit(boardId) {
     const board = BoardManager.boards.find(b => b.id === boardId);
     if (!board) return false;
@@ -29,12 +25,12 @@ class _Permissions {
 
   async addMember(boardId, email, role = 'viewer') {
     if (!BoardFlowAuth.supabase) {
-      Toast.show('Supabase required for member management', 'info');
+      Toast.show(I18n.__('connect_supabase_members'), 'info');
       return false;
     }
 
     if (!this.canAddMembers(boardId)) {
-      Toast.show('Only the owner can add members', 'error');
+      Toast.show(I18n.__('owner_only_add_members'), 'error');
       return false;
     }
 
@@ -46,7 +42,7 @@ class _Permissions {
         .single();
 
       if (!profile) {
-        Toast.show('User not found', 'error');
+        Toast.show(I18n.__('user_not_found'), 'error');
         return false;
       }
 
@@ -56,18 +52,17 @@ class _Permissions {
 
       if (error) {
         if (error.code === '23505') {
-          Toast.show('User is already a member', 'info');
+          Toast.show(I18n.__('already_member'), 'info');
         } else {
-          Toast.show('Failed to add member', 'error');
+          Toast.show(I18n.__('failed_add_member'), 'error');
         }
         return false;
       }
 
-      Toast.show(`Added ${email} as ${role}`, 'success');
+      Toast.show(`${I18n.__('added')} ${email} ${I18n.__('as_role')} ${role}`, 'success');
       return true;
     } catch (err) {
-      console.error('Add member failed:', err);
-      Toast.show('Failed to add member', 'error');
+      Toast.show(I18n.__('failed_add_member'), 'error');
       return false;
     }
   }
@@ -83,10 +78,9 @@ class _Permissions {
         .eq('board_id', boardId)
         .eq('user_id', userId);
 
-      Toast.show('Member removed', 'success');
+      Toast.show(I18n.__('member_removed'), 'success');
       return true;
-    } catch (err) {
-      console.error('Remove member failed:', err);
+    } catch {
       return false;
     }
   }
@@ -102,10 +96,9 @@ class _Permissions {
         .eq('board_id', boardId)
         .eq('user_id', userId);
 
-      Toast.show(`Role changed to ${newRole}`, 'success');
+      Toast.show(`${I18n.__('role_changed')} ${newRole}`, 'success');
       return true;
-    } catch (err) {
-      console.error('Role change failed:', err);
+    } catch {
       return false;
     }
   }

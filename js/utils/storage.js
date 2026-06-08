@@ -115,4 +115,6 @@ class _Storage {
 
 try {
   Object.defineProperty(window, 'Storage', { value: new _Storage(), writable: false, configurable: true, enumerable: true });
-} catch { window.Storage = new _Storage(); }
+} catch {
+  window.Storage = new _Storage();
+}

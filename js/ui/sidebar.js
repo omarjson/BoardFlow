@@ -109,12 +109,12 @@ class _Sidebar {
       </div>
     `;
 
-    document.getElementById('sidebar-lang')?.addEventListener('change', (e) => {
+    const langSel = document.getElementById('sidebar-lang');
+    langSel?.addEventListener('change', (e) => {
       I18n.setLanguage(e.target.value);
     });
 
     // Sync selector with current language
-    const langSel = document.getElementById('sidebar-lang');
     if (langSel) langSel.value = I18n.currentLang;
 
     document.getElementById('sidebar-new-board')?.addEventListener('click', () => {

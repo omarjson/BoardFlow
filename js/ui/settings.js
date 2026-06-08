@@ -360,9 +360,18 @@ class _Settings {
     `;
     document.body.appendChild(backdrop);
 
-    backdrop.querySelector('.modal-close')?.addEventListener('click', () => backdrop.remove());
-    backdrop.querySelector('.modal-cancel')?.addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove(); });
+    const pwCleanup = () => {
+      document.removeEventListener('keydown', pwEscHandler);
+      backdrop.remove();
+    };
+    const pwEscHandler = (e) => {
+      if (e.key === 'Escape') pwCleanup();
+    };
+    document.addEventListener('keydown', pwEscHandler);
+
+    backdrop.querySelector('.modal-close')?.addEventListener('click', pwCleanup);
+    backdrop.querySelector('.modal-cancel')?.addEventListener('click', pwCleanup);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) pwCleanup(); });
 
     document.getElementById('pw-submit')?.addEventListener('click', async () => {
       const current = document.getElementById('pw-current').value;
@@ -387,7 +396,7 @@ class _Settings {
         const { error } = await BoardFlowAuth.supabase.auth.updateUser({ password: newPw });
         if (error) throw error;
         Toast.show(I18n.__('password_updated'), 'success');
-        backdrop.remove();
+        pwCleanup();
       } catch (err) {
         Toast.show(err.message || 'Failed to update password', 'error');
       }
@@ -420,9 +429,18 @@ class _Settings {
     `;
     document.body.appendChild(backdrop);
 
-    backdrop.querySelector('.modal-close')?.addEventListener('click', () => backdrop.remove());
-    backdrop.querySelector('.modal-cancel')?.addEventListener('click', () => backdrop.remove());
-    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) backdrop.remove(); });
+    const deleteCleanup = () => {
+      document.removeEventListener('keydown', deleteEscHandler);
+      backdrop.remove();
+    };
+    const deleteEscHandler = (e) => {
+      if (e.key === 'Escape') deleteCleanup();
+    };
+    document.addEventListener('keydown', deleteEscHandler);
+
+    backdrop.querySelector('.modal-close')?.addEventListener('click', deleteCleanup);
+    backdrop.querySelector('.modal-cancel')?.addEventListener('click', deleteCleanup);
+    backdrop.addEventListener('click', (e) => { if (e.target === backdrop) deleteCleanup(); });
 
     document.getElementById('delete-submit')?.addEventListener('click', async () => {
       if (document.getElementById('delete-confirm').value !== 'DELETE') {
@@ -440,6 +458,7 @@ class _Settings {
       }
 
       localStorage.clear();
+      deleteCleanup();
       await BoardFlowAuth.signOut();
     });
   }

@@ -677,10 +677,6 @@
   transition: transform 0.25s ease, box-shadow 0.25s ease, z-index 0s;
   z-index: 1;
   will-change: transform;
-  transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px)) rotate(var(--rot, 0deg));
-}
-
-.hero-sticky {
   animation: hero-sticky-float 3s ease-in-out infinite alternate;
   animation-delay: calc(var(--i, 0) * 0.25s);
   transform: translate(var(--parallax-x, 0px), var(--parallax-y, 0px)) rotate(var(--rot, 0deg));
@@ -1767,10 +1763,6 @@
   font-size: 17px;
 }
 
-.btn-block {
-  width: 100%;
-}
-
 /* ============================================
    Responsive — Tablet
    ============================================ */
@@ -2176,12 +2168,35 @@
 }
 
 /* Feature icon backgrounds */
-.feature-icon-blue { background: rgba(0,117,222,0.1); color: var(--primary); }
-.feature-icon-purple { background: rgba(57,28,87,0.08); color: var(--accent-purple-deep); }
-.feature-icon-teal { background: rgba(42,157,153,0.1); color: var(--accent-teal); }
-.feature-icon-pink { background: rgba(194,24,91,0.08); color: #c2185b; }
-.feature-icon-green { background: rgba(46,125,50,0.08); color: #2e7d32; }
-.feature-icon-orange { background: rgba(221,91,0,0.08); color: var(--accent-orange); }
+.feature-icon-blue {
+  background: rgba(0,117,222,0.1);
+  color: var(--primary);
+}
+
+.feature-icon-purple {
+  background: rgba(57,28,87,0.08);
+  color: var(--accent-purple-deep);
+}
+
+.feature-icon-teal {
+  background: rgba(42,157,153,0.1);
+  color: var(--accent-teal);
+}
+
+.feature-icon-pink {
+  background: rgba(194,24,91,0.08);
+  color: #c2185b;
+}
+
+.feature-icon-green {
+  background: rgba(46,125,50,0.08);
+  color: #2e7d32;
+}
+
+.feature-icon-orange {
+  background: rgba(221,91,0,0.08);
+  color: var(--accent-orange);
+}
 
 /* Use case icon colors */
 .usecase-icon-blue { color: var(--primary); }
@@ -2198,27 +2213,87 @@
 .stat-orange { color: var(--accent-orange); }
 
 /* Vision float cards */
-.vision-card-1 { --delay: 0s; left: 5%; top: 10%; }
-.vision-card-2 { --delay: 0.5s; left: 55%; top: 5%; }
-.vision-card-3 { --delay: 1s; left: 28%; top: 55%; }
-.vision-card-4 { --delay: 1.5s; left: 62%; top: 48%; }
+.vision-card-1 {
+  --delay: 0s;
+  left: 5%;
+  top: 10%;
+}
+
+.vision-card-2 {
+  --delay: 0.5s;
+  left: 55%;
+  top: 5%;
+}
+
+.vision-card-3 {
+  --delay: 1s;
+  left: 28%;
+  top: 55%;
+}
+
+.vision-card-4 {
+  --delay: 1.5s;
+  left: 62%;
+  top: 48%;
+}
 
 /* Tech logo backgrounds */
-.tech-logo-blue { background: rgba(59,130,246,0.1); color: #3b82f6; }
-.tech-logo-green { background: rgba(16,185,129,0.1); color: #10b981; }
-.tech-logo-orange { background: rgba(249,115,22,0.1); color: #f97316; }
-.tech-logo-yellow { background: rgba(234,179,8,0.1); color: #eab308; }
-.tech-logo-violet { background: rgba(139,92,246,0.1); color: #8b5cf6; }
-.tech-logo-emerald { background: rgba(34,197,94,0.1); color: #22c55e; }
+.tech-logo-blue {
+  background: rgba(59,130,246,0.1);
+  color: #3b82f6;
+}
+
+.tech-logo-green {
+  background: rgba(16,185,129,0.1);
+  color: #10b981;
+}
+
+.tech-logo-orange {
+  background: rgba(249,115,22,0.1);
+  color: #f97316;
+}
+
+.tech-logo-yellow {
+  background: rgba(234,179,8,0.1);
+  color: #eab308;
+}
+
+.tech-logo-violet {
+  background: rgba(139,92,246,0.1);
+  color: #8b5cf6;
+}
+
+.tech-logo-emerald {
+  background: rgba(34,197,94,0.1);
+  color: #22c55e;
+}
 
 /* Pricing badge */
-.pricing-badge-blue { background: rgba(100,210,255,0.1); border-color: rgba(100,210,255,0.2); color: #64d2ff; }
+.pricing-badge-blue {
+  background: rgba(100,210,255,0.1);
+  border-color: rgba(100,210,255,0.2);
+  color: #64d2ff;
+}
 
 /* Section dark pricing badge */
-.section-dark .landing-badge { background: rgba(10,132,255,0.15); border-color: rgba(10,132,255,0.2); color: #64d2ff; }
+.section-dark .landing-badge {
+  background: rgba(10,132,255,0.15);
+  border-color: rgba(10,132,255,0.2);
+  color: #64d2ff;
+}
 
 /* Gradient text */
-.gradient-text { background: linear-gradient(135deg, #6C5CE7 0%, #8B5CF6 35%, #EC4899 65%, #F59E0B 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text {
+  background: linear-gradient(135deg, #6C5CE7 0%, #8B5CF6 35%, #EC4899 65%, #F59E0B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
 
 /* Gradient text rainbow */
-.gradient-text-rainbow { background: linear-gradient(135deg, #64d2ff 0%, #a78bfa 40%, #f472b6 70%, #fb923c 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.gradient-text-rainbow {
+  background: linear-gradient(135deg, #64d2ff 0%, #a78bfa 40%, #f472b6 70%, #fb923c 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}

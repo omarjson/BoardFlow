@@ -6,9 +6,15 @@ class _Modal {
   constructor() {
     this.backdrop = null;
     this.isOpen = false;
+    this._escHandler = null;
+    this._closeTimeout = null;
   }
 
   show({ title = '', content = '', confirmText = 'Confirm', cancelText = 'Cancel', confirmStyle = 'primary', onConfirm, onCancel, onOpen, hideCancel }) {
+    if (this._closeTimeout) {
+      clearTimeout(this._closeTimeout);
+      this._closeTimeout = null;
+    }
     this.close();
 
     this.backdrop = document.createElement('div');
@@ -76,9 +82,10 @@ class _Modal {
     this.isOpen = false;
     document.body.style.overflow = '';
     document.removeEventListener('keydown', this._escHandler);
-    setTimeout(() => {
+    this._closeTimeout = setTimeout(() => {
       this.backdrop?.remove();
       this.backdrop = null;
+      this._closeTimeout = null;
     }, 200);
   }
 }

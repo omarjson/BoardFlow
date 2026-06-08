@@ -106,6 +106,7 @@ class _ContextMenu {
 
     // Close on click outside, Escape key
     requestAnimationFrame(() => {
+      if (!this.menu) return;
       document.addEventListener('click', this._closeHandler = () => this.close());
       document.addEventListener('contextmenu', this._closeHandler);
       document.addEventListener('keydown', this._escHandler = (e) => {

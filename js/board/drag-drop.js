@@ -10,49 +10,62 @@ class _DragDrop {
     this.offsetX = 0;
     this.offsetY = 0;
     this.onDragEnd = null;
+    this._canvasEl = null;
+    this._onCanvasMouseDown = null;
+    this._onWindowMouseMove = null;
+    this._onWindowMouseUp = null;
+    this._onCanvasTouchStart = null;
+    this._onWindowTouchMove = null;
+    this._onWindowTouchEnd = null;
   }
 
   init() {
-    const canvas = document.getElementById('canvas');
-    if (!canvas) return;
+    this._canvasEl = document.getElementById('canvas');
+    if (!this._canvasEl) return;
 
-    canvas.addEventListener('mousedown', (e) => {
+    this._onCanvasMouseDown = (e) => {
       const itemEl = e.target.closest('.board-item');
       if (!itemEl) return;
       if (e.target.closest('.item-resize-handle') || e.target.closest('.item-rotate-handle')) return;
 
       e.stopPropagation();
       this.startDrag(itemEl, e);
-    });
+    };
 
-    window.addEventListener('mousemove', (e) => {
+    this._onWindowMouseMove = (e) => {
       if (!this.isDragging) return;
       this.onDrag(e.clientX, e.clientY);
-    });
+    };
 
-    window.addEventListener('mouseup', () => {
+    this._onWindowMouseUp = () => {
       if (this.isDragging) {
         this.endDrag();
       }
-    });
+    };
 
-    // Touch support
-    canvas.addEventListener('touchstart', (e) => {
+    this._onCanvasTouchStart = (e) => {
       const itemEl = e.target.closest('.board-item');
       if (!itemEl || e.touches.length !== 1) return;
       e.stopPropagation();
       this.startDrag(itemEl, e);
-    }, { passive: false });
+    };
 
-    window.addEventListener('touchmove', (e) => {
+    this._onWindowTouchMove = (e) => {
       if (!this.isDragging || e.touches.length !== 1) return;
       e.preventDefault();
       this.onDrag(e.touches[0].clientX, e.touches[0].clientY);
-    }, { passive: false });
+    };
 
-    window.addEventListener('touchend', () => {
+    this._onWindowTouchEnd = () => {
       if (this.isDragging) this.endDrag();
-    });
+    };
+
+    this._canvasEl.addEventListener('mousedown', this._onCanvasMouseDown);
+    window.addEventListener('mousemove', this._onWindowMouseMove);
+    window.addEventListener('mouseup', this._onWindowMouseUp);
+    this._canvasEl.addEventListener('touchstart', this._onCanvasTouchStart, { passive: false });
+    window.addEventListener('touchmove', this._onWindowTouchMove, { passive: false });
+    window.addEventListener('touchend', this._onWindowTouchEnd);
   }
 
   startDrag(itemEl, e) {
@@ -62,13 +75,14 @@ class _DragDrop {
 
     if (!this.dragItem) return;
 
-    // Push history before drag starts
-    if (typeof pushHistoryState === 'function') pushHistoryState();
+    BoardHistory.push({
+      items: ItemManager.items.map(i => ({ ...i })),
+      selectedIds: [...ItemManager.selectedItems]
+    });
 
     const clientX = e.touches ? e.touches[0].clientX : e.clientX;
     const clientY = e.touches ? e.touches[0].clientY : e.clientY;
 
-    // Select item
     if (e.shiftKey) {
       ItemManager.selectItem(this.dragItem.id, true);
     } else if (!ItemManager.selectedItems.has(this.dragItem.id)) {
@@ -81,7 +95,7 @@ class _DragDrop {
 
     itemEl.style.zIndex = 9999;
     itemEl.classList.add('dragging');
-    document.getElementById('canvas').style.cursor = 'grabbing';
+    this._canvasEl.style.cursor = 'grabbing';
   }
 
   onDrag(clientX, clientY) {
@@ -91,7 +105,6 @@ class _DragDrop {
     let newX = canvasPos.x - this.offsetX;
     let newY = canvasPos.y - this.offsetY;
 
-    // Snap to grid if enabled
     if (Canvas.gridEnabled) {
       const gridSize = Canvas.gridSize;
       newX = Math.round(newX / gridSize) * gridSize;
@@ -111,7 +124,7 @@ class _DragDrop {
 
     this.dragElement.style.zIndex = '';
     this.dragElement.classList.remove('dragging');
-    document.getElementById('canvas').style.cursor = 'grab';
+    this._canvasEl.style.cursor = 'grab';
 
     ItemManager.updateItem(this.dragItem.id, {
       position_x: this.dragItem.position_x,
@@ -122,6 +135,18 @@ class _DragDrop {
     this.isDragging = false;
     this.dragElement = null;
     this.dragItem = null;
+  }
+
+  destroy() {
+    if (this._canvasEl) {
+      this._canvasEl.removeEventListener('mousedown', this._onCanvasMouseDown);
+      this._canvasEl.removeEventListener('touchstart', this._onCanvasTouchStart);
+    }
+    window.removeEventListener('mousemove', this._onWindowMouseMove);
+    window.removeEventListener('mouseup', this._onWindowMouseUp);
+    window.removeEventListener('touchmove', this._onWindowTouchMove);
+    window.removeEventListener('touchend', this._onWindowTouchEnd);
+    this._canvasEl = null;
   }
 }
 

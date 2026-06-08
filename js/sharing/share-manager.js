@@ -130,8 +130,11 @@ class _ShareManager {
           membersList.innerHTML = `<div style="font-size: var(--text-sm); color: var(--ink-muted);">${I18n.__('no_members')}</div>`;
         }
       }
-    } catch (err) {
-      console.error('Failed to load members:', err);
+    } catch {
+      const membersList = document.getElementById('share-members-list');
+      if (membersList) {
+        membersList.innerHTML = `<div style="font-size: var(--text-sm); color: var(--ink-muted);">${I18n.__('error_occurred')}</div>`;
+      }
     }
   }
 }

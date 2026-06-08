@@ -5,7 +5,6 @@
 class _Toast {
   constructor() {
     this.container = null;
-    this.queue = [];
     this.maxVisible = 5;
   }
 
@@ -87,7 +86,7 @@ class _Toast {
 
     // Limit visible toasts
     while (this.container.children.length > this.maxVisible) {
-      this._remove(this.container.firstChild);
+      this.container.removeChild(this.container.firstChild);
     }
 
     return toast;

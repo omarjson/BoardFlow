@@ -26,19 +26,14 @@ const BoardExport = {
         allowTaint: false,
         scale,
         logging: false,
-        onclone: cloneDoc,
-          doc.querySelectorAll('.board-item').forEach(el => {
-            el.style.transform = el.style.transform.replace(/translate\([^)]+\)/, '');
-          });
-        }
+        onclone: cloneDoc
       });
       const link = document.createElement('a');
       link.download = `boardflow-${Date.now()}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
       Toast.show('Board exported as PNG', 'success');
-    } catch (err) {
-      console.error('Export PNG failed:', err);
+    } catch {
       Toast.show('Export failed', 'error');
     }
   },

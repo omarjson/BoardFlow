@@ -113,35 +113,42 @@ class _SketchTool {
 
     // Clear
     wrapper.querySelector('.sketch-clear-btn')?.addEventListener('click', () => {
-      if (typeof pushHistoryState === 'function') pushHistoryState();
+      BoardHistory.push({
+        items: ItemManager.items.map(i => ({ ...i })),
+        selectedIds: [...ItemManager.selectedItems]
+      });
       this.paths = [];
       this._redraw();
       this._save();
     });
 
     // Drawing events
-    this.canvas.addEventListener('mousedown', (e) => this._startDraw(e));
-    this.canvas.addEventListener('mousemove', (e) => this._draw(e));
-    this.canvas.addEventListener('mouseup', () => this._endDraw());
-    this.canvas.addEventListener('mouseleave', () => this._endDraw());
-
-    // Touch drawing
-    this.canvas.addEventListener('touchstart', (e) => {
+    this._onMouseDown = (e) => this._startDraw(e);
+    this._onMouseMove = (e) => this._draw(e);
+    this._onMouseUp = () => this._endDraw();
+    this._onMouseLeave = () => this._endDraw();
+    this._onTouchStart = (e) => {
       e.preventDefault();
       e.stopPropagation();
       this._startDraw(e.touches[0]);
-    }, { passive: false });
-
-    this.canvas.addEventListener('touchmove', (e) => {
+    };
+    this._onTouchMove = (e) => {
       e.preventDefault();
       e.stopPropagation();
       this._draw(e.touches[0]);
-    }, { passive: false });
-
-    this.canvas.addEventListener('touchend', (e) => {
+    };
+    this._onTouchEnd = (e) => {
       e.stopPropagation();
       this._endDraw();
-    });
+    };
+
+    this.canvas.addEventListener('mousedown', this._onMouseDown);
+    this.canvas.addEventListener('mousemove', this._onMouseMove);
+    this.canvas.addEventListener('mouseup', this._onMouseUp);
+    this.canvas.addEventListener('mouseleave', this._onMouseLeave);
+    this.canvas.addEventListener('touchstart', this._onTouchStart, { passive: false });
+    this.canvas.addEventListener('touchmove', this._onTouchMove, { passive: false });
+    this.canvas.addEventListener('touchend', this._onTouchEnd);
   }
 
   _getPos(e) {
@@ -238,7 +245,7 @@ class _SketchTool {
   }
 
   redo() {
-    // Redo not fully implemented (would need separate redo stack)
+    // Not yet implemented — would need a separate redo stack
   }
 
   _save() {
@@ -272,6 +279,15 @@ class _SketchTool {
 
   destroy() {
     this._resizeObserver?.disconnect();
+    if (this.canvas) {
+      this.canvas.removeEventListener('mousedown', this._onMouseDown);
+      this.canvas.removeEventListener('mousemove', this._onMouseMove);
+      this.canvas.removeEventListener('mouseup', this._onMouseUp);
+      this.canvas.removeEventListener('mouseleave', this._onMouseLeave);
+      this.canvas.removeEventListener('touchstart', this._onTouchStart);
+      this.canvas.removeEventListener('touchmove', this._onTouchMove);
+      this.canvas.removeEventListener('touchend', this._onTouchEnd);
+    }
     this.canvas = null;
     this.ctx = null;
   }

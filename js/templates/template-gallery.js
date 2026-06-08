@@ -10,16 +10,15 @@ class _TemplateGallery {
   show() {
     this._selectedTemplate = null;
     Modal.show({
-      title: 'Choose a Template',
+      title: I18n.__('template_choose'),
       content: this._buildContent(),
-      confirmText: 'Create Board',
-      cancelText: 'Blank Board',
+      confirmText: I18n.__('create'),
+      cancelText: I18n.__('untitled'),
       confirmStyle: 'primary',
       onConfirm: () => this._onConfirm(),
       onCancel: () => this._createBlankBoard()
     });
 
-    // Bind category clicks after modal renders
     requestAnimationFrame(() => this._bindEvents());
   }
 
@@ -111,16 +110,22 @@ class _TemplateGallery {
   }
 
   _refreshGallery() {
-    const modal = document.querySelector('.modal-body');
-    if (!modal) return;
-    modal.innerHTML = this._buildContent().replace('<div class="template-gallery">', '').replace(/<\/div>$/, '');
+    const modalBody = document.querySelector('.modal-body');
+    if (!modalBody) return;
+    const wrapper = document.createElement('div');
+    wrapper.innerHTML = this._buildContent();
+    const gallery = wrapper.querySelector('.template-gallery');
+    if (gallery) {
+      modalBody.innerHTML = '';
+      modalBody.appendChild(gallery);
+    }
     this._bindEvents();
   }
 
   async _onConfirm() {
     const title = this._selectedTemplate
-      ? TemplateEngine.getTemplate(this._selectedTemplate)?.name || 'New Board'
-      : 'Untitled Board';
+      ? TemplateEngine.getTemplate(this._selectedTemplate)?.name || I18n.__('untitled')
+      : I18n.__('untitled');
 
     const board = await BoardManager.create(title, this._selectedTemplate);
 
@@ -128,14 +133,14 @@ class _TemplateGallery {
       await TemplateEngine.applyTemplate(board.id, this._selectedTemplate);
     }
 
-    Toast.show('Board created!', 'success');
-    AppRouter.navigate('/board/' + board.id);
+    Toast.show(I18n.__('board_created'), 'success');
+    AppRouter.navigate(`/board/${board.id}`);
   }
 
   async _createBlankBoard() {
-    const board = await BoardManager.create('Untitled Board');
-    Toast.show('Board created!', 'success');
-    AppRouter.navigate('/board/' + board.id);
+    const board = await BoardManager.create(I18n.__('untitled'));
+    Toast.show(I18n.__('board_created'), 'success');
+    AppRouter.navigate(`/board/${board.id}`);
   }
 }
 

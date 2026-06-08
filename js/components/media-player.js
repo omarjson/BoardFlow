@@ -22,7 +22,7 @@ class _MediaPlayer {
     });
   }
 
-  async openFile(url, type, title) {
+  openFile(url, type, title) {
     this.play(url, type, title);
   }
 }

@@ -9,13 +9,13 @@ class _Minimap {
     this.width = 160;
     this.height = 120;
     this.scale = 0.05;
-    this.viewportRect = null;
     this.isDragging = false;
   }
 
   init() {
     this.el = document.getElementById('minimap');
     if (!this.el) return;
+    this.canvasEl = document.getElementById('canvas');
 
     this.el.innerHTML = `
       <canvas width="${this.width}" height="${this.height}" style="width: 100%; height: 100%;"></canvas>
@@ -32,14 +32,15 @@ class _Minimap {
       this._navigateTo(e);
     });
 
-    window.addEventListener('mousemove', (e) => {
+    this._onMouseMove = (e) => {
       if (!this.isDragging) return;
       this._navigateTo(e);
-    });
-
-    window.addEventListener('mouseup', () => {
+    };
+    this._onMouseUp = () => {
       this.isDragging = false;
-    });
+    };
+    window.addEventListener('mousemove', this._onMouseMove);
+    window.addEventListener('mouseup', this._onMouseUp);
   }
 
   _navigateTo(e) {
@@ -47,9 +48,8 @@ class _Minimap {
     const x = (e.clientX - rect.left) / rect.width;
     const y = (e.clientY - rect.top) / rect.height;
 
-    const canvasEl = document.getElementById('canvas');
-    if (!canvasEl) return;
-    const canvasRect = canvasEl.getBoundingClientRect();
+    if (!this.canvasEl) return;
+    const canvasRect = this.canvasEl.getBoundingClientRect();
 
     // Use stored world bounds from last render
     if (this._minX === undefined) return;
@@ -124,9 +124,8 @@ class _Minimap {
     ctx.globalAlpha = 1;
 
     // Draw viewport
-    const canvasEl = document.getElementById('canvas');
-    if (!canvasEl) return;
-    const canvasRect = canvasEl.getBoundingClientRect();
+    if (!this.canvasEl) return;
+    const canvasRect = this.canvasEl.getBoundingClientRect();
 
     const vpX = (-Canvas.panX / Canvas.zoom - minX) * this.scale;
     const vpY = (-Canvas.panY / Canvas.zoom - minY) * this.scale;
@@ -139,8 +138,11 @@ class _Minimap {
   }
 
   destroy() {
+    if (this._onMouseMove) window.removeEventListener('mousemove', this._onMouseMove);
+    if (this._onMouseUp) window.removeEventListener('mouseup', this._onMouseUp);
     this.el = null;
     this.ctx = null;
+    this.canvasEl = null;
   }
 }
 

@@ -3,8 +3,8 @@ class _BoardSearch {
     this.overlay = null;
     this.input = null;
     this.results = null;
+    this.countEl = null;
     this.activeIndex = -1;
-    this._keyHandler = null;
   }
 
   show() {
@@ -26,7 +26,7 @@ class _BoardSearch {
 
     this.input = this.overlay.querySelector('.board-search-input');
     this.results = this.overlay.querySelector('.board-search-results');
-    const countEl = this.overlay.querySelector('.board-search-count');
+    this.countEl = this.overlay.querySelector('.board-search-count');
     const closeBtn = this.overlay.querySelector('.board-search-close');
 
     this.input.addEventListener('input', Utils.debounce(() => this._search(), 150));
@@ -56,7 +56,7 @@ class _BoardSearch {
 
   _search() {
     const q = this.input?.value?.toLowerCase().trim() || '';
-    const countEl = this.overlay?.querySelector('.board-search-count');
+    const countEl = this.countEl;
     this.results.innerHTML = '';
 
     if (!q) {

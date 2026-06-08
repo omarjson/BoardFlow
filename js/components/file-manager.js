@@ -92,8 +92,8 @@ class _FileManager {
             source: 'puter'
           }));
         }
-      } catch (err) {
-        console.log('Puter files not available, using local files');
+      } catch {
+        // Puter files not available, using local files
       }
     }
 
@@ -144,28 +144,36 @@ class _FileManager {
       });
     });
 
-    document.querySelectorAll('.fm-insert').forEach(btn => {
-      btn.addEventListener('click', async (e) => {
-        e.stopPropagation();
-        const file = this.files.find(f => f.id === btn.dataset.id);
-        if (!file) return;
-        this._addToBoard(file);
-      });
-    });
+    const fileList = document.querySelector('.fm-list');
+    if (fileList) {
+      fileList.addEventListener('click', (e) => {
+        const insertBtn = e.target.closest('.fm-insert');
+        if (insertBtn) {
+          e.stopPropagation();
+          const file = this.files.find(f => f.id === insertBtn.dataset.id);
+          if (file) this._addToBoard(file);
+          return;
+        }
 
-    document.querySelectorAll('.fm-download').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        const file = this.files.find(f => f.id === btn.dataset.id);
-        if (!file) return;
-        this._downloadFile(file);
+        const downloadBtn = e.target.closest('.fm-download');
+        if (downloadBtn) {
+          e.stopPropagation();
+          const file = this.files.find(f => f.id === downloadBtn.dataset.id);
+          if (file) this._downloadFile(file);
+          return;
+        }
       });
-    });
 
-    document.querySelectorAll('.fm-file').forEach(el => {
-      el.addEventListener('mouseenter', () => el.style.background = 'var(--canvas-soft)');
-      el.addEventListener('mouseleave', () => el.style.background = '');
-    });
+      fileList.addEventListener('mouseenter', (e) => {
+        const fileEl = e.target.closest('.fm-file');
+        if (fileEl) fileEl.style.background = 'var(--canvas-soft)';
+      }, true);
+
+      fileList.addEventListener('mouseleave', (e) => {
+        const fileEl = e.target.closest('.fm-file');
+        if (fileEl) fileEl.style.background = '';
+      }, true);
+    }
   }
 
   async _handleFileUpload(file) {

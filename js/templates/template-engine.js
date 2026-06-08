@@ -610,14 +610,14 @@ const BOARD_TEMPLATES = [
 
 class _TemplateEngine {
   getTemplate(id) {
-    return BOARD_TEMPLATES.find(function(t) { return t.id === id; }) || null;
+    return BOARD_TEMPLATES.find(t => t.id === id) || null;
   }
 
   getTemplatesByCategory(category) {
     if (category === 'all') {
       return BOARD_TEMPLATES;
     }
-    return BOARD_TEMPLATES.filter(function(t) { return t.category === category; });
+    return BOARD_TEMPLATES.filter(t => t.category === category);
   }
 
   getAllTemplates() {
@@ -629,25 +629,23 @@ class _TemplateEngine {
   }
 
   async applyTemplate(boardId, templateId) {
-    var template = this.getTemplate(templateId);
+    const template = this.getTemplate(templateId);
     if (!template) {
-      throw new Error('Template not found: ' + templateId);
+      throw new Error(`Template not found: ${templateId}`);
     }
 
-    var items = template.items.map(function(item) {
-      return {
-        board_id: boardId,
-        type: item.type,
-        title: item.title,
-        content: item.content,
-        position_x: item.position_x,
-        position_y: item.position_y,
-        width: item.width,
-        height: item.height,
-        color: item.color,
-        created_at: new Date().toISOString()
-      };
-    });
+    const items = template.items.map(item => ({
+      board_id: boardId,
+      type: item.type,
+      title: item.title,
+      content: item.content,
+      position_x: item.position_x,
+      position_y: item.position_y,
+      width: item.width,
+      height: item.height,
+      color: item.color,
+      created_at: new Date().toISOString()
+    }));
 
     if (BoardFlowAuth.supabase) {
       const { error } = await BoardFlowAuth.supabase
@@ -655,16 +653,16 @@ class _TemplateEngine {
         .insert(items);
 
       if (error) {
-        throw new Error('Failed to save template: ' + error.message);
+        throw new Error(`Failed to save template: ${error.message}`);
       }
     } else {
-      var stored = localStorage.getItem('boardflow_items_' + boardId);
-      var existingItems = stored ? JSON.parse(stored) : [];
-      var newItems = items.map(function(item, index) {
-        return Object.assign({}, item, { id: 'local_' + Date.now() + '_' + index });
-      });
-      existingItems = existingItems.concat(newItems);
-      localStorage.setItem('boardflow_items_' + boardId, JSON.stringify(existingItems));
+      const stored = localStorage.getItem(`boardflow_items_${boardId}`);
+      const existingItems = stored ? JSON.parse(stored) : [];
+      const newItems = items.map((item, index) => ({
+        ...item,
+        id: `local_${Date.now()}_${index}`
+      }));
+      localStorage.setItem(`boardflow_items_${boardId}`, JSON.stringify([...existingItems, ...newItems]));
     }
 
     return { success: true, template: template.name, itemCount: items.length };

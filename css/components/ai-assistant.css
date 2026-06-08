@@ -170,10 +170,6 @@
   color: var(--ink-muted);
 }
 
-.btn-block {
-  width: 100%;
-}
-
 @media (max-width: 767px) {
   #ai-panel {
     width: 100vw;

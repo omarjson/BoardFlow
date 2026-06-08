@@ -10,6 +10,7 @@ class _BoardChat {
     this.boardId = null;
     this._subscription = null;
     this._bound = false;
+    this._audioCtx = null;
   }
 
   async open(boardId) {
@@ -61,6 +62,10 @@ class _BoardChat {
     if (this._subscription) {
       this._subscription.unsubscribe();
       this._subscription = null;
+    }
+    if (this._audioCtx) {
+      this._audioCtx.close().catch(() => {});
+      this._audioCtx = null;
     }
     this._bound = false;
     this.panel?.remove();
@@ -184,7 +189,6 @@ class _BoardChat {
     const container = document.getElementById('chat-messages');
     if (!container) return;
 
-    container.innerHTML = '';
     container.innerHTML = '<div class="chat-message chat-system">Board Chat</div>';
     this.messages.forEach(msg => this._renderMessage(msg));
   }
@@ -196,7 +200,10 @@ class _BoardChat {
     const isOwn = msg.user_id === BoardFlowAuth.user?.id || msg.user_id === 'anonymous';
     if (!isOwn && localStorage.getItem('boardflow_chat_sound') !== 'false') {
       try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        if (!this._audioCtx) {
+          this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        const ctx = this._audioCtx;
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.connect(gain);

@@ -205,6 +205,7 @@ class _AIAssistant {
     this.panel?.remove();
     this.panel = null;
     this.isOpen = false;
+    this.messages = [];
   }
 
   _bindEvents() {

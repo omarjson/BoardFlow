@@ -35,7 +35,7 @@ const I18n = {
 
   setLanguage(lang) {
     if (!this.locales[lang]) {
-      Toast.show('Language not available', 'error');
+      Toast.show(this.__('language_not_available'), 'error');
       return;
     }
     this.currentLang = lang;
@@ -117,6 +117,7 @@ const I18n = {
       sign_up: 'Sign Up',
       sign_out: 'Sign Out',
       back_to_home: 'Back to Home',
+      design_system: 'Design System',
       email: 'Email',
       password: 'Password',
       confirm_password: 'Confirm Password',
@@ -152,6 +153,7 @@ const I18n = {
       back_to_dashboard: 'Back to Dashboard',
       language: 'Language',
       language_changed: 'Language changed',
+      language_not_available: 'Language not available',
       no_boards_yet: 'No boards yet',
       no_boards_desc: 'Create your first board to get started. You can choose a template or start blank.',
       settings: 'Settings',
@@ -249,6 +251,16 @@ const I18n = {
       link_generated: 'Share link generated!',
       connect_supabase_members: 'Connect Supabase to manage members',
       no_members: 'No members yet',
+      owner_only_add_members: 'Only the owner can add members',
+      user_not_found: 'User not found',
+      already_member: 'User is already a member',
+      failed_add_member: 'Failed to add member',
+      added: 'Added',
+      as_role: 'as',
+      member_removed: 'Member removed',
+      role_changed: 'Role changed to',
+      template_choose: 'Choose a Template',
+      board_created: 'Board created!',
       synced_just_now: 'Synced just now',
       synced_ago: 'Synced {n} ago',
       sync_now: 'Sync now',
