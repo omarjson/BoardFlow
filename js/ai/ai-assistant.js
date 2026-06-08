@@ -164,16 +164,46 @@ class _AIAssistant {
             <div class="ai-model-select">
               <label for="ai-model">Model:</label>
               <select id="ai-model">
-                <option value="openai/gpt-4o-mini">GPT-4o Mini (fast)</option>
-                <option value="openai/gpt-4o">GPT-4o</option>
-                <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
-                <option value="openai/gpt-4.1-mini">GPT-4.1 Mini</option>
-                <option value="anthropic/claude-sonnet-4-20250514">Claude Sonnet 4</option>
-                <option value="anthropic/claude-3-5-haiku-20241022">Claude 3.5 Haiku (fast)</option>
-                <option value="google/gemini-2.0-flash">Gemini 2.0 Flash (fast)</option>
-                <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
-                <option value="meta/llama-4-maverick">Llama 4 Maverick</option>
-                <option value="deepseek/deepseek-chat">DeepSeek Chat</option>
+                <optgroup label="GPT-5 Series">
+                  <option value="gpt-5.5-pro">GPT-5.5 Pro</option>
+                  <option value="gpt-5.5">GPT-5.5</option>
+                  <option value="gpt-5.4">GPT-5.4</option>
+                  <option value="gpt-5.4-mini">GPT-5.4 Mini</option>
+                  <option value="gpt-5.4-nano" selected>GPT-5.4 Nano (fast)</option>
+                  <option value="gpt-5">GPT-5</option>
+                  <option value="gpt-5-mini">GPT-5 Mini</option>
+                </optgroup>
+                <optgroup label="Reasoning">
+                  <option value="o3">o3</option>
+                  <option value="o4-mini">o4-mini</option>
+                  <option value="o1">o1</option>
+                  <option value="o1-pro">o1 Pro</option>
+                </optgroup>
+                <optgroup label="Codex">
+                  <option value="gpt-5.3-codex">GPT-5.3 Codex</option>
+                </optgroup>
+                <optgroup label="GPT-OSS (Open Source)">
+                  <option value="openai/gpt-oss-120b">GPT-OSS 120B</option>
+                </optgroup>
+                <optgroup label="Claude">
+                  <option value="claude-opus-4-5">Claude Opus 4.5</option>
+                  <option value="claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                  <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
+                </optgroup>
+                <optgroup label="Gemini">
+                  <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
+                  <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
+                </optgroup>
+                <optgroup label="DeepSeek">
+                  <option value="deepseek-chat">DeepSeek Chat</option>
+                  <option value="deepseek-reasoner">DeepSeek Reasoner</option>
+                </optgroup>
+                <optgroup label="Other">
+                  <option value="z-ai/glm-5.1">GLM 5.1</option>
+                  <option value="grok-3">Grok 3</option>
+                  <option value="meta-llama/llama-4-maverick">Llama 4 Maverick</option>
+                  <option value="mistral-large-latest">Mistral Large</option>
+                </optgroup>
               </select>
             </div>
           </div>
