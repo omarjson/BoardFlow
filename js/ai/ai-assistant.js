@@ -16,7 +16,7 @@ class _AIAssistant {
     return typeof puter !== 'undefined' && puter.ai;
   }
 
-  async chat(message, context) {
+  async chat(message, context, model) {
     if (!this.isAvailable()) {
       Toast.show('AI not available — Puter.js not loaded', 'error');
       return null;
@@ -27,10 +27,13 @@ class _AIAssistant {
         ? `You are a helpful board assistant. Context: ${context}`
         : 'You are a helpful board assistant. Keep responses concise.';
 
+      const opts = {};
+      if (model) opts.model = model;
+
       const response = await puter.ai.chat([
         { role: 'system', content: systemPrompt },
         { role: 'user', content: message }
-      ]);
+      ], opts);
 
       if (typeof response === 'string') return response;
       if (response?.message?.content) return response.message.content;
@@ -158,6 +161,21 @@ class _AIAssistant {
           </div>
           <div class="ai-context">
             <label><input type="checkbox" id="ai-include-context"> Include board context</label>
+            <div class="ai-model-select">
+              <label for="ai-model">Model:</label>
+              <select id="ai-model">
+                <option value="openai/gpt-4o-mini">GPT-4o Mini (fast)</option>
+                <option value="openai/gpt-4o">GPT-4o</option>
+                <option value="openai/gpt-4.1-nano">GPT-4.1 Nano</option>
+                <option value="openai/gpt-4.1-mini">GPT-4.1 Mini</option>
+                <option value="anthropic/claude-sonnet-4-20250514">Claude Sonnet 4</option>
+                <option value="anthropic/claude-3-5-haiku-20241022">Claude 3.5 Haiku (fast)</option>
+                <option value="google/gemini-2.0-flash">Gemini 2.0 Flash (fast)</option>
+                <option value="google/gemini-2.5-pro">Gemini 2.5 Pro</option>
+                <option value="meta/llama-4-maverick">Llama 4 Maverick</option>
+                <option value="deepseek/deepseek-chat">DeepSeek Chat</option>
+              </select>
+            </div>
           </div>
         </div>
         <div class="ai-tab-content" id="ai-tab-image">
@@ -247,7 +265,7 @@ class _AIAssistant {
         context = items.map(i => `${i.type}: ${i.title || ''} — ${i.content || ''}`).join('\n').slice(0, 2000);
       }
 
-      const reply = await this.chat(text, context);
+      const reply = await this.chat(text, context, document.getElementById('ai-model')?.value);
       this._addMessage('assistant', reply || 'No response');
       chatSend.disabled = false;
       chatSend.textContent = 'Send';
@@ -259,6 +277,16 @@ class _AIAssistant {
         e.preventDefault();
         sendMessage();
       }
+    });
+
+    // Restore saved model
+    const savedModel = localStorage.getItem('boardflow_ai_model');
+    const modelSelect = document.getElementById('ai-model');
+    if (savedModel && modelSelect) {
+      modelSelect.value = savedModel;
+    }
+    modelSelect?.addEventListener('change', () => {
+      localStorage.setItem('boardflow_ai_model', modelSelect.value);
     });
 
     // Image generation
