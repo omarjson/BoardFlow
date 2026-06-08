@@ -822,8 +822,13 @@ function createItemElement(item) {
       z-index: ${item.z_index};
     `;
     el.innerHTML = `
-      <div class="file-item-preview" style="background: var(--canvas-soft); cursor: pointer;">
+      <div class="file-item-preview" style="background: var(--canvas-soft); cursor: pointer; position: relative;">
         <div class="file-icon" style="color: var(--ink-muted);">${Icons.mic}</div>
+        <a href="${Utils.escapeHtml(item.file_url || '#')}" download="${Utils.escapeHtml(item.title || 'audio')}.webm" 
+           style="position: absolute; top: 4px; right: 4px; background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-xs); width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--ink-muted); text-decoration: none; opacity: 0.6; transition: opacity 0.2s;"
+           onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.6'">
+           ↓
+        </a>
       </div>
       <div class="file-item-info">${Utils.escapeHtml(item.title || 'Audio')}</div>
     `;
