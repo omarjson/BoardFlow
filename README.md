@@ -90,7 +90,7 @@ boardflow/
 └── assets/icons/                  # favicon, PWA icons
 ```
 
-See `AGENTS.md` for the full design plan and `DESIGN.md` for the visual design system.
+See `AGENTS.md` for the full design plan. Visit the [interactive Design System](/#/design-system) for live tokens and component documentation.
 
 ## License
 

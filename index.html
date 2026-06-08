@@ -59,6 +59,7 @@
   <link rel="stylesheet" href="/css/components/chat.css">
   <link rel="stylesheet" href="/css/components/search.css">
   <link rel="stylesheet" href="/css/settings.css">
+  <link rel="stylesheet" href="/css/design-system.css">
 
   <!-- Supabase Client -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
@@ -167,24 +168,6 @@
       <section class="landing-trust">
         <div class="landing-container" data-animate="fade">
           <div class="landing-trust-label" data-i18n="trust_label">Trusted by creators worldwide</div>
-          <div class="landing-trust-stats">
-            <div class="landing-trust-stat">
-              <div class="landing-trust-stat-number" data-count="27" data-suffix="+">0+</div>
-              <div class="landing-trust-stat-label" data-i18n="features">Features</div>
-            </div>
-            <div class="landing-trust-stat">
-              <div class="landing-trust-stat-number" data-count="35" data-suffix="+">0+</div>
-              <div class="landing-trust-stat-label" data-i18n="templates">Templates</div>
-            </div>
-            <div class="landing-trust-stat">
-              <div class="landing-trust-stat-number" data-count="15">0</div>
-              <div class="landing-trust-stat-label" data-i18n="languages">Languages</div>
-            </div>
-            <div class="landing-trust-stat">
-              <div class="landing-trust-stat-number" data-count="100" data-suffix="%">0%</div>
-              <div class="landing-trust-stat-label" data-i18n="free_forever">Free Forever</div>
-            </div>
-          </div>
         </div>
       </section>
 
@@ -602,6 +585,7 @@
               <h4 data-i18n="footer_product">Product</h4>
               <a href="#/about" data-i18n="about">About</a>
               <a href="#features" data-i18n="footer_features">Features</a>
+              <a href="#/design-system">Design System</a>
               <a href="#/signup" data-i18n="footer_sign_up">Sign Up</a>
               <a href="#/login" data-i18n="footer_log_in">Log In</a>
             </div>
@@ -833,6 +817,243 @@
       </main>
     </div>
 
+    <!-- ========== DESIGN SYSTEM PAGE ========== -->
+    <div id="page-design-system" class="page design-system-page">
+
+      <!-- Nav -->
+      <nav class="ds-nav" aria-label="Design system navigation">
+        <a href="#/" class="ds-nav-brand">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="9" y1="3" x2="9" y2="21"/></svg>
+          BoardFlow Design System
+        </a>
+        <div class="ds-nav-actions">
+          <button class="theme-toggle" id="ds-theme-toggle" aria-label="Toggle theme" type="button"></button>
+          <a href="#/" class="btn btn-secondary btn-sm">Back to Home</a>
+        </div>
+      </nav>
+
+      <!-- Hero -->
+      <section class="ds-hero">
+        <div class="ds-hero-shapes" aria-hidden="true">
+          <div class="shape"></div>
+          <div class="shape"></div>
+          <div class="shape"></div>
+        </div>
+        <h1>BoardFlow Design System</h1>
+        <p>The visual language that powers BoardFlow — a living style guide with interactive tokens, components, and effects. Click anything to explore.</p>
+        <div class="ds-hero-stats">
+          <div class="ds-hero-stat">
+            <div class="ds-hero-stat-value" data-count="42">42</div>
+            <div class="ds-hero-stat-label">Design Tokens</div>
+          </div>
+          <div class="ds-hero-stat">
+            <div class="ds-hero-stat-value" data-count="7">7</div>
+            <div class="ds-hero-stat-label">Component Categories</div>
+          </div>
+          <div class="ds-hero-stat">
+            <div class="ds-hero-stat-value" data-count="2">2</div>
+            <div class="ds-hero-stat-label">Themes (Light / Dark)</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Color Palette -->
+      <section class="ds-section" id="ds-colors">
+        <div class="ds-section-header">
+          <span class="ds-section-number">01</span>
+          <div>
+            <h2 class="ds-section-title">Color Palette</h2>
+            <p class="ds-section-desc">Brand, semantic, and surface colors. Click any swatch to copy its hex value.</p>
+          </div>
+        </div>
+        <div class="ds-color-grid" id="ds-color-grid"></div>
+      </section>
+
+      <!-- Typography -->
+      <section class="ds-section" id="ds-typography">
+        <div class="ds-section-header">
+          <span class="ds-section-number">02</span>
+          <div>
+            <h2 class="ds-section-title">Typography</h2>
+            <p class="ds-section-desc">Inter font family with a refined size scale. Optical adjustments for display sizes.</p>
+          </div>
+        </div>
+        <div class="ds-type-list" id="ds-type-list"></div>
+      </section>
+
+      <!-- Spacing -->
+      <section class="ds-section" id="ds-spacing">
+        <div class="ds-section-header">
+          <span class="ds-section-number">03</span>
+          <div>
+            <h2 class="ds-section-title">Spacing</h2>
+            <p class="ds-section-desc">8px-based spacing scale. Each unit is a multiple of 4px for visual consistency.</p>
+          </div>
+        </div>
+        <div class="ds-spacing-grid" id="ds-spacing-grid"></div>
+      </section>
+
+      <!-- Buttons -->
+      <section class="ds-section" id="ds-buttons">
+        <div class="ds-section-header">
+          <span class="ds-section-number">04</span>
+          <div>
+            <h2 class="ds-section-title">Buttons</h2>
+            <p class="ds-section-desc">All button variants. Pill-shaped for primary, glass for secondary, ghost for minimal.</p>
+          </div>
+        </div>
+        <div class="ds-button-grid">
+          <div class="ds-button-group">
+            <span class="ds-button-group-label">Primary</span>
+            <div class="ds-button-row">
+              <button class="btn btn-primary">Primary</button>
+              <button class="btn btn-primary btn-sm">Small</button>
+              <button class="btn btn-primary btn-lg">Large</button>
+              <button class="btn btn-primary" disabled>Disabled</button>
+            </div>
+          </div>
+          <div class="ds-button-group">
+            <span class="ds-button-group-label">Secondary</span>
+            <div class="ds-button-row">
+              <button class="btn btn-secondary">Secondary</button>
+              <button class="btn btn-secondary btn-sm">Small</button>
+            </div>
+          </div>
+          <div class="ds-button-group">
+            <span class="ds-button-group-label">Glass</span>
+            <div class="ds-button-row">
+              <button class="btn btn-glass">Glass</button>
+              <button class="btn btn-glass btn-sm">Small</button>
+            </div>
+          </div>
+          <div class="ds-button-group">
+            <span class="ds-button-group-label">Ghost</span>
+            <div class="ds-button-row">
+              <button class="btn btn-ghost">Ghost</button>
+              <button class="btn btn-ghost btn-sm">Small</button>
+            </div>
+          </div>
+          <div class="ds-button-group">
+            <span class="ds-button-group-label">Danger</span>
+            <div class="ds-button-row">
+              <button class="btn btn-danger">Danger</button>
+              <button class="btn btn-danger btn-sm">Small</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Elevation & Shadows -->
+      <section class="ds-section" id="ds-elevation">
+        <div class="ds-section-header">
+          <span class="ds-section-number">05</span>
+          <div>
+            <h2 class="ds-section-title">Elevation & Shadows</h2>
+            <p class="ds-section-desc">Three levels of elevation used throughout the app.</p>
+          </div>
+        </div>
+        <div class="ds-elevation-demo">
+          <div class="ds-elevation-box" style="box-shadow: var(--shadow-flat);">Flat</div>
+          <div class="ds-elevation-box" style="box-shadow: var(--shadow-soft);">Soft</div>
+          <div class="ds-elevation-box" style="box-shadow: var(--shadow-elevated);">Elevated</div>
+          <div class="ds-elevation-box" style="box-shadow: var(--shadow-glass);">Glass</div>
+          <div class="ds-elevation-box" style="box-shadow: var(--shadow-glass-hover);">Glass Hover</div>
+        </div>
+      </section>
+
+      <!-- Glass Morphism -->
+      <section class="ds-section" id="ds-glass">
+        <div class="ds-section-header">
+          <span class="ds-section-number">06</span>
+          <div>
+            <h2 class="ds-section-title">Glass Morphism</h2>
+            <p class="ds-section-desc">Frosted glass surfaces with dynamic blur. Hover any card to see the effect deepen.</p>
+          </div>
+        </div>
+        <div class="ds-glass-grid">
+          <div class="ds-glass-card">
+            <h4>Glass Card</h4>
+            <p>60% opacity — perfect for backgrounds and surfaces that need to stay subtle.</p>
+            <span class="ds-glass-badge">glass-1</span>
+          </div>
+          <div class="ds-glass-card" style="background: var(--glass-2);">
+            <h4>Glass Card</h4>
+            <p>78% opacity — ideal for elevated surfaces like sidebars and panels.</p>
+            <span class="ds-glass-badge">glass-2</span>
+          </div>
+          <div class="ds-glass-card" style="background: var(--glass-3);">
+            <h4>Glass Card</h4>
+            <p>90% opacity — used for interactive elements that need clarity.</p>
+            <span class="ds-glass-badge">glass-3</span>
+          </div>
+        </div>
+
+        <div style="margin-top: var(--space-6);">
+          <div class="ds-blur-demo">
+            <div class="ds-blur-bg" aria-hidden="true"></div>
+            <div class="ds-blur-card" id="ds-blur-card">
+              <h3>Interactive Blur</h3>
+              <p>Adjust the slider to change the backdrop-filter blur intensity in real-time.</p>
+            </div>
+            <div class="ds-blur-control">
+              <label for="ds-blur-range">Blur</label>
+              <input type="range" id="ds-blur-range" min="0" max="40" value="16" step="1">
+              <span class="ds-blur-value" id="ds-blur-value">16px</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Components -->
+      <section class="ds-section" id="ds-components">
+        <div class="ds-section-header">
+          <span class="ds-section-number">07</span>
+          <div>
+            <h2 class="ds-section-title">Components</h2>
+            <p class="ds-section-desc">Common UI components used across the app.</p>
+          </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+          <!-- Cards -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <span class="ds-button-group-label">Cards</span>
+            <div class="card">
+              <h4 style="margin: 0 0 var(--space-2); font-size: var(--text-h4-size);">Default Card</h4>
+              <p style="margin: 0; font-size: var(--text-body-sm-size); color: var(--ink-secondary);">A standard card with border and padding.</p>
+            </div>
+            <div class="card-elevated">
+              <h4 style="margin: 0 0 var(--space-2); font-size: var(--text-h4-size);">Elevated Card</h4>
+              <p style="margin: 0; font-size: var(--text-body-sm-size); color: var(--ink-secondary);">A card with subtle shadow elevation.</p>
+            </div>
+          </div>
+
+          <!-- Form Elements -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-4);">
+            <span class="ds-button-group-label">Form Elements</span>
+            <div class="form-group">
+              <label for="ds-input">Text Input</label>
+              <input type="text" id="ds-input" placeholder="Type something..." value="BoardFlow">
+            </div>
+            <div class="form-group">
+              <label for="ds-select">Select</label>
+              <select id="ds-select">
+                <option>Option 1</option>
+                <option selected>Option 2</option>
+                <option>Option 3</option>
+              </select>
+            </div>
+            <div style="display: flex; gap: var(--space-2);">
+              <span class="badge">Badge</span>
+              <span class="badge" style="color: var(--success); background: color-mix(in srgb, var(--success) 8%, transparent);">Success</span>
+              <span class="badge" style="color: var(--danger); background: color-mix(in srgb, var(--danger) 8%, transparent);">Danger</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+
     <!-- ========== LOGIN PAGE ========== -->
     <div id="page-login" class="page auth-page">
       <main class="auth-container">
@@ -981,6 +1202,7 @@
   <script src="/js/components/chat.js?v=10" defer></script>
   <script src="/js/ui/settings.js?v=10" defer></script>
   <script src="/js/pwa.js?v=10" defer></script>
+  <script src="/js/design-system.js?v=10" defer></script>
   <script src="/js/landing.js?v=10" defer></script>
   <script src="/js/app.js?v=10" defer></script>
 </body>

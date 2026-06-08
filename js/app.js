@@ -64,7 +64,7 @@ function showBootError(message, diag, err) {
       <p style="margin:0 0 12px;color:#555;font-size:14px;line-height:1.5;">${escapeHtml(message)}</p>
       <p style="margin:0 0 16px;color:#888;font-size:13px;line-height:1.5;">Fix: open DevTools (F12) → Application → Service Workers → Unregister. Then hard-reload (Ctrl+Shift+R).</p>
       ${diagHtml}
-      <button onclick="location.reload(true)" style="background:#0075de;color:#fff;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;">Reload</button>
+      <button onclick="location.reload(true)" style="background:var(--primary);color:var(--primary-on);border:none;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:14px;">Reload</button>
     </div>
   `;
 }
@@ -80,6 +80,7 @@ function setupRoutes() {
     privacy: document.getElementById('page-privacy'),
     terms: document.getElementById('page-terms'),
     contact: document.getElementById('page-contact'),
+    designSystem: document.getElementById('page-design-system'),
     login: document.getElementById('page-login'),
     signup: document.getElementById('page-signup'),
     dashboard: document.getElementById('page-dashboard'),
@@ -107,6 +108,10 @@ function setupRoutes() {
     })
     .on('/terms', (ctx) => {
       showPage('terms');
+    })
+    .on('/design-system', (ctx) => {
+      showPage('designSystem');
+      if (window.DesignSystem) DesignSystem.init();
     })
     .on('/contact', (ctx) => {
       showPage('contact');
