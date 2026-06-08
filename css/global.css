@@ -40,17 +40,18 @@ body {
   display: none;
   flex: 1;
   overflow: hidden;
+  opacity: 0;
+  transform: scale(0.99) translateY(4px);
+  transition: 
+    opacity var(--duration-slow) var(--ease-out-quint),
+    transform var(--duration-slow) var(--ease-out-quint);
 }
 
 .page.active {
   display: flex;
   flex-direction: column;
-  animation: pageIn 0.2s ease;
-}
-
-@keyframes pageIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  opacity: 1;
+  transform: scale(1) translateY(0);
 }
 
 /* ---- Skip Link ---- */

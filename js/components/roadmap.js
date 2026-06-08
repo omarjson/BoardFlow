@@ -95,9 +95,9 @@ class _Roadmap {
 
   async create(x, y, title) {
     const milestones = [
-      { title: 'Phase 1', description: 'Planning', date: '', status: 'todo' },
-      { title: 'Phase 2', description: 'Development', date: '', status: 'todo' },
-      { title: 'Phase 3', description: 'Launch', date: '', status: 'todo' }
+      { title: 'Phase 1', description: 'Planning', date: '', status: 'done' },
+      { title: 'Phase 2', description: 'Development', date: '', status: 'done' },
+      { title: 'Phase 3', description: 'Launch', date: '', status: 'done' }
     ];
 
     return await ItemManager.createItem('roadmap', {

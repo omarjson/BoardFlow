@@ -5,12 +5,18 @@
 
 .sticky-note {
   background: var(--sticky-bg);
-  border-radius: 2px;
-  box-shadow: 2px 2px 8px rgba(0,0,0,0.1);
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-soft);
   padding: 0;
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  border: 1px solid color-mix(in srgb, var(--sticky-bg) 80%, transparent);
+  transition: box-shadow var(--duration-base) var(--ease-out-quint);
+}
+
+.sticky-note:hover {
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
 }
 
 .sticky-note-header {

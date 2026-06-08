@@ -62,23 +62,25 @@
 
 /* Board card */
 .board-card {
-  background: var(--glass-2);
-  -webkit-backdrop-filter: blur(var(--blur-lg)) saturate(180%);
-  backdrop-filter: blur(var(--blur-lg)) saturate(180%);
-  border: 1px solid var(--glass-border);
-  border-radius: var(--radius-xl);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-card);
   overflow: hidden;
   cursor: pointer;
-  transition: transform var(--transition-base), box-shadow var(--transition-base), border-color var(--transition-base), background var(--transition-base);
+  transition: 
+    transform var(--duration-base) var(--ease-spring), 
+    box-shadow var(--duration-base) var(--ease-out-quint), 
+    border-color var(--duration-base) var(--ease-out-quint), 
+    background var(--duration-base) var(--ease-out-quint);
   position: relative;
-  box-shadow: var(--shadow-glass), var(--glass-highlight);
+  box-shadow: var(--shadow-soft);
 }
 
 .board-card::before {
   content: '';
   position: absolute;
   inset: 0;
-  border-radius: var(--radius-xl);
+  border-radius: var(--radius-card);
   padding: 1px;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.5) 0%, transparent 50%);
   -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
@@ -89,10 +91,12 @@
 }
 
 .board-card:hover {
-  border-color: var(--glass-border-strong);
-  box-shadow: var(--shadow-glass-hover), var(--glass-highlight);
-  transform: translateY(-4px);
-  background: var(--glass-3);
+  border-color: var(--primary);
+  box-shadow: 
+    0 4px 6px rgba(0, 0, 0, 0.02), 
+    0 16px 36px rgba(99, 102, 241, 0.06);
+  transform: translateY(-6px);
+  background: var(--surface-hover);
 }
 
 .board-card-preview {
