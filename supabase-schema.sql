@@ -209,6 +209,8 @@ CREATE POLICY "Editors update member boards" ON public.boards
   );
 CREATE POLICY "Users delete own boards" ON public.boards
   FOR DELETE USING (auth.uid() = user_id);
+CREATE POLICY "Anonymous view shared boards" ON public.boards
+  FOR SELECT USING (share_token IS NOT NULL);
 
 -- board_members
 ALTER TABLE public.board_members ENABLE ROW LEVEL SECURITY;
@@ -259,6 +261,11 @@ CREATE POLICY "View items on public boards" ON public.items
   FOR SELECT USING (
     EXISTS (SELECT 1 FROM public.boards
             WHERE id = items.board_id AND is_public = true)
+  );
+CREATE POLICY "Anonymous view items on shared boards" ON public.items
+  FOR SELECT USING (
+    EXISTS (SELECT 1 FROM public.boards
+            WHERE id = items.board_id AND share_token IS NOT NULL)
   );
 CREATE POLICY "Editors insert items" ON public.items
   FOR INSERT WITH CHECK (

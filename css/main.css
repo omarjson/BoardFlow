@@ -96,6 +96,12 @@ body::before {
   color: var(--ink) !important;
 }
 
+.sidebar-nav-btn svg {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
 .main-content {
   flex: 1;
   display: flex;
@@ -552,6 +558,12 @@ hr {
 .modal-close:hover {
   background: var(--canvas-soft);
   color: var(--ink);
+}
+
+.modal-close svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
 }
 
 .modal-body {

@@ -14,7 +14,7 @@ class _ShareManager {
           <div>
             <label for="share-link">${I18n.__('share_link')}</label>
             <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-xs);">
-              <input type="text" id="share-link" value="${Utils.escapeHtml(shareUrl)}" readonly style="flex: 1; padding: var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
+              <input type="text" id="share-link" value="${Utils.escapeHtml(shareUrl)}" readonly title="${Utils.escapeHtml(shareUrl)}" style="flex: 1; min-width: 0; padding: var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm); text-overflow: ellipsis; overflow: hidden; white-space: nowrap;">
               <button class="btn btn-secondary" id="share-copy-btn">${I18n.__('copy')}</button>
               ${!board.share_token ? `<button class="btn btn-primary" id="share-generate-btn">${I18n.__('generate')}</button>` : ''}
             </div>
@@ -22,7 +22,7 @@ class _ShareManager {
           <div>
             <label>${I18n.__('invite_by_email')}</label>
             <div style="display: flex; gap: var(--space-sm); margin-top: var(--space-xs);">
-              <input type="email" id="share-email" placeholder="${I18n.__('email')}" style="flex: 1; padding: var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
+              <input type="email" id="share-email" placeholder="${I18n.__('email')}" style="flex: 1; min-width: 140px; padding: var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
               <select id="share-role" style="padding: var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
                 <option value="editor">${I18n.__('editor')}</option>
                 <option value="viewer">${I18n.__('viewer')}</option>
@@ -53,7 +53,7 @@ class _ShareManager {
               url: shareUrl
             }).catch(() => {});
           });
-          document.querySelector('.modal-content > div')?.prepend(shareBtn);
+          document.querySelector('.modal .modal-body')?.prepend(shareBtn);
         }
       }
     });
@@ -80,7 +80,7 @@ class _ShareManager {
 
     document.getElementById('share-generate-btn')?.addEventListener('click', async () => {
       const token = Utils.generateId('share');
-      await BoardManager.update(board.id, { share_token: token });
+      await BoardManager.update(board.id, { share_token: token, is_public: true });
       const input = document.getElementById('share-link');
       if (input) {
         input.value = `${window.location.origin}/#/board/shared/${token}`;

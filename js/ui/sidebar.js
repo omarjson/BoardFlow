@@ -71,20 +71,22 @@ class _Sidebar {
     `;
 
     this.footerEl.innerHTML = `
-      <div style="display: flex; align-items: center; gap: var(--space-sm); padding: var(--space-sm) var(--space-md);">
-        <div style="
-          width: 32px; height: 32px;
-          border-radius: var(--radius-full);
-          background: var(--primary);
-          display: flex; align-items: center; justify-content: center;
-          color: white; font-size: var(--text-sm); font-weight: var(--weight-semibold);
-          flex-shrink: 0;
-        ">${displayName.charAt(0).toUpperCase()}</div>
-        <div style="flex: 1; min-width: 0;">
-          <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</div>
-          <div style="font-size: var(--text-xs); color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
+      <div style="padding: var(--space-sm) var(--space-md); display: flex; flex-direction: column; gap: var(--space-sm);">
+        <div style="display: flex; align-items: center; gap: var(--space-sm); min-width: 0;">
+          <div style="
+            width: 32px; height: 32px;
+            border-radius: var(--radius-full);
+            background: var(--primary);
+            display: flex; align-items: center; justify-content: center;
+            color: white; font-size: var(--text-sm); font-weight: var(--weight-semibold);
+            flex-shrink: 0;
+          ">${displayName.charAt(0).toUpperCase()}</div>
+          <div style="flex: 1; min-width: 0;">
+            <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</div>
+            <div style="font-size: var(--text-xs); color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
+          </div>
         </div>
-        <button class="sidebar-logout-btn" id="sidebar-logout" title="${I18n.__('sign_out')}">${Icons.logout}<span>${I18n.__('sign_out')}</span></button>
+        <button class="sidebar-logout-btn" id="sidebar-logout" title="${I18n.__('sign_out')}" style="display: flex; align-items: center; justify-content: flex-end; gap: var(--space-xs); width: 100%; padding: var(--space-xs) 0; border: none; background: none; cursor: pointer; color: var(--ink-secondary); font-size: var(--text-xs); border-radius: var(--radius-sm); transition: color var(--transition-fast);">${Icons.logout}<span>${I18n.__('sign_out')}</span></button>
       </div>
       <div style="padding: var(--space-xs) var(--space-md); border-top: 1px solid var(--hairline);">
         <select id="sidebar-lang" style="width: 100%; padding: 6px var(--space-sm); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--ink-secondary);">

@@ -198,6 +198,16 @@
   color: var(--ink);
 }
 
+.landing-nav-links a:not(.btn).active {
+  color: var(--ink);
+  font-weight: 600;
+  background: rgba(0,0,0,0.06);
+}
+
+[data-theme="dark"] .landing-nav-links a:not(.btn).active {
+  background: rgba(255,255,255,0.1);
+}
+
 .landing-nav-links .btn {
   font-size: 14px;
   margin-left: 4px;

@@ -150,16 +150,13 @@ function setupRoutes() {
       initBoard(ctx.params.id);
     })
     .on('/board/shared/:token', async (ctx) => {
-      if (!BoardFlowAuth.isAuthenticated()) {
-        AppRouter.navigate('/');
-        return;
-      }
       const board = await BoardManager.getByShareToken(ctx.params.token);
       if (board) {
-        AppRouter.navigate('/board/' + board.id);
+        showPage('board');
+        initBoard(board.id);
       } else {
         Toast.show('Share link not found', 'error');
-        AppRouter.navigate('/dashboard');
+        AppRouter.navigate('/');
       }
     })
     .on('*', (ctx) => {
