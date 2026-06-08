@@ -16,10 +16,6 @@ html[dir="rtl"] .sidebar-header h2 {
   margin-left: auto;
 }
 
-html[dir="rtl"] .board-toolbar {
-  flex-direction: row-reverse;
-}
-
 html[dir="rtl"] .toolbar-label {
   direction: ltr;
 }

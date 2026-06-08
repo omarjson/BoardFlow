@@ -127,6 +127,15 @@ function setupRoutes() {
       showPage('dashboard');
       initDashboard();
     })
+    .on('/settings', (ctx) => {
+      if (!BoardFlowAuth.isAuthenticated()) {
+        AppRouter.navigate('/');
+        return;
+      }
+      showPage('dashboard');
+      Sidebar.init();
+      Settings.render();
+    })
     .on('/board/:id', (ctx) => {
       if (!BoardFlowAuth.isAuthenticated()) {
         AppRouter.navigate('/');
@@ -317,6 +326,10 @@ async function initBoard(boardId) {
   BoardHistory.clear();
   AudioRecorder.destroy();
   VideoUpload.destroy();
+  if (window._syncTickInterval) {
+    clearInterval(window._syncTickInterval);
+    window._syncTickInterval = null;
+  }
 
   // Load items
   await ItemManager.loadItems(boardId);
@@ -368,6 +381,25 @@ async function initBoard(boardId) {
   // Build toolbar
   renderBoardToolbar(boardId);
 
+  // Last synced indicator
+  function updateSyncIndicator() {
+    const el = document.getElementById('sync-indicator');
+    if (!el) return;
+    const lastSync = ItemManager.lastSyncedAt;
+    if (!lastSync) { el.textContent = ''; return; }
+    const seconds = Math.floor((Date.now() - lastSync) / 1000);
+    if (seconds < 5) {
+      el.textContent = I18n.__('synced_just_now');
+    } else if (seconds < 60) {
+      el.textContent = I18n.__('synced_ago', { n: seconds + 's' });
+    } else {
+      el.textContent = I18n.__('synced_ago', { n: Math.floor(seconds / 60) + 'm' });
+    }
+  }
+  ItemManager.onSync = updateSyncIndicator;
+  updateSyncIndicator();
+  window._syncTickInterval = setInterval(updateSyncIndicator, 15000);
+
   // Minimap render on pan
   Canvas.onPanChange = () => Minimap.render();
 
@@ -383,7 +415,7 @@ async function initBoard(boardId) {
         { icon: Icons.note, label: I18n.__('add_note'), action: async () => {
           await ItemManager.createItem('sticky_note', {
             x: canvasPos.x, y: canvasPos.y,
-            title: 'New Note', content: '', color: '#fffde7'
+            title: 'New Note', content: '', color: localStorage.getItem('boardflow_default_note_color') || '#fffde7'
           });
         }},
         { icon: Icons.richNote, label: I18n.__('add_rich_note'), action: async () => {
@@ -477,11 +509,13 @@ function renderBoardToolbar(boardId) {
     <button class="toolbar-btn" id="tb-delete" title="${I18n.__('delete_selected')}">${Icons.trash}</button>
     <button class="toolbar-btn" id="tb-back" title="${I18n.__('back_to_dashboard')}">${Icons.arrowLeft}</button>
     <div class="toolbar-divider"></div>
-    <button class="toolbar-btn" id="tb-export-png" title="Export PNG">${Icons.download}</button>
-    <button class="toolbar-btn" id="tb-export-pdf" title="Export PDF">${Icons.exportFile}</button>
+    <button class="toolbar-btn" id="tb-export-png" title="Export PNG">${Icons.exportPng}</button>
+    <button class="toolbar-btn" id="tb-export-pdf" title="Export PDF">${Icons.exportPdf}</button>
     <button class="toolbar-btn" id="tb-ai" title="${I18n.__('ai_assistant')}">${Icons.brain}</button>
     <button class="toolbar-btn" id="tb-chat" title="${I18n.__('board_chat')}">${Icons.chat}</button>
     <button class="toolbar-btn" id="tb-share" title="${I18n.__('share_board')}">${Icons.share}</button>
+    <button class="toolbar-btn" id="tb-sync" title="${I18n.__('sync_now')}">${Icons.sync}</button>
+    <span class="sync-indicator" id="sync-indicator">Synced just now</span>
   `;
 
   document.getElementById('tb-add-note')?.addEventListener('click', async () => {
@@ -492,7 +526,7 @@ function renderBoardToolbar(boardId) {
       y: (rect.height / 2 - Canvas.panY) / Canvas.zoom,
       title: 'New Note',
       content: '',
-      color: '#fffde7'
+      color: localStorage.getItem('boardflow_default_note_color') || '#fffde7'
     });
   });
 
@@ -632,6 +666,19 @@ function renderBoardToolbar(boardId) {
 
   document.getElementById('tb-share')?.addEventListener('click', () => {
     ShareManager.showShareDialog(ItemManager.boardId);
+  });
+
+  document.getElementById('tb-sync')?.addEventListener('click', async () => {
+    const btn = document.getElementById('tb-sync');
+    if (btn) btn.style.pointerEvents = 'none';
+    if (BoardFlowAuth.supabase) {
+      await BoardManager.update(ItemManager.boardId, {});
+    }
+    ItemManager._markSynced();
+    Toast.show(I18n.__('synced_just_now'), 'success');
+    if (btn) {
+      setTimeout(() => { btn.style.pointerEvents = ''; }, 1500);
+    }
   });
 
   // Undo/Redo
@@ -933,6 +980,7 @@ function handleUndo() {
     ItemManager.items = prev.items;
     ItemManager.selectedItems = new Set(prev.selectedIds);
     ItemManager._saveLocal();
+    ItemManager._markSynced();
     renderBoardItems();
     updateItemSelectionUI();
     Minimap?.render();
@@ -949,6 +997,7 @@ function handleRedo() {
     ItemManager.items = next.items;
     ItemManager.selectedItems = new Set(next.selectedIds);
     ItemManager._saveLocal();
+    ItemManager._markSynced();
     renderBoardItems();
     updateItemSelectionUI();
     Minimap?.render();
@@ -974,7 +1023,6 @@ function handleBoardKeyboard(e) {
     }
     if (e.key === 'Delete' || e.key === 'Backspace') {
     if (ItemManager.selectedItems.size > 0) {
-      pushHistoryState();
       ItemManager.deleteSelected();
     }
   } else if (e.key === 'z' && (e.ctrlKey || e.metaKey) && !e.shiftKey) {

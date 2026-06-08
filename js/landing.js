@@ -21,6 +21,7 @@
       this.initHeroParallax();
       this.initStaggeredReveal();
       this.initGlitchEffects();
+      this.initHeroTypewriter();
     },
 
     // ---- Theme Toggle ----
@@ -348,6 +349,58 @@
           el.classList.remove('glitch-active');
         });
       });
+    },
+
+    // ---- Hero Typewriter ----
+
+    initHeroTypewriter() {
+      const el = document.getElementById('hero-typewriter');
+      if (!el) return;
+
+      let phrases;
+      try {
+        phrases = JSON.parse(window.I18n && window.I18n.__('typewriter_phrases') || '[]');
+      } catch(e) { phrases = []; }
+      if (!phrases.length) return;
+
+      let phraseIndex = 0;
+      let charIndex = 0;
+      let isDeleting = false;
+      let isPaused = false;
+
+      function tick() {
+        const current = phrases[phraseIndex];
+
+        if (isPaused) {
+          isPaused = false;
+          isDeleting = true;
+          setTimeout(tick, 80);
+          return;
+        }
+
+        if (isDeleting) {
+          charIndex--;
+          el.textContent = current.substring(0, charIndex);
+          if (charIndex === 0) {
+            isDeleting = false;
+            phraseIndex = (phraseIndex + 1) % phrases.length;
+            setTimeout(tick, 300);
+            return;
+          }
+          setTimeout(tick, 30);
+        } else {
+          charIndex++;
+          el.textContent = current.substring(0, charIndex);
+          if (charIndex === current.length) {
+            isPaused = true;
+            setTimeout(tick, 2000);
+            return;
+          }
+          setTimeout(tick, 60 + Math.random() * 40);
+        }
+      }
+
+      setTimeout(tick, 800);
     },
   };
 

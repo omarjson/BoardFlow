@@ -14,8 +14,8 @@ class _Canvas {
     this.isPanning = false;
     this.startX = 0;
     this.startY = 0;
-    this.gridEnabled = true;
-    this.gridSize = 20;
+    this.gridEnabled = localStorage.getItem('boardflow_grid_enabled') !== 'false';
+    this.gridSize = parseInt(localStorage.getItem('boardflow_grid_size') || '20', 10);
     this._bound = false;
     this.onZoomChange = null;
     this.onPanChange = null;
@@ -30,6 +30,8 @@ class _Canvas {
       this._bindEvents();
       this._bound = true;
     }
+    const defaultPct = parseInt(localStorage.getItem('boardflow_default_zoom') || '100', 10);
+    this.zoom = Math.max(this.minZoom, Math.min(this.maxZoom, defaultPct / 100));
     this._applyTransform();
     this._renderGrid();
     this.centerCanvas();

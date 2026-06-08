@@ -435,7 +435,7 @@ class _AIAssistant {
       x, y,
       title: 'Dictated',
       content: text,
-      color: '#fffde7'
+      color: localStorage.getItem('boardflow_default_note_color') || '#fffde7'
     });
     Toast.show('Note created from speech', 'success');
   }

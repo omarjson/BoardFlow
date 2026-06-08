@@ -51,7 +51,8 @@
     bottom: 56px;
   }
 
-  .toolbar-label {
+  .toolbar-label,
+  .sync-indicator {
     display: none;
   }
 
@@ -72,6 +73,26 @@
   }
 }
 
+/* Sync indicator */
+.sync-indicator {
+  font-size: 11px;
+  color: var(--ink-faint);
+  white-space: nowrap;
+  padding: 0 4px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sync-indicator::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--success);
+  flex-shrink: 0;
+}
+
 /* Tablet — condensed toolbar */
 @media (min-width: 768px) and (max-width: 1023px) {
   .board-toolbar {
@@ -79,6 +100,10 @@
   }
 
   .toolbar-label {
+    display: none;
+  }
+
+  .sync-indicator {
     display: none;
   }
 }

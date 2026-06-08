@@ -62,6 +62,12 @@ class _Sidebar {
         ">
       </div>
       <div id="board-list" style="padding: var(--space-xs) var(--space-sm);"></div>
+      <div style="padding: var(--space-xs) var(--space-sm); border-top: 1px solid var(--hairline); margin-top: var(--space-sm);">
+        <button class="sidebar-nav-btn" id="sidebar-settings" style="display: flex; align-items: center; gap: var(--space-sm); width: 100%; padding: var(--space-sm) var(--space-md); border: none; border-radius: var(--radius-md); background: none; cursor: pointer; color: var(--ink-secondary); font-size: var(--text-sm); transition: all var(--transition-fast);">
+          ${Icons.settings}
+          <span>${I18n.__('settings')}</span>
+        </button>
+      </div>
     `;
 
     this.footerEl.innerHTML = `
@@ -78,7 +84,7 @@ class _Sidebar {
           <div style="font-size: var(--text-sm); font-weight: var(--weight-medium); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${displayName}</div>
           <div style="font-size: var(--text-xs); color: var(--ink-muted); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${email}</div>
         </div>
-        <button class="btn btn-ghost" id="sidebar-logout" title="${I18n.__('sign_out')}" style="padding: var(--space-xs);">${Icons.logout}</button>
+        <button class="sidebar-logout-btn" id="sidebar-logout" title="${I18n.__('sign_out')}">${Icons.logout}<span>${I18n.__('sign_out')}</span></button>
       </div>
       <div style="padding: var(--space-xs) var(--space-md); border-top: 1px solid var(--hairline);">
         <select id="sidebar-lang" style="width: 100%; padding: 6px var(--space-sm); background: var(--surface); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-xs); color: var(--ink-secondary);">
@@ -130,6 +136,10 @@ class _Sidebar {
 
     document.getElementById('sidebar-logout')?.addEventListener('click', () => {
       BoardFlowAuth.signOut();
+    });
+
+    document.getElementById('sidebar-settings')?.addEventListener('click', () => {
+      AppRouter.navigate('/settings');
     });
 
     document.getElementById('board-search')?.addEventListener('input', (e) => {

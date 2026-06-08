@@ -194,6 +194,21 @@ class _BoardChat {
     if (!container) return;
 
     const isOwn = msg.user_id === BoardFlowAuth.user?.id || msg.user_id === 'anonymous';
+    if (!isOwn && localStorage.getItem('boardflow_chat_sound') !== 'false') {
+      try {
+        const ctx = new (window.AudioContext || window.webkitAudioContext)();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.frequency.value = 660;
+        osc.type = 'sine';
+        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime);
+        osc.stop(ctx.currentTime + 0.15);
+      } catch {}
+    }
     const el = document.createElement('div');
     el.className = `chat-message ${isOwn ? 'chat-own' : 'chat-other'}`;
     const userId = String(msg.user_id ?? '');

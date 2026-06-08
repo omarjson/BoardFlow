@@ -9,7 +9,23 @@ class _ItemManager {
     this.selectedItems = new Set();
     this.onItemsChange = null;
     this.onSelectionChange = null;
+    this.onSync = null;
     this.suppressRender = false;
+    this.lastSyncedAt = null;
+  }
+
+  _markSynced() {
+    this.lastSyncedAt = Date.now();
+    this.onSync?.();
+  }
+
+  _pushHistory() {
+    if (window.BoardHistory) {
+      BoardHistory.push({
+        items: this.items.map(i => ({ ...i })),
+        selectedIds: [...this.selectedItems]
+      });
+    }
   }
 
   async loadItems(boardId) {
@@ -34,6 +50,7 @@ class _ItemManager {
       }
     }
 
+    this._markSynced();
     this.onItemsChange?.(this.items);
     return this.items;
   }
@@ -73,8 +90,10 @@ class _ItemManager {
       item.id = data.id;
     }
 
+    this._pushHistory();
     this.items.push(item);
     this._saveLocal();
+    this._markSynced();
     this.onItemsChange?.(this.items);
     return item;
   }
@@ -92,6 +111,7 @@ class _ItemManager {
     if (item) {
       Object.assign(item, updates, { updated_at: new Date().toISOString() });
       this._saveLocal();
+      this._markSynced();
       if (!this.suppressRender) {
         this.onItemsChange?.(this.items);
       }
@@ -110,9 +130,11 @@ class _ItemManager {
 
     window.Connections?.removeConnectionsForItem(id);
 
+    this._pushHistory();
     this.items = this.items.filter(i => i.id !== id);
     this.selectedItems.delete(id);
     this._saveLocal();
+    this._markSynced();
     this.onItemsChange?.(this.items);
     this.onSelectionChange?.(this.selectedItems);
   }
@@ -129,10 +151,13 @@ class _ItemManager {
 
     ids.forEach(id => window.Connections?.removeConnectionsForItem(id));
 
+    this._pushHistory();
+
     // Remove from local array
     this.items = this.items.filter(i => !ids.includes(i.id));
     ids.forEach(id => this.selectedItems.delete(id));
     this._saveLocal();
+    this._markSynced();
 
     // Fire callbacks once
     this.onItemsChange?.(this.items);

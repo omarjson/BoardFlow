@@ -10,13 +10,23 @@ const BoardExport = {
 
     try {
       Toast.show('Rendering board...', 'info');
+      const scale = parseInt(localStorage.getItem('boardflow_export_scale') || '2', 10);
+      const includeGrid = localStorage.getItem('boardflow_export_grid') !== 'false';
+      const cloneDoc = (doc) => {
+        doc.querySelectorAll('.board-item').forEach(el => {
+          el.style.transform = el.style.transform.replace(/translate\([^)]+\)/, '');
+        });
+        if (!includeGrid) {
+          doc.querySelector('.canvas-grid')?.remove();
+        }
+      };
       const canvas = await html2canvas(container, {
         backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim() || '#fafafa',
         useCORS: true,
         allowTaint: false,
-        scale: 2,
+        scale,
         logging: false,
-        onclone: (doc) => {
+        onclone: cloneDoc,
           doc.querySelectorAll('.board-item').forEach(el => {
             el.style.transform = el.style.transform.replace(/translate\([^)]+\)/, '');
           });
