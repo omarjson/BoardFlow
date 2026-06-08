@@ -191,8 +191,8 @@ class _AIAssistant {
                   <option value="claude-3-5-haiku-20241022">Claude 3.5 Haiku</option>
                 </optgroup>
                 <optgroup label="Gemini">
+                  <option value="gemini-3.5-flash">Gemini 3.5 Flash (newest)</option>
                   <option value="gemini-2.5-pro">Gemini 2.5 Pro</option>
-                  <option value="gemini-2.0-flash">Gemini 2.0 Flash</option>
                 </optgroup>
                 <optgroup label="DeepSeek">
                   <option value="deepseek-chat">DeepSeek Chat</option>
