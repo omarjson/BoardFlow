@@ -1,7 +1,16 @@
 class _Settings {
   constructor() {
     this.container = null;
+    this.activeTab = 'account';
   }
+
+  _icons = {
+    account: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    canvas: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/></svg>`,
+    export: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>`,
+    appearance: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`,
+    notifications: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>`,
+  };
 
   render() {
     const user = BoardFlowAuth.getUser();
@@ -26,90 +35,189 @@ class _Settings {
         <div class="settings-header">
           <h1>${I18n.__('settings')}</h1>
         </div>
+        <div class="settings-body">
+          <nav class="settings-tabs" role="tablist" aria-label="Settings navigation">
+            <button class="settings-tab active" role="tab" aria-selected="true" data-tab="account" id="tab-account">
+              ${this._icons.account}
+              <span>Account</span>
+            </button>
+            <button class="settings-tab" role="tab" aria-selected="false" data-tab="canvas" id="tab-canvas">
+              ${this._icons.canvas}
+              <span>Canvas</span>
+            </button>
+            <button class="settings-tab" role="tab" aria-selected="false" data-tab="export" id="tab-export">
+              ${this._icons.export}
+              <span>Export</span>
+            </button>
+            <button class="settings-tab" role="tab" aria-selected="false" data-tab="appearance" id="tab-appearance">
+              ${this._icons.appearance}
+              <span>Appearance</span>
+            </button>
+            <button class="settings-tab" role="tab" aria-selected="false" data-tab="notifications" id="tab-notifications">
+              ${this._icons.notifications}
+              <span>${I18n.__('notifications')}</span>
+            </button>
+          </nav>
 
-        <section class="settings-section">
-          <h2>${I18n.__('display_name')}</h2>
-          <div class="settings-field">
-            <label for="settings-display-name">${I18n.__('display_name')}</label>
-            <input type="text" id="settings-display-name" value="${this._escapeHtml(displayName)}">
-          </div>
-          <div class="settings-field">
-            <label>${I18n.__('email')}</label>
-            <div class="settings-field-readonly">${this._escapeHtml(email)}</div>
-          </div>
-          <div style="display: flex; gap: var(--space-sm); flex-wrap: wrap;">
-            <button class="btn btn-secondary" id="settings-change-password">${I18n.__('change_password')}</button>
-            <button class="btn btn-primary" id="settings-save-account" style="flex:1;">${I18n.__('save_changes')}</button>
-          </div>
-          <div style="margin-top: var(--space-md); padding-top: var(--space-md); border-top: 1px solid var(--hairline);">
-            <button class="btn btn-danger" id="settings-delete-account">${I18n.__('delete_account')}</button>
-          </div>
-        </section>
+          <div class="settings-content">
 
-        <section class="settings-section">
-          <h2>${I18n.__('canvas')}</h2>
-          <div class="settings-field">
-            <label>${I18n.__('grid')}</label>
-            <label class="toggle-row">
-              <input type="checkbox" id="settings-grid-enabled"${gridDefault ? ' checked' : ''}>
-              <span>${I18n.__('show_grid_by_default')}</span>
-            </label>
-          </div>
-          <div class="settings-field">
-            <label for="settings-grid-size">${I18n.__('grid_size')}</label>
-            <select id="settings-grid-size">
-              <option value="10"${gridSize === '10' ? ' selected' : ''}>${I18n.__('small')} (10px)</option>
-              <option value="20"${gridSize === '20' ? ' selected' : ''}>${I18n.__('medium')} (20px)</option>
-              <option value="30"${gridSize === '30' ? ' selected' : ''}>${I18n.__('large')} (30px)</option>
-            </select>
-          </div>
-          <div class="settings-field">
-            <label for="settings-default-zoom">${I18n.__('default_zoom')}</label>
-            <select id="settings-default-zoom">
-              <option value="50"${defaultZoom === '50' ? ' selected' : ''}>50%</option>
-              <option value="75"${defaultZoom === '75' ? ' selected' : ''}>75%</option>
-              <option value="100"${defaultZoom === '100' ? ' selected' : ''}>100%</option>
-              <option value="150"${defaultZoom === '150' ? ' selected' : ''}>150%</option>
-              <option value="200"${defaultZoom === '200' ? ' selected' : ''}>200%</option>
-            </select>
-          </div>
-          <div class="settings-field">
-            <label for="settings-default-color">${I18n.__('default_note_color')}</label>
-            <div class="color-picker-row">
-              <input type="color" id="settings-default-color" value="${defaultColor}">
-              <input type="text" id="settings-default-color-text" value="${defaultColor}" maxlength="7">
-            </div>
-          </div>
-        </section>
+            <!-- Account Tab -->
+            <section class="settings-section active" data-section="account" role="tabpanel" aria-labelledby="tab-account">
+              <div>
+                <h2 class="settings-section-title">Account</h2>
+                <p class="settings-section-desc">Manage your profile, email, and password.</p>
+              </div>
 
-        <section class="settings-section">
-          <h2>${I18n.__('export')}</h2>
-          <div class="settings-field">
-            <label for="settings-export-scale">${I18n.__('png_scale')}</label>
-            <select id="settings-export-scale">
-              <option value="1"${exportScale === '1' ? ' selected' : ''}>1x (${I18n.__('standard')})</option>
-              <option value="2"${exportScale === '2' ? ' selected' : ''}>2x (${I18n.__('retina')})</option>
-              <option value="3"${exportScale === '3' ? ' selected' : ''}>3x (${I18n.__('high_res')})</option>
-              <option value="4"${exportScale === '4' ? ' selected' : ''}>4x (${I18n.__('ultra')})</option>
-            </select>
-          </div>
-          <div class="settings-field">
-            <label class="toggle-row">
-              <input type="checkbox" id="settings-export-grid"${exportGrid ? ' checked' : ''}>
-              <span>${I18n.__('include_grid')}</span>
-            </label>
-          </div>
-        </section>
+              <div class="settings-field">
+                <label for="settings-display-name">${I18n.__('display_name')}</label>
+                <input type="text" id="settings-display-name" value="${this._escapeHtml(displayName)}">
+              </div>
 
-        <section class="settings-section">
-          <h2>${I18n.__('notifications')}</h2>
-          <div class="settings-field">
-            <label class="toggle-row">
-              <input type="checkbox" id="settings-chat-sound"${chatSound ? ' checked' : ''}>
-              <span>${I18n.__('chat_sound')}</span>
-            </label>
+              <div class="settings-field">
+                <label for="settings-email">${I18n.__('email')}</label>
+                <input type="email" id="settings-email" value="${this._escapeHtml(email)}" disabled>
+              </div>
+
+              <div class="settings-actions">
+                <button class="btn btn-secondary" id="settings-change-password">${I18n.__('change_password')}</button>
+                <button class="btn btn-primary" id="settings-save-account">${I18n.__('save_changes')}</button>
+              </div>
+
+              <div class="settings-danger-zone">
+                <h3>${I18n.__('delete_account')}</h3>
+                <p>Permanently delete your account and all data. This action cannot be undone.</p>
+                <button class="btn btn-danger" id="settings-delete-account">${I18n.__('delete_account')}</button>
+              </div>
+            </section>
+
+            <!-- Canvas Tab -->
+            <section class="settings-section" data-section="canvas" role="tabpanel" aria-labelledby="tab-canvas">
+              <div>
+                <h2 class="settings-section-title">Canvas</h2>
+                <p class="settings-section-desc">Configure grid, zoom, and default note color.</p>
+              </div>
+
+              <div class="settings-toggle-row" id="settings-grid-toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-label">${I18n.__('grid')}</span>
+                  <span class="toggle-desc">Show dot grid on the canvas</span>
+                </div>
+                <input type="checkbox" id="settings-grid-enabled"${gridDefault ? ' checked' : ''}>
+              </div>
+
+              <div class="settings-field">
+                <label for="settings-grid-size">${I18n.__('grid_size')}</label>
+                <select id="settings-grid-size">
+                  <option value="10"${gridSize === '10' ? ' selected' : ''}>${I18n.__('small')} (10px)</option>
+                  <option value="20"${gridSize === '20' ? ' selected' : ''}>${I18n.__('medium')} (20px)</option>
+                  <option value="30"${gridSize === '30' ? ' selected' : ''}>${I18n.__('large')} (30px)</option>
+                </select>
+              </div>
+
+              <div class="settings-field">
+                <label for="settings-default-zoom">${I18n.__('default_zoom')}</label>
+                <select id="settings-default-zoom">
+                  <option value="50"${defaultZoom === '50' ? ' selected' : ''}>50%</option>
+                  <option value="75"${defaultZoom === '75' ? ' selected' : ''}>75%</option>
+                  <option value="100"${defaultZoom === '100' ? ' selected' : ''}>100%</option>
+                  <option value="150"${defaultZoom === '150' ? ' selected' : ''}>150%</option>
+                  <option value="200"${defaultZoom === '200' ? ' selected' : ''}>200%</option>
+                </select>
+              </div>
+
+              <div class="settings-field">
+                <label for="settings-default-color">${I18n.__('default_note_color')}</label>
+                <div class="settings-color-row">
+                  <input type="color" id="settings-default-color" value="${defaultColor}">
+                  <input type="text" id="settings-default-color-text" value="${defaultColor}" maxlength="7">
+                </div>
+              </div>
+            </section>
+
+            <!-- Export Tab -->
+            <section class="settings-section" data-section="export" role="tabpanel" aria-labelledby="tab-export">
+              <div>
+                <h2 class="settings-section-title">Export</h2>
+                <p class="settings-section-desc">Control export quality and format.</p>
+              </div>
+
+              <div class="settings-field">
+                <label for="settings-export-scale">${I18n.__('png_scale')}</label>
+                <select id="settings-export-scale">
+                  <option value="1"${exportScale === '1' ? ' selected' : ''}>1x (${I18n.__('standard')})</option>
+                  <option value="2"${exportScale === '2' ? ' selected' : ''}>2x (${I18n.__('retina')})</option>
+                  <option value="3"${exportScale === '3' ? ' selected' : ''}>3x (${I18n.__('high_res')})</option>
+                  <option value="4"${exportScale === '4' ? ' selected' : ''}>4x (${I18n.__('ultra')})</option>
+                </select>
+              </div>
+
+              <div class="settings-toggle-row" id="settings-export-grid-toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-label">${I18n.__('include_grid')}</span>
+                  <span class="toggle-desc">Include grid dots in exported PNG</span>
+                </div>
+                <input type="checkbox" id="settings-export-grid"${exportGrid ? ' checked' : ''}>
+              </div>
+            </section>
+
+            <!-- Appearance Tab -->
+            <section class="settings-section" data-section="appearance" role="tabpanel" aria-labelledby="tab-appearance">
+              <div>
+                <h2 class="settings-section-title">Appearance</h2>
+                <p class="settings-section-desc">Switch between light and dark themes.</p>
+              </div>
+
+              <div class="settings-theme-row">
+                <button class="settings-theme-option${currentTheme === 'light' ? ' active' : ''}" data-theme="light">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+                  <span>Light</span>
+                </button>
+                <button class="settings-theme-option${currentTheme === 'dark' ? ' active' : ''}" data-theme="dark">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+                  <span>Dark</span>
+                </button>
+              </div>
+
+              <div class="settings-field">
+                <label for="settings-lang">${I18n.__('language')}</label>
+                <select id="settings-lang">
+                  <option value="en"${currentLang === 'en' ? ' selected' : ''}>English</option>
+                  <option value="ar"${currentLang === 'ar' ? ' selected' : ''}>العربية</option>
+                  <option value="fr"${currentLang === 'fr' ? ' selected' : ''}>Français</option>
+                  <option value="es"${currentLang === 'es' ? ' selected' : ''}>Español</option>
+                  <option value="pt"${currentLang === 'pt' ? ' selected' : ''}>Português</option>
+                  <option value="de"${currentLang === 'de' ? ' selected' : ''}>Deutsch</option>
+                  <option value="ru"${currentLang === 'ru' ? ' selected' : ''}>Русский</option>
+                  <option value="tr"${currentLang === 'tr' ? ' selected' : ''}>Türkçe</option>
+                  <option value="hi"${currentLang === 'hi' ? ' selected' : ''}>हिन्दी</option>
+                  <option value="zh-CN"${currentLang === 'zh-CN' ? ' selected' : ''}>简体中文</option>
+                  <option value="ja"${currentLang === 'ja' ? ' selected' : ''}>日本語</option>
+                  <option value="ko"${currentLang === 'ko' ? ' selected' : ''}>한국어</option>
+                  <option value="it"${currentLang === 'it' ? ' selected' : ''}>Italiano</option>
+                  <option value="nl"${currentLang === 'nl' ? ' selected' : ''}>Nederlands</option>
+                  <option value="id"${currentLang === 'id' ? ' selected' : ''}>Bahasa Indonesia</option>
+                </select>
+              </div>
+            </section>
+
+            <!-- Notifications Tab -->
+            <section class="settings-section" data-section="notifications" role="tabpanel" aria-labelledby="tab-notifications">
+              <div>
+                <h2 class="settings-section-title">${I18n.__('notifications')}</h2>
+                <p class="settings-section-desc">Control sounds and alerts.</p>
+              </div>
+
+              <div class="settings-toggle-row" id="settings-chat-sound-toggle-row">
+                <div class="toggle-info">
+                  <span class="toggle-label">${I18n.__('chat_sound')}</span>
+                  <span class="toggle-desc">Play a sound when new chat messages arrive</span>
+                </div>
+                <input type="checkbox" id="settings-chat-sound"${chatSound ? ' checked' : ''}>
+              </div>
+            </section>
+
           </div>
-        </section>
+        </div>
       </div>
     `;
 
@@ -117,18 +225,36 @@ class _Settings {
   }
 
   _wireEvents() {
+    // Tab switching
+    document.querySelectorAll('.settings-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        this.activeTab = tab.dataset.tab;
+        document.querySelectorAll('.settings-tab').forEach(t => {
+          t.classList.toggle('active', t === tab);
+          t.setAttribute('aria-selected', t === tab ? 'true' : 'false');
+        });
+        document.querySelectorAll('.settings-section').forEach(s => {
+          s.classList.toggle('active', s.dataset.section === this.activeTab);
+        });
+      });
+    });
+
+    // Account
     document.getElementById('settings-save-account')?.addEventListener('click', () => this._saveAccount());
     document.getElementById('settings-change-password')?.addEventListener('click', () => this._changePassword());
     document.getElementById('settings-delete-account')?.addEventListener('click', () => this._deleteAccount());
 
-    document.querySelectorAll('.theme-option').forEach(btn => {
+    // Theme
+    document.querySelectorAll('.settings-theme-option').forEach(btn => {
       btn.addEventListener('click', () => this._setTheme(btn.dataset.theme));
     });
 
+    // Language
     document.getElementById('settings-lang')?.addEventListener('change', (e) => {
       I18n.setLanguage(e.target.value);
     });
 
+    // Canvas
     document.getElementById('settings-grid-enabled')?.addEventListener('change', (e) => {
       localStorage.setItem('boardflow_grid_enabled', e.target.checked);
     });
@@ -141,6 +267,7 @@ class _Settings {
       localStorage.setItem('boardflow_default_zoom', e.target.value);
     });
 
+    // Export
     document.getElementById('settings-export-scale')?.addEventListener('change', (e) => {
       localStorage.setItem('boardflow_export_scale', e.target.value);
     });
@@ -149,10 +276,12 @@ class _Settings {
       localStorage.setItem('boardflow_export_grid', e.target.checked);
     });
 
+    // Notifications
     document.getElementById('settings-chat-sound')?.addEventListener('change', (e) => {
       localStorage.setItem('boardflow_chat_sound', e.target.checked);
     });
 
+    // Color picker
     const colorInput = document.getElementById('settings-default-color');
     const colorText = document.getElementById('settings-default-color-text');
     if (colorInput && colorText) {
@@ -319,7 +448,7 @@ class _Settings {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('boardflow_theme', theme);
 
-    document.querySelectorAll('.theme-option').forEach(btn => {
+    document.querySelectorAll('.settings-theme-option').forEach(btn => {
       btn.classList.toggle('active', btn.dataset.theme === theme);
     });
   }
