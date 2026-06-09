@@ -176,7 +176,7 @@ class _Connections {
     };
 
     this._onUp = (e) => {
-      const targetEl = e.target.closest('.board-item');
+      const targetEl = document.elementFromPoint(e.clientX, e.clientY)?.closest('.board-item');
       if (targetEl && targetEl.dataset.id !== sourceId) {
         this.addConnection(sourceId, targetEl.dataset.id);
         if (ItemManager.boardId) this.save(ItemManager.boardId);

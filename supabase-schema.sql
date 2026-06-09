@@ -34,10 +34,13 @@ CREATE TABLE IF NOT EXISTS public.boards (
   share_token TEXT UNIQUE,
   template TEXT,
   thumbnail_url TEXT,
-  items JSONB DEFAULT '[]'::jsonb,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- NOTE: items JSONB column removed — items are stored in the dedicated items table only.
+-- ⚠️ If migrating an existing database, run this exactly once:
+-- ALTER TABLE public.boards DROP COLUMN IF EXISTS items;
 
 CREATE INDEX IF NOT EXISTS idx_boards_user_id ON public.boards(user_id);
 CREATE INDEX IF NOT EXISTS idx_boards_share_token ON public.boards(share_token);
@@ -331,6 +334,25 @@ CREATE POLICY "Members send messages" ON public.chat_messages
                  WHERE board_id = chat_messages.board_id AND user_id = auth.uid())
     )
   );
+
+-- ============================================
+-- Chat message cleanup — call periodically to save storage
+-- ============================================
+CREATE OR REPLACE FUNCTION public.cleanup_old_chat_messages(days_to_keep INTEGER DEFAULT 30)
+RETURNS INTEGER AS $$
+DECLARE
+  deleted_count INTEGER;
+BEGIN
+  DELETE FROM public.chat_messages
+  WHERE created_at < NOW() - (days_to_keep || ' days')::INTERVAL;
+  GET DIAGNOSTICS deleted_count = ROW_COUNT;
+  RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Call via: SELECT public.cleanup_old_chat_messages(30);
+-- Or set up as a cron job (Supabase pg_cron) on paid plans:
+-- SELECT cron.schedule('cleanup-chat', '0 0 * * 0', $$SELECT public.cleanup_old_chat_messages(30);$$);
 
 -- ============================================
 -- Realtime

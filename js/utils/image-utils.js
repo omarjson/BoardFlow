@@ -95,11 +95,25 @@ const ImageUtils = {
 
     try {
       const result = await puter.fs.write(`BoardFlow/${file.name}`, file);
-      return result?.url || result?.path || null;
+      if (result?.url) return result.url;
+      if (result?.path) {
+        try {
+          const fileBlob = await puter.fs.read(result.path);
+          if (fileBlob?.url) return fileBlob.url;
+        } catch {}
+      }
+      return null;
     } catch (err) {
       console.error('Puter upload error:', err);
       return null;
     }
+  },
+
+  async _uploadToIndexedDB(file) {
+    const id = Utils.generateId('file');
+    const dataUrl = await this.toDataURL(file);
+    await Storage.saveFile(id, dataUrl, file.type);
+    return { url: dataUrl, provider: 'local', id };
   },
 
   async uploadFile(file) {
@@ -108,21 +122,31 @@ const ImageUtils = {
 
     // Images under 5MB → ImgBB
     if (isImage && !isLarge) {
-      const url = await this.uploadToImgBB(file);
-      if (url) return { url, provider: 'imgbb' };
+      try {
+        const url = await this.uploadToImgBB(file);
+        if (url) return { url, provider: 'imgbb' };
+      } catch (err) {
+        console.warn('ImgBB upload failed, trying Puter:', err);
+      }
     }
 
     // Videos, audio, large files → Puter.js
     if (typeof puter !== 'undefined') {
-      const url = await this.uploadToPuter(file);
-      if (url) return { url, provider: 'puter' };
+      try {
+        const url = await this.uploadToPuter(file);
+        if (url) return { url, provider: 'puter' };
+      } catch (err) {
+        console.warn('Puter upload failed, using local:', err);
+      }
     }
 
     // Fallback: cache in IndexedDB
-    const id = Utils.generateId('file');
-    const dataUrl = await this.toDataURL(file);
-    await Storage.saveFile(id, dataUrl, file.type);
-    return { url: dataUrl, provider: 'local', id };
+    try {
+      return await this._uploadToIndexedDB(file);
+    } catch (err) {
+      console.error('Local upload failed:', err);
+      return null;
+    }
   },
 
   formatFileSize(bytes) {

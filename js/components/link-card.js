@@ -4,29 +4,54 @@
 
 class _LinkCard {
   async fetchMetadata(url) {
+    const normalized = url.startsWith('http') ? url : 'https://' + url;
+    const proxies = [
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(normalized)}`,
+      `https://corsproxy.io/?${encodeURIComponent(normalized)}`
+    ];
+
+    for (const proxyUrl of proxies) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+
+        const res = await fetch(proxyUrl, { signal: controller.signal });
+        clearTimeout(timeout);
+
+        if (!res.ok) continue;
+        const html = await res.text();
+
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+
+        const getMeta = (prop) => {
+          const el = doc.querySelector(`meta[property="${prop}"]`) || doc.querySelector(`meta[name="${prop}"]`);
+          return el?.getAttribute('content') || '';
+        };
+
+        return {
+          title: getMeta('og:title') || doc.querySelector('title')?.textContent || url,
+          description: getMeta('og:description') || getMeta('description') || '',
+          image: getMeta('og:image') || '',
+          url: normalized,
+          siteName: getMeta('og:site_name') || new URL(normalized).hostname
+        };
+      } catch {
+        continue;
+      }
+    }
+
+    // All proxies failed — return basic metadata from URL
     try {
-      const normalized = url.startsWith('http') ? url : 'https://' + url;
-      const res = await fetch(`https://api.allorigins.win/raw?url=${encodeURIComponent(normalized)}`);
-      if (!res.ok) return null;
-      const html = await res.text();
-
-      const parser = new DOMParser();
-      const doc = parser.parseFromString(html, 'text/html');
-
-      const getMeta = (prop) => {
-        const el = doc.querySelector(`meta[property="${prop}"]`) || doc.querySelector(`meta[name="${prop}"]`);
-        return el?.getAttribute('content') || '';
-      };
-
+      const hostname = new URL(normalized).hostname;
       return {
-        title: getMeta('og:title') || doc.querySelector('title')?.textContent || url,
-        description: getMeta('og:description') || getMeta('description') || '',
-        image: getMeta('og:image') || '',
+        title: hostname,
+        description: '',
+        image: '',
         url: normalized,
-        siteName: getMeta('og:site_name') || new URL(normalized).hostname
+        siteName: hostname
       };
-    } catch (err) {
-      console.error('Link preview fetch failed:', err);
+    } catch {
       return null;
     }
   }
@@ -65,7 +90,7 @@ class _LinkCard {
           height: 140px;
           background: var(--canvas-soft);
           overflow: hidden;
-        "><img src="${Utils.escapeHtml(meta.image)}" alt="${Utils.escapeHtml(meta.title || '')}" style="width:100%;height:100%;object-fit:cover;" loading="lazy"></div>` : ''}
+        "><img src="${Utils.escapeHtml(meta.image)}" alt="${Utils.escapeHtml(meta.title || '')}" style="width:100%;height:100%;object-fit:cover;" loading="lazy" onerror="this.parentElement.style.display='none'"></div>` : ''}
         <div class="link-card-body" style="
           padding: var(--space-md);
           flex: 1;
@@ -86,19 +111,21 @@ class _LinkCard {
       </div>
     `;
 
-    const openLink = () => {
+    const openLink = (e) => {
+      e.stopPropagation();
       window.open(meta.url || item.url || '#', '_blank');
     };
 
     el.addEventListener('click', openLink);
     el.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') openLink();
+      if (e.key === 'Enter') openLink(e);
     });
 
     return el;
   }
 
   async createFromUrl(url, x, y) {
+    Toast.show('Fetching link preview...', 'info');
     const meta = await this.fetchMetadata(url);
     const item = await ItemManager.createItem('link_card', {
       x, y,
@@ -109,6 +136,7 @@ class _LinkCard {
       url: url,
       metadata: meta ? { link_preview: meta } : null
     });
+    Toast.show('Link card added', 'success');
     return item;
   }
 }

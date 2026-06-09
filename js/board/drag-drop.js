@@ -27,6 +27,11 @@ class _DragDrop {
       const itemEl = e.target.closest('.board-item');
       if (!itemEl) return;
       if (e.target.closest('.item-resize-handle') || e.target.closest('.item-rotate-handle')) return;
+      if (e.target.closest('.sketch-canvas') || e.target.closest('.sketch-toolbar') || e.target.closest('.sketch-wrapper')) return;
+      if (e.target.closest('.rich-note-editor') || e.target.closest('.sticky-note-content[contenteditable]')) return;
+
+      const item = ItemManager.getItem(itemEl.dataset.id);
+      if (item?.metadata?.is_locked) return;
 
       e.stopPropagation();
       this.startDrag(itemEl, e);

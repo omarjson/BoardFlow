@@ -356,17 +356,31 @@
   .sidebar, .board-toolbar, .minimap, .context-menu,
   .modal-backdrop, .toast-container, .ai-assistant-panel,
   .chat-panel, .file-manager, .media-player-modal,
-  .sidebar-toggle, .mobile-topbar, .sidebar-scrim {
+  .sidebar-toggle, .mobile-topbar, .sidebar-scrim,
+  .item-resize-handle, .item-rotate-handle {
     display: none !important;
+  }
+  .board-page {
+    position: static;
+    overflow: visible;
   }
   .board-canvas {
     position: static;
     overflow: visible;
+    height: auto !important;
+    width: auto !important;
   }
   .canvas-container {
     transform: none !important;
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
   }
   #canvas { overflow: visible; }
+  .board-item {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
 }
 
 /* Reduced motion */

@@ -1256,6 +1256,7 @@ function createItemElement(item) {
     handle.className = `item-resize-handle ${dir}`;
     handle.addEventListener('mousedown', (e) => {
       e.stopPropagation();
+      if (item.metadata?.is_locked) return;
       startResize(item, dir, e);
     });
     el.appendChild(handle);
@@ -1266,9 +1267,41 @@ function createItemElement(item) {
   rotateHandle.className = 'item-rotate-handle';
   rotateHandle.addEventListener('mousedown', (e) => {
     e.stopPropagation();
+    if (item.metadata?.is_locked) return;
     startRotate(item, e);
   });
   el.appendChild(rotateHandle);
+
+  // Apply locked state
+  if (item.metadata?.is_locked) {
+    el.classList.add('is-locked');
+  }
+
+  // Right-click context menu
+  el.addEventListener('contextmenu', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const isLocked = item.metadata?.is_locked;
+    const lockLabel = I18n.__('lock_item');
+    const unlockLabel = I18n.__('unlock_item');
+    const frontLabel = I18n.__('bring_to_front');
+    const backLabel = I18n.__('send_to_back');
+    const deleteLabel = I18n.__('delete');
+    ContextMenu.show(e.clientX, e.clientY, [
+      { icon: isLocked ? Icons.unlock : Icons.lock, label: isLocked ? (unlockLabel !== 'unlock_item' ? unlockLabel : 'Unlock') : (lockLabel !== 'lock_item' ? lockLabel : 'Lock in Place'), action: async () => {
+        const locked = !isLocked;
+        await ItemManager.updateItem(item.id, { metadata: { ...item.metadata, is_locked: locked } });
+        const el = document.querySelector(`[data-id="${item.id}"]`);
+        if (el) el.classList.toggle('is-locked', locked);
+        Toast.show(locked ? 'Item locked' : 'Item unlocked', 'success');
+      }},
+      { separator: true },
+      { icon: Icons.bringToFront, label: frontLabel !== 'bring_to_front' ? frontLabel : 'Bring to Front', action: () => ItemManager.bringToFront(item.id) },
+      { icon: Icons.sendToBack, label: backLabel !== 'send_to_back' ? backLabel : 'Send to Back', action: () => ItemManager.sendToBack(item.id) },
+      { separator: true },
+      { icon: Icons.trash, label: deleteLabel !== 'delete' ? deleteLabel : 'Delete', action: () => ItemManager.deleteItem(item.id), danger: true }
+    ]);
+  });
 
   return el;
 }
