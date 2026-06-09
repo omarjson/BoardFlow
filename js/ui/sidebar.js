@@ -57,6 +57,7 @@ class _Sidebar {
       const topbar = document.querySelector('.mobile-topbar');
       if (topbar) topbar.addEventListener('click', this._topbarBound);
     }
+    if (!this._toggleBound) {
       this._toggleBound = () => {
         const isMobile = window.matchMedia('(max-width: 767px)').matches;
         const scrim = document.getElementById('sidebar-scrim');
