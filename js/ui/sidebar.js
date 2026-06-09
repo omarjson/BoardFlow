@@ -31,17 +31,43 @@ class _Sidebar {
       toggle.setAttribute('aria-label', 'Toggle sidebar');
       document.body.appendChild(toggle);
     }
-    toggle.addEventListener('click', () => {
-      this._isCollapsed = !this._isCollapsed;
-      this.el.classList.toggle('collapsed', this._isCollapsed);
-    });
-    document.addEventListener('click', (e) => {
-      const card = e.target.closest('.board-card, .board-list-item');
-      if (card && this._isCollapsed) {
-        this._isCollapsed = false;
-        this.el.classList.remove('collapsed');
-      }
-    });
+    if (!this._toggleBound) {
+      this._toggleBound = () => {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (isMobile) {
+          this.el.classList.toggle('open');
+        } else {
+          this._isCollapsed = !this._isCollapsed;
+          this.el.classList.toggle('collapsed', this._isCollapsed);
+        }
+      };
+      toggle.addEventListener('click', this._toggleBound);
+    }
+    if (!this._autoOpenBound) {
+      this._autoOpenBound = (e) => {
+        const card = e.target.closest('.board-card, .board-list-item');
+        if (card) {
+          const isMobile = window.matchMedia('(max-width: 767px)').matches;
+          if (isMobile) {
+            this.el.classList.remove('open');
+          } else if (this._isCollapsed) {
+            this._isCollapsed = false;
+            this.el.classList.remove('collapsed');
+          }
+        }
+      };
+      document.addEventListener('click', this._autoOpenBound);
+    }
+    if (!this._clickOutsideBound) {
+      this._clickOutsideBound = (e) => {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (!isMobile) return;
+        if (!this.el.classList.contains('open')) return;
+        if (e.target.closest('.sidebar') || e.target.closest('.sidebar-toggle')) return;
+        this.el.classList.remove('open');
+      };
+      document.addEventListener('click', this._clickOutsideBound);
+    }
   }
 
   _wireScrollShadow() {

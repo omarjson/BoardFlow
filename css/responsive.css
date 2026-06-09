@@ -22,6 +22,9 @@
     border-right: none;
     border-bottom: 1px solid var(--hairline);
     border-radius: 0 0 var(--radius-lg) var(--radius-lg);
+    background: var(--surface);
+    -webkit-backdrop-filter: blur(var(--blur-xl)) saturate(180%);
+    backdrop-filter: blur(var(--blur-xl)) saturate(180%);
   }
   .sidebar.open {
     transform: translateY(0);
