@@ -1,5 +1,5 @@
 // ============================================
-// Sketch / Drawing Tool
+// Sketch / Drawing Tool — Premium Edition
 // ============================================
 
 class _SketchTool {
@@ -9,53 +9,52 @@ class _SketchTool {
     this.isDrawing = false;
     this.currentPath = [];
     this.paths = [];
+    this.undoStack = [];
+    this.redoStack = [];
     this.tool = 'pen';
     this.color = '#1d1d1f';
+    this.fillColor = 'transparent';
     this.lineWidth = 3;
     this.opacity = 1;
     this.itemId = null;
     this.onSave = null;
-    this.tools = {
-      pen: { compositeOp: 'source-over', cursor: 'crosshair' },
-      marker: { compositeOp: 'source-over', cursor: 'crosshair' },
-      eraser: { compositeOp: 'destination-out', cursor: 'crosshair' }
-    };
+    this._shapeStart = null;
+    this._previewPath = null;
+    this._textMode = false;
   }
+
+  static TOOLS = {
+    pen:        { icon: 'pen', label: 'Pen' },
+    highlighter:{ icon: 'highlighter', label: 'Highlighter' },
+    line:       { icon: 'line', label: 'Line' },
+    arrow:      { icon: 'arrow', label: 'Arrow' },
+    rect:       { icon: 'rect', label: 'Rectangle' },
+    circle:     { icon: 'circle', label: 'Circle' },
+    text:       { icon: 'text', label: 'Text' },
+    fill:       { icon: 'fill', label: 'Fill' },
+    eraser:     { icon: 'eraser', label: 'Eraser' },
+  };
+
+  static COLORS = [
+    '#1d1d1f', '#ffffff', '#ff3b30', '#ff9500', '#ffcc00',
+    '#34c759', '#007aff', '#5856d6', '#af52de', '#ff2d55',
+    '#a2845e', '#8e8e93'
+  ];
+
+  static SIZES = [1, 3, 6, 12];
 
   init(containerEl, item) {
     this.itemId = item.id;
     this.paths = item.sketch_data?.paths || [];
     this.color = item.sketch_data?.color || '#1d1d1f';
     this.lineWidth = item.sketch_data?.lineWidth || 3;
+    this.undoStack = [];
+    this.redoStack = [];
 
     const wrapper = document.createElement('div');
     wrapper.className = 'sketch-wrapper';
-    wrapper.style.cssText = `
-      position: relative;
-      width: 100%;
-      height: 100%;
-      overflow: hidden;
-      border-radius: var(--radius-md);
-    `;
 
-    wrapper.innerHTML = `
-      <div class="sketch-toolbar">
-        <button class="sketch-tool-btn active" data-tool="pen" title="Pen" style="display: flex; align-items: center; justify-content: center;">${Icons.edit}</button>
-        <button class="sketch-tool-btn" data-tool="marker" title="Marker" style="display: flex; align-items: center; justify-content: center;">${Icons.richNote}</button>
-        <button class="sketch-tool-btn" data-tool="eraser" title="Eraser" style="display: flex; align-items: center; justify-content: center;">${Icons.close}</button>
-        <div class="sketch-divider"></div>
-        <input type="color" class="sketch-color" value="${this.color}" title="Color">
-        <div class="sketch-divider"></div>
-        <button class="sketch-size-btn" data-size="1" title="Thin">—</button>
-        <button class="sketch-size-btn active" data-size="3" title="Medium">━</button>
-        <button class="sketch-size-btn" data-size="6" title="Thick">▬</button>
-        <div class="sketch-divider"></div>
-        <button class="sketch-undo-btn" title="Undo (Ctrl+Z)" style="display: flex; align-items: center; justify-content: center;">${Icons.undo}</button>
-        <button class="sketch-redo-btn" title="Redo (Ctrl+Y)" style="display: flex; align-items: center; justify-content: center;">${Icons.redo}</button>
-        <button class="sketch-clear-btn" title="Clear All" style="display: flex; align-items: center; justify-content: center;">${Icons.trash}</button>
-      </div>
-      <canvas class="sketch-canvas"></canvas>
-    `;
+    wrapper.innerHTML = this._buildToolbarHTML();
 
     containerEl.appendChild(wrapper);
 
@@ -66,39 +65,111 @@ class _SketchTool {
     this._bindEvents(wrapper);
     this._redraw();
 
-    // Resize observer
     this._resizeObserver = new ResizeObserver(() => this._resize());
     this._resizeObserver.observe(wrapper);
+  }
+
+  _buildToolbarHTML() {
+    const toolIcons = {
+      pen: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>`,
+      highlighter: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 11l-6 6v3h9l3-3"/><path d="M22 12l-4.6 4.6a2 2 0 01-2.8 0l-5.2-5.2a2 2 0 010-2.8L14 4"/></svg>`,
+      line: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="5" y1="19" x2="19" y2="5"/></svg>`,
+      arrow: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>`,
+      rect: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>`,
+      circle: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>`,
+      text: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 7 4 4 20 4 20 7"/><line x1="9" y1="20" x2="15" y2="20"/><line x1="12" y1="4" x2="12" y2="20"/></svg>`,
+      fill: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 11l-8-8-8.6 8.6a2 2 0 000 2.8l5.2 5.2a2 2 0 002.8 0L19 11z"/><path d="M5 21a2 2 0 002-2 2 2 0 00-2-2 2 2 0 00-2 2 2 2 0 002 2z"/></svg>`,
+      eraser: `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 20H7L3 16l9-9 8 8-4 4"/><path d="M6.5 13.5l5-5"/></svg>`,
+    };
+
+    const colorSwatches = _SketchTool.COLORS.map(c =>
+      `<button class="sketch-color-swatch${c === this.color ? ' active' : ''}" data-color="${c}" style="background:${c};${c === '#ffffff' ? 'border-color:var(--hairline);' : ''}" title="${c}"></button>`
+    ).join('');
+
+    const sizeBtns = _SketchTool.SIZES.map(s =>
+      `<button class="sketch-size-btn${s === this.lineWidth ? ' active' : ''}" data-size="${s}" title="${s}px">
+        <span style="width:${Math.min(s * 2, 16)}px;height:${Math.min(s * 2, 16)}px;background:var(--ink);border-radius:50%;display:block;"></span>
+      </button>`
+    ).join('');
+
+    const toolBtns = Object.entries(_SketchTool.TOOLS).map(([key, t]) =>
+      `<button class="sketch-tool-btn${key === this.tool ? ' active' : ''}" data-tool="${key}" title="${t.label}">${toolIcons[key]}</button>`
+    ).join('');
+
+    return `
+      <div class="sketch-toolbar">
+        <div class="sketch-toolbar-group">
+          ${toolBtns}
+        </div>
+        <div class="sketch-divider"></div>
+        <div class="sketch-toolbar-group sketch-colors">
+          ${colorSwatches}
+          <input type="color" class="sketch-color-picker" value="${this.color}" title="Custom color">
+        </div>
+        <div class="sketch-divider"></div>
+        <div class="sketch-toolbar-group sketch-sizes">
+          ${sizeBtns}
+        </div>
+        <div class="sketch-divider"></div>
+        <div class="sketch-toolbar-group">
+          <button class="sketch-action-btn" data-action="undo" title="Undo (Ctrl+Z)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+          </button>
+          <button class="sketch-action-btn" data-action="redo" title="Redo (Ctrl+Y)">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 11-2.13-9.36L23 10"/></svg>
+          </button>
+          <button class="sketch-action-btn sketch-clear-btn" data-action="clear" title="Clear All">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 01-2 2H8a2 2 0 01-2-2L5 6m5 0V4a1 1 0 011-1h2a1 1 0 011 1v2"/></svg>
+          </button>
+        </div>
+      </div>
+      <canvas class="sketch-canvas"></canvas>
+    `;
   }
 
   _resize() {
     if (!this.canvas || !this.canvas.parentElement) return;
     const parent = this.canvas.parentElement;
     const rect = parent.getBoundingClientRect();
-    const toolbarHeight = 40;
+    const toolbarHeight = parent.querySelector('.sketch-toolbar')?.offsetHeight || 40;
 
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height - toolbarHeight;
+    const dpr = window.devicePixelRatio || 1;
+    this.canvas.width = rect.width * dpr;
+    this.canvas.height = (rect.height - toolbarHeight) * dpr;
+    this.canvas.style.width = rect.width + 'px';
+    this.canvas.style.height = (rect.height - toolbarHeight) + 'px';
     this.canvas.style.marginTop = toolbarHeight + 'px';
+    this.ctx.scale(dpr, dpr);
+    this._logicalWidth = rect.width;
+    this._logicalHeight = rect.height - toolbarHeight;
     this._redraw();
   }
 
   _bindEvents(wrapper) {
-    // Tool selection
     wrapper.querySelectorAll('.sketch-tool-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         wrapper.querySelectorAll('.sketch-tool-btn').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
         this.tool = btn.dataset.tool;
+        this.canvas.style.cursor = this.tool === 'eraser' ? 'cell' :
+                                   this.tool === 'text' ? 'text' :
+                                   this.tool === 'fill' ? 'crosshair' : 'crosshair';
       });
     });
 
-    // Color
-    wrapper.querySelector('.sketch-color')?.addEventListener('input', (e) => {
-      this.color = e.target.value;
+    wrapper.querySelectorAll('.sketch-color-swatch').forEach(btn => {
+      btn.addEventListener('click', () => {
+        wrapper.querySelectorAll('.sketch-color-swatch').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        this.color = btn.dataset.color;
+      });
     });
 
-    // Size
+    wrapper.querySelector('.sketch-color-picker')?.addEventListener('input', (e) => {
+      this.color = e.target.value;
+      wrapper.querySelectorAll('.sketch-color-swatch').forEach(b => b.classList.remove('active'));
+    });
+
     wrapper.querySelectorAll('.sketch-size-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         wrapper.querySelectorAll('.sketch-size-btn').forEach(b => b.classList.remove('active'));
@@ -107,186 +178,465 @@ class _SketchTool {
       });
     });
 
-    // Undo/Redo
-    wrapper.querySelector('.sketch-undo-btn')?.addEventListener('click', () => this.undo());
-    wrapper.querySelector('.sketch-redo-btn')?.addEventListener('click', () => this.redo());
-
-    // Clear
-    wrapper.querySelector('.sketch-clear-btn')?.addEventListener('click', () => {
-      BoardHistory.push({
-        items: ItemManager.items.map(i => ({ ...i })),
-        selectedIds: [...ItemManager.selectedItems]
+    wrapper.querySelectorAll('.sketch-action-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const action = btn.dataset.action;
+        if (action === 'undo') this.undo();
+        else if (action === 'redo') this.redo();
+        else if (action === 'clear') this.clear();
       });
-      this.paths = [];
-      this._redraw();
-      this._save();
     });
 
-    // Drawing events
-    this._onMouseDown = (e) => this._startDraw(e);
-    this._onMouseMove = (e) => this._draw(e);
-    this._onMouseUp = () => this._endDraw();
-    this._onMouseLeave = () => this._endDraw();
-    this._onTouchStart = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this._startDraw(e.touches[0]);
-    };
-    this._onTouchMove = (e) => {
-      e.preventDefault();
-      e.stopPropagation();
-      this._draw(e.touches[0]);
-    };
-    this._onTouchEnd = (e) => {
-      e.stopPropagation();
-      this._endDraw();
-    };
+    this._onPointerDown = (e) => this._startDraw(e);
+    this._onPointerMove = (e) => this._draw(e);
+    this._onPointerUp = (e) => this._endDraw(e);
 
-    this.canvas.addEventListener('mousedown', this._onMouseDown);
-    this.canvas.addEventListener('mousemove', this._onMouseMove);
-    this.canvas.addEventListener('mouseup', this._onMouseUp);
-    this.canvas.addEventListener('mouseleave', this._onMouseLeave);
-    this.canvas.addEventListener('touchstart', this._onTouchStart, { passive: false });
-    this.canvas.addEventListener('touchmove', this._onTouchMove, { passive: false });
-    this.canvas.addEventListener('touchend', this._onTouchEnd);
+    this.canvas.addEventListener('pointerdown', this._onPointerDown);
+    this.canvas.addEventListener('pointermove', this._onPointerMove);
+    this.canvas.addEventListener('pointerup', this._onPointerUp);
+    this.canvas.addEventListener('pointerleave', this._onPointerUp);
+    this.canvas.style.touchAction = 'none';
   }
 
   _getPos(e) {
     const rect = this.canvas.getBoundingClientRect();
     return {
       x: e.clientX - rect.left,
-      y: e.clientY - rect.top
+      y: e.clientY - rect.top,
+      pressure: e.pressure || 0.5
     };
   }
 
   _startDraw(e) {
-    this.isDrawing = true;
     const pos = this._getPos(e);
-    this.currentPath = [{
-      x: pos.x,
-      y: pos.y,
-      tool: this.tool,
-      color: this.tool === 'eraser' ? null : this.color,
-      lineWidth: this.tool === 'eraser' ? this.lineWidth * 3 : this.lineWidth,
-      opacity: this.tool === 'marker' ? 0.4 : 1
-    }];
+
+    if (this.tool === 'text') {
+      this._addText(pos);
+      return;
+    }
+
+    if (this.tool === 'fill') {
+      this._fillAt(pos);
+      return;
+    }
+
+    this.isDrawing = true;
+    this._pushUndo();
+
+    if (['line', 'arrow', 'rect', 'circle'].includes(this.tool)) {
+      this._shapeStart = pos;
+      this._previewPath = null;
+    } else {
+      this.currentPath = [{
+        x: pos.x, y: pos.y,
+        tool: this.tool,
+        color: this.tool === 'eraser' ? null : this.color,
+        lineWidth: this.tool === 'eraser' ? this.lineWidth * 4 :
+                   this.tool === 'highlighter' ? this.lineWidth * 3 : this.lineWidth,
+        opacity: this.tool === 'highlighter' ? 0.35 : 1,
+        pressure: pos.pressure
+      }];
+    }
   }
 
   _draw(e) {
     if (!this.isDrawing) return;
     const pos = this._getPos(e);
-    this.currentPath.push({
-      x: pos.x,
-      y: pos.y,
-      tool: this.tool,
-      color: this.tool === 'eraser' ? null : this.color,
-      lineWidth: this.tool === 'eraser' ? this.lineWidth * 3 : this.lineWidth,
-      opacity: this.tool === 'marker' ? 0.4 : 1
-    });
-    this._redraw();
+
+    if (['line', 'arrow', 'rect', 'circle'].includes(this.tool)) {
+      this._previewPath = this._makeShape(this._shapeStart, pos);
+      this._redraw();
+      this._drawPath(this.ctx, this._previewPath, true);
+    } else {
+      this.currentPath.push({
+        x: pos.x, y: pos.y,
+        tool: this.tool,
+        color: this.tool === 'eraser' ? null : this.color,
+        lineWidth: this.tool === 'eraser' ? this.lineWidth * 4 :
+                   this.tool === 'highlighter' ? this.lineWidth * 3 : this.lineWidth,
+        opacity: this.tool === 'highlighter' ? 0.35 : 1,
+        pressure: pos.pressure
+      });
+      this._redraw();
+    }
   }
 
-  _endDraw() {
+  _endDraw(e) {
     if (!this.isDrawing) return;
     this.isDrawing = false;
-    if (this.currentPath.length > 1) {
+
+    if (['line', 'arrow', 'rect', 'circle'].includes(this.tool) && this._shapeStart && this._previewPath) {
+      this.paths.push(this._previewPath);
+      this._previewPath = null;
+      this._shapeStart = null;
+      this._save();
+      this._redraw();
+    } else if (this.currentPath.length > 1) {
       this.paths.push([...this.currentPath]);
       this.currentPath = [];
       this._save();
+      this._redraw();
     } else {
       this.currentPath = [];
     }
   }
 
-  _redraw() {
-    if (!this.ctx) return;
-    const ctx = this.ctx;
-    ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+  _makeShape(start, end) {
+    const base = {
+      tool: this.tool,
+      color: this.color,
+      fillColor: this.fillColor,
+      lineWidth: this.lineWidth,
+      opacity: 1
+    };
 
-    // Draw all saved paths
-    this.paths.forEach(path => this._drawPath(ctx, path));
-
-    // Draw current path
-    if (this.currentPath.length > 0) {
-      this._drawPath(ctx, this.currentPath);
+    if (this.tool === 'line') {
+      return { ...base, points: [start, end] };
     }
+
+    if (this.tool === 'arrow') {
+      return { ...base, points: [start, end], isArrow: true };
+    }
+
+    if (this.tool === 'rect') {
+      return {
+        ...base,
+        x: Math.min(start.x, end.x),
+        y: Math.min(start.y, end.y),
+        w: Math.abs(end.x - start.x),
+        h: Math.abs(end.y - start.y)
+      };
+    }
+
+    if (this.tool === 'circle') {
+      const cx = (start.x + end.x) / 2;
+      const cy = (start.y + end.y) / 2;
+      const rx = Math.abs(end.x - start.x) / 2;
+      const ry = Math.abs(end.y - start.y) / 2;
+      return { ...base, cx, cy, rx, ry };
+    }
+
+    return base;
   }
 
-  _drawPath(ctx, path) {
-    if (path.length < 2) return;
+  _addText(pos) {
+    const input = document.createElement('textarea');
+    input.className = 'sketch-text-input';
+    input.placeholder = 'Type here...';
+    input.style.cssText = `
+      position: absolute;
+      left: ${pos.x}px;
+      top: ${pos.y + (this.canvas.parentElement.querySelector('.sketch-toolbar')?.offsetHeight || 40)}px;
+      min-width: 120px;
+      max-width: 300px;
+      min-height: 32px;
+      font-size: ${Math.max(this.lineWidth * 5, 16)}px;
+      color: ${this.color};
+      background: transparent;
+      border: 1px dashed var(--primary);
+      border-radius: 4px;
+      padding: 4px 6px;
+      outline: none;
+      resize: both;
+      z-index: 20;
+      font-family: var(--font-sans);
+      line-height: 1.3;
+    `;
+
+    this.canvas.parentElement.appendChild(input);
+    input.focus();
+
+    const commit = () => {
+      const text = input.value.trim();
+      if (text) {
+        this._pushUndo();
+        this.paths.push({
+          tool: 'text',
+          x: pos.x,
+          y: pos.y,
+          text,
+          color: this.color,
+          fontSize: Math.max(this.lineWidth * 5, 16),
+          opacity: 1
+        });
+        this._save();
+        this._redraw();
+      }
+      input.remove();
+    };
+
+    input.addEventListener('blur', commit);
+    input.addEventListener('keydown', (ev) => {
+      if (ev.key === 'Escape') { input.value = ''; input.blur(); }
+      if (ev.key === 'Enter' && !ev.shiftKey) { ev.preventDefault(); input.blur(); }
+    });
+  }
+
+  _fillAt(pos) {
+    const { width, height } = this.canvas;
+    const dpr = window.devicePixelRatio || 1;
+    const px = Math.floor(pos.x * dpr);
+    const py = Math.floor(pos.y * dpr);
+
+    const imageData = this.ctx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+
+    const targetIdx = (py * width + px) * 4;
+    const targetR = data[targetIdx];
+    const targetG = data[targetIdx + 1];
+    const targetB = data[targetIdx + 2];
+    const targetA = data[targetIdx + 3];
+
+    const fill = this._hexToRgb(this.color);
+    if (!fill) return;
+
+    if (targetR === fill.r && targetG === fill.g && targetB === fill.b && targetA === 255) return;
+
+    const stack = [[px, py]];
+    const visited = new Set();
+    const tolerance = 30;
+
+    const match = (idx) => {
+      return Math.abs(data[idx] - targetR) <= tolerance &&
+             Math.abs(data[idx + 1] - targetG) <= tolerance &&
+             Math.abs(data[idx + 2] - targetB) <= tolerance &&
+             Math.abs(data[idx + 3] - targetA) <= tolerance;
+    };
+
+    while (stack.length > 0) {
+      const [x, y] = stack.pop();
+      const key = y * width + x;
+      if (visited.has(key)) continue;
+      if (x < 0 || x >= width || y < 0 || y >= height) continue;
+
+      const idx = key * 4;
+      if (!match(idx)) continue;
+
+      visited.add(key);
+      data[idx] = fill.r;
+      data[idx + 1] = fill.g;
+      data[idx + 2] = fill.b;
+      data[idx + 3] = 255;
+
+      stack.push([x + 1, y], [x - 1, y], [x, y + 1], [x, y - 1]);
+    }
+
+    this._pushUndo();
+    this.paths.push({
+      tool: 'fill',
+      imageData: imageData.data.buffer.slice(0),
+      width, height
+    });
+    this.ctx.putImageData(imageData, 0, 0);
+    this._save();
+  }
+
+  _hexToRgb(hex) {
+    const r = parseInt(hex.slice(1, 3), 16);
+    const g = parseInt(hex.slice(3, 5), 16);
+    const b = parseInt(hex.slice(5, 7), 16);
+    return { r, g, b };
+  }
+
+  _redraw() {
+    if (!this.ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    this.ctx.save();
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    this.ctx.clearRect(0, 0, this._logicalWidth, this._logicalHeight);
+
+    this.paths.forEach(p => this._drawPath(this.ctx, p, false));
+
+    if (this.currentPath.length > 0) {
+      this._drawPath(this.ctx, { tool: 'stroke', points: this.currentPath, ...this.currentPath[0] }, false);
+    }
+
+    this.ctx.restore();
+  }
+
+  _drawPath(ctx, path, isPreview) {
+    if (path.tool === 'fill') {
+      const imgData = new ImageData(new Uint8ClampedArray(path.imageData), path.width, path.height);
+      ctx.putImageData(imgData, 0, 0);
+      return;
+    }
+
+    if (path.tool === 'text') {
+      ctx.save();
+      ctx.globalAlpha = path.opacity || 1;
+      ctx.fillStyle = path.color;
+      ctx.font = `${path.fontSize || 16}px ${getComputedStyle(document.documentElement).getPropertyValue('--font-sans') || 'sans-serif'}`;
+      ctx.textBaseline = 'top';
+      const lines = path.text.split('\n');
+      lines.forEach((line, i) => {
+        ctx.fillText(line, path.x, path.y + i * (path.fontSize || 16) * 1.3);
+      });
+      ctx.restore();
+      return;
+    }
+
+    if (['line', 'arrow'].includes(path.tool) && path.points) {
+      ctx.save();
+      ctx.globalAlpha = path.opacity || 1;
+      ctx.strokeStyle = path.color;
+      ctx.lineWidth = path.lineWidth;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(path.points[0].x, path.points[0].y);
+      ctx.lineTo(path.points[1].x, path.points[1].y);
+      ctx.stroke();
+
+      if (path.isArrow) {
+        const [start, end] = path.points;
+        const angle = Math.atan2(end.y - start.y, end.x - start.x);
+        const headLen = Math.max(path.lineWidth * 4, 12);
+        ctx.beginPath();
+        ctx.moveTo(end.x, end.y);
+        ctx.lineTo(end.x - headLen * Math.cos(angle - 0.4), end.y - headLen * Math.sin(angle - 0.4));
+        ctx.moveTo(end.x, end.y);
+        ctx.lineTo(end.x - headLen * Math.cos(angle + 0.4), end.y - headLen * Math.sin(angle + 0.4));
+        ctx.stroke();
+      }
+      ctx.restore();
+      return;
+    }
+
+    if (path.tool === 'rect') {
+      ctx.save();
+      ctx.globalAlpha = path.opacity || 1;
+      ctx.strokeStyle = path.color;
+      ctx.lineWidth = path.lineWidth;
+      ctx.lineJoin = 'round';
+      ctx.lineCap = 'round';
+      ctx.strokeRect(path.x, path.y, path.w, path.h);
+      ctx.restore();
+      return;
+    }
+
+    if (path.tool === 'circle') {
+      ctx.save();
+      ctx.globalAlpha = path.opacity || 1;
+      ctx.strokeStyle = path.color;
+      ctx.lineWidth = path.lineWidth;
+      ctx.beginPath();
+      ctx.ellipse(path.cx, path.cy, Math.abs(path.rx), Math.abs(path.ry), 0, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.restore();
+      return;
+    }
+
+    const points = path.points || path;
+    if (!Array.isArray(points) || points.length < 2) return;
 
     ctx.save();
     ctx.lineCap = 'round';
     ctx.lineJoin = 'round';
 
-    for (let i = 1; i < path.length; i++) {
-      const prev = path[i - 1];
-      const curr = path[i];
+    for (let i = 1; i < points.length; i++) {
+      const prev = points[i - 1];
+      const curr = points[i];
 
       ctx.globalAlpha = curr.opacity || 1;
       ctx.strokeStyle = curr.tool === 'eraser' ? '#ffffff' : curr.color;
-      ctx.lineWidth = curr.lineWidth;
       ctx.globalCompositeOperation = curr.tool === 'eraser' ? 'destination-out' : 'source-over';
 
+      const baseWidth = curr.lineWidth || 3;
+      const pressure = curr.pressure || 0.5;
+      const variableWidth = baseWidth * (0.5 + pressure);
+
+      ctx.lineWidth = variableWidth;
       ctx.beginPath();
       ctx.moveTo(prev.x, prev.y);
-      ctx.lineTo(curr.x, curr.y);
+
+      if (i < points.length - 1) {
+        const next = points[i + 1];
+        const midX = (curr.x + next.x) / 2;
+        const midY = (curr.y + next.y) / 2;
+        ctx.quadraticCurveTo(curr.x, curr.y, midX, midY);
+      } else {
+        ctx.lineTo(curr.x, curr.y);
+      }
       ctx.stroke();
     }
 
     ctx.restore();
   }
 
+  _pushUndo() {
+    this.undoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    if (this.undoStack.length > 50) this.undoStack.shift();
+    this.redoStack = [];
+  }
+
   undo() {
-    if (this.paths.length === 0) return;
-    this.paths.pop();
+    if (this.undoStack.length === 0) return;
+    this.redoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    this.paths = this.undoStack.pop();
     this._redraw();
     this._save();
   }
 
   redo() {
-    // Not yet implemented — would need a separate redo stack
+    if (this.redoStack.length === 0) return;
+    this.undoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    this.paths = this.redoStack.pop();
+    this._redraw();
+    this._save();
+  }
+
+  clear() {
+    if (this.paths.length === 0) return;
+    this._pushUndo();
+    this.paths = [];
+    this._redraw();
+    this._save();
   }
 
   _save() {
     if (this.onSave) {
-      ItemManager.suppressRender = true;
       this.onSave(this.itemId, {
         paths: this.paths,
         color: this.color,
         lineWidth: this.lineWidth
       });
-      ItemManager.suppressRender = false;
     }
   }
 
   getSVG() {
-    // Export as SVG for thumbnails
-    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${this.canvas.width}" height="${this.canvas.height}">`;
+    let svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${this._logicalWidth || 400}" height="${this._logicalHeight || 300}">`;
     this.paths.forEach(path => {
-      if (path.length < 2) return;
-      const p = path[0];
-      if (p.tool === 'eraser') return; // Skip eraser strokes
-      let d = `M ${path[0].x} ${path[0].y}`;
-      for (let i = 1; i < path.length; i++) {
-        d += ` L ${path[i].x} ${path[i].y}`;
+      if (path.tool === 'text') {
+        svg += `<text x="${path.x}" y="${path.y + 16}" fill="${path.color}" font-size="${path.fontSize || 16}" font-family="sans-serif">${this._escSvg(path.text)}</text>`;
+      } else if (path.tool === 'rect') {
+        svg += `<rect x="${path.x}" y="${path.y}" width="${path.w}" height="${path.h}" stroke="${path.color}" stroke-width="${path.lineWidth}" fill="none"/>`;
+      } else if (path.tool === 'circle') {
+        svg += `<ellipse cx="${path.cx}" cy="${path.cy}" rx="${Math.abs(path.rx)}" ry="${Math.abs(path.ry)}" stroke="${path.color}" stroke-width="${path.lineWidth}" fill="none"/>`;
+      } else if (path.tool === 'fill' || path.tool === 'eraser') {
+        // Skip pixel-based paths
+      } else if (path.points) {
+        const p = path.points;
+        if (p.length >= 2) {
+          let d = `M ${p[0].x} ${p[0].y}`;
+          for (let i = 1; i < p.length; i++) d += ` L ${p[i].x} ${p[i].y}`;
+          svg += `<path d="${d}" stroke="${p[0].color || '#000'}" stroke-width="${p[0].lineWidth || 3}" fill="none" stroke-linecap="round" opacity="${p[0].opacity || 1}"/>`;
+        }
       }
-      svg += `<path d="${d}" stroke="${p.color || '#000'}" stroke-width="${p.lineWidth}" fill="none" stroke-linecap="round" opacity="${p.opacity || 1}"/>`;
     });
     svg += '</svg>';
     return svg;
   }
 
+  _escSvg(s) {
+    return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  }
+
   destroy() {
     this._resizeObserver?.disconnect();
     if (this.canvas) {
-      this.canvas.removeEventListener('mousedown', this._onMouseDown);
-      this.canvas.removeEventListener('mousemove', this._onMouseMove);
-      this.canvas.removeEventListener('mouseup', this._onMouseUp);
-      this.canvas.removeEventListener('mouseleave', this._onMouseLeave);
-      this.canvas.removeEventListener('touchstart', this._onTouchStart);
-      this.canvas.removeEventListener('touchmove', this._onTouchMove);
-      this.canvas.removeEventListener('touchend', this._onTouchEnd);
+      this.canvas.removeEventListener('pointerdown', this._onPointerDown);
+      this.canvas.removeEventListener('pointermove', this._onPointerMove);
+      this.canvas.removeEventListener('pointerup', this._onPointerUp);
+      this.canvas.removeEventListener('pointerleave', this._onPointerUp);
     }
     this.canvas = null;
     this.ctx = null;

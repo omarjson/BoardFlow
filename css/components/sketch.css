@@ -1,3 +1,7 @@
+/* ============================================
+   Sketch Tool — Premium Edition
+   ============================================ */
+
 .sketch-wrapper {
   position: relative;
   width: 100%;
@@ -6,6 +10,8 @@
   border-radius: var(--radius-md);
   overflow: hidden;
 }
+
+/* ---- Toolbar ---- */
 
 .sketch-toolbar {
   position: absolute;
@@ -20,96 +26,208 @@
   background: var(--surface);
   border-bottom: 1px solid var(--hairline);
   z-index: 10;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }
 
-.sketch-tool-btn,
-.sketch-size-btn {
+.sketch-toolbar::-webkit-scrollbar { display: none; }
+
+.sketch-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 1px;
+  flex-shrink: 0;
+}
+
+/* ---- Tool Buttons ---- */
+
+.sketch-tool-btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-xs);
-  font-size: var(--text-caption-size);
   color: var(--ink-secondary);
   border: none;
   background: none;
   cursor: pointer;
-  transition: var(--transition-fast);
+  transition: all 0.15s ease;
+  flex-shrink: 0;
 }
 
-.sketch-tool-btn:hover,
-.sketch-size-btn:hover {
+.sketch-tool-btn:hover {
   background: var(--canvas-soft);
   color: var(--ink);
 }
 
-.sketch-tool-btn.active,
-.sketch-size-btn.active {
-  background: color-mix(in srgb, var(--primary) 10%, transparent);
+.sketch-tool-btn.active {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
   color: var(--primary);
 }
+
+/* ---- Color Palette ---- */
+
+.sketch-colors {
+  gap: 2px;
+}
+
+.sketch-color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+  padding: 0;
+}
+
+.sketch-color-swatch:hover {
+  transform: scale(1.2);
+}
+
+.sketch-color-swatch.active {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--primary) 30%, transparent);
+  transform: scale(1.15);
+}
+
+.sketch-color-picker {
+  width: 22px;
+  height: 22px;
+  padding: 0;
+  border: 2px solid var(--hairline);
+  border-radius: 50%;
+  cursor: pointer;
+  background: none;
+  flex-shrink: 0;
+}
+
+.sketch-color-picker::-webkit-color-swatch-wrapper { padding: 0; }
+.sketch-color-picker::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+/* ---- Size Buttons ---- */
+
+.sketch-sizes {
+  gap: 2px;
+}
+
+.sketch-size-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-xs);
+  color: var(--ink-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sketch-size-btn:hover {
+  background: var(--canvas-soft);
+}
+
+.sketch-size-btn.active {
+  background: color-mix(in srgb, var(--primary) 12%, transparent);
+}
+
+/* ---- Action Buttons ---- */
+
+.sketch-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--radius-xs);
+  color: var(--ink-secondary);
+  border: none;
+  background: none;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  flex-shrink: 0;
+}
+
+.sketch-action-btn:hover {
+  background: var(--canvas-soft);
+  color: var(--ink);
+}
+
+.sketch-clear-btn:hover {
+  color: var(--danger);
+}
+
+/* ---- Divider ---- */
 
 .sketch-divider {
   width: 1px;
   height: 20px;
   background: var(--hairline);
-  margin: 0 4px;
+  margin: 0 3px;
+  flex-shrink: 0;
 }
 
-.sketch-color {
-  width: 28px;
-  height: 28px;
-  padding: 0;
-  border: 2px solid var(--hairline);
-  border-radius: var(--radius-xs);
-  cursor: pointer;
-  background: none;
-}
-
-.sketch-color::-webkit-color-swatch-wrapper {
-  padding: 0;
-}
-
-.sketch-color::-webkit-color-swatch {
-  border: none;
-  border-radius: 2px;
-}
-
-.sketch-undo-btn,
-.sketch-redo-btn,
-.sketch-clear-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-xs);
-  font-size: var(--text-body-sm-size);
-  color: var(--ink-secondary);
-  border: none;
-  background: none;
-  cursor: pointer;
-  transition: var(--transition-fast);
-}
-
-.sketch-undo-btn:hover,
-.sketch-redo-btn:hover,
-.sketch-clear-btn:hover {
-  background: var(--canvas-soft);
-  color: var(--ink);
-}
+/* ---- Canvas ---- */
 
 .sketch-canvas {
   display: block;
-  width: 100%;
   cursor: crosshair;
   touch-action: none;
 }
+
+/* ---- Text Input ---- */
+
+.sketch-text-input {
+  font-family: var(--font-sans);
+}
+
+/* ---- Item Container ---- */
 
 .sketch-item {
   background: var(--surface);
   border: 1px solid var(--hairline);
   border-radius: var(--radius-md);
   overflow: hidden;
+}
+
+/* ---- Mobile ---- */
+
+@media (max-width: 767px) {
+  .sketch-toolbar {
+    height: 36px;
+    padding: 0 2px;
+    gap: 1px;
+  }
+
+  .sketch-tool-btn {
+    width: 28px;
+    height: 28px;
+  }
+
+  .sketch-color-swatch {
+    width: 16px;
+    height: 16px;
+  }
+
+  .sketch-size-btn {
+    width: 24px;
+    height: 24px;
+  }
+
+  .sketch-action-btn {
+    width: 26px;
+    height: 26px;
+  }
+
+  .sketch-divider {
+    height: 16px;
+    margin: 0 2px;
+  }
 }
