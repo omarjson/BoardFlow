@@ -2,6 +2,35 @@
    Responsive — Mobile, Tablet, Desktop
    ============================================ */
 
+/* Sidebar toggle button (hamburger) — base before media queries */
+.sidebar-toggle {
+  display: none;
+  position: fixed;
+  top: var(--space-sm);
+  left: var(--space-sm);
+  z-index: calc(var(--z-sticky) + 11);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-soft);
+  font-size: var(--text-body-sm-size);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: background var(--duration-fast) var(--ease-out-quint);
+}
+
+.sidebar-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.sidebar-toggle:hover {
+  background: var(--surface-hover);
+}
+
 /* Mobile: 320px - 767px */
 @media (max-width: 767px) {
   html { font-size: 15px; }
@@ -222,35 +251,6 @@
 .dashboard-grid:has(.board-card:only-child) {
   grid-template-columns: minmax(0, 1fr);
   max-width: 400px;
-}
-
-/* Sidebar toggle button (hamburger) */
-.sidebar-toggle {
-  display: none;
-  position: fixed;
-  top: var(--space-sm);
-  left: var(--space-sm);
-  z-index: calc(var(--z-sticky) + 11);
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-sm);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
-  box-shadow: var(--shadow-soft);
-  font-size: var(--text-body-sm-size);
-  cursor: pointer;
-  align-items: center;
-  justify-content: center;
-  transition: background var(--duration-fast) var(--ease-out-quint);
-}
-
-.sidebar-toggle svg {
-  width: 16px;
-  height: 16px;
-}
-
-.sidebar-toggle:hover {
-  background: var(--surface-hover);
 }
 
 /* PWA install banner */
