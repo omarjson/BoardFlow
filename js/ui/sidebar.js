@@ -22,20 +22,47 @@ class _Sidebar {
 
   _wireToggle() {
     this._isCollapsed = this.el.classList.contains('collapsed');
+
+    let scrim = document.getElementById('sidebar-scrim');
+    if (!scrim) {
+      scrim = document.createElement('div');
+      scrim.id = 'sidebar-scrim';
+      scrim.className = 'sidebar-scrim';
+      document.body.appendChild(scrim);
+      scrim.addEventListener('click', () => this.el.classList.remove('open'));
+    }
+
     let toggle = document.getElementById('sidebar-toggle');
     if (!toggle) {
       toggle = document.createElement('button');
       toggle.id = 'sidebar-toggle';
       toggle.className = 'sidebar-toggle';
-      toggle.innerHTML = Icons.menu;
       toggle.setAttribute('aria-label', 'Toggle sidebar');
       document.body.appendChild(toggle);
     }
-    if (!this._toggleBound) {
+
+    if (!this._iconSet) {
+      this._iconSet = true;
+      toggle.innerHTML = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`;
+    }
+
+    if (!this._topbarBound) {
+      this._topbarBound = () => {
+        const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        if (!isMobile) return;
+        const scrim = document.getElementById('sidebar-scrim');
+        const isOpen = this.el.classList.toggle('open');
+        if (scrim) scrim.classList.toggle('active', isOpen);
+      };
+      const topbar = document.querySelector('.mobile-topbar');
+      if (topbar) topbar.addEventListener('click', this._topbarBound);
+    }
       this._toggleBound = () => {
         const isMobile = window.matchMedia('(max-width: 767px)').matches;
+        const scrim = document.getElementById('sidebar-scrim');
         if (isMobile) {
-          this.el.classList.toggle('open');
+          const isOpen = this.el.classList.toggle('open');
+          if (scrim) scrim.classList.toggle('active', isOpen);
         } else {
           this._isCollapsed = !this._isCollapsed;
           this.el.classList.toggle('collapsed', this._isCollapsed);
@@ -48,8 +75,10 @@ class _Sidebar {
         const card = e.target.closest('.board-card, .board-list-item');
         if (card) {
           const isMobile = window.matchMedia('(max-width: 767px)').matches;
+          const scrim = document.getElementById('sidebar-scrim');
           if (isMobile) {
             this.el.classList.remove('open');
+            if (scrim) scrim.classList.remove('active');
           } else if (this._isCollapsed) {
             this._isCollapsed = false;
             this.el.classList.remove('collapsed');
@@ -64,7 +93,9 @@ class _Sidebar {
         if (!isMobile) return;
         if (!this.el.classList.contains('open')) return;
         if (e.target.closest('.sidebar') || e.target.closest('.sidebar-toggle')) return;
+        const scrim = document.getElementById('sidebar-scrim');
         this.el.classList.remove('open');
+        if (scrim) scrim.classList.remove('active');
       };
       document.addEventListener('click', this._clickOutsideBound);
     }
