@@ -191,7 +191,7 @@ body::before {
   padding: 7px var(--space-sm);
   border: none;
   border-radius: var(--radius-sm);
-  background: none;
+  background: transparent;
   cursor: pointer;
   color: var(--ink-secondary);
   font-size: var(--text-caption-size);
@@ -200,7 +200,7 @@ body::before {
 }
 
 .sidebar-nav-btn:hover {
-  background: var(--canvas-soft);
+  background: var(--surface);
   color: var(--ink);
 }
 
@@ -232,14 +232,9 @@ body::before {
   gap: var(--space-sm);
   padding: 6px var(--space-sm);
   border-radius: var(--radius-sm);
-  background: var(--canvas-soft);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   min-width: 0;
-  transition: border-color var(--duration-fast) var(--ease-out-quint);
-}
-
-.user-profile-pill:hover {
-  border-color: var(--hairline-strong);
 }
 
 .user-avatar {
@@ -299,7 +294,7 @@ body::before {
 }
 
 .sidebar-logout-btn:hover {
-  background: color-mix(in srgb, var(--danger) 8%, transparent);
+  background: var(--primary-subtle);
   color: var(--danger);
 }
 
@@ -329,7 +324,7 @@ body::before {
 }
 
 .board-list-item:hover {
-  background: var(--canvas-soft);
+  background: var(--surface);
 }
 
 .board-list-item.active {
@@ -409,19 +404,13 @@ body::before {
   padding: 0;
   display: flex;
   align-items: center;
-  background: var(--canvas-soft);
-  border: 1px solid transparent;
-  border-radius: var(--radius-sm);
-  transition: border-color var(--duration-fast) var(--ease-out-quint), background var(--duration-fast) var(--ease-out-quint);
-}
-
-.sidebar-search:hover {
   background: var(--surface);
-  border-color: var(--hairline);
+  border: 1px solid var(--hairline);
+  border-radius: var(--radius-sm);
+  transition: border-color var(--duration-fast) var(--ease-out-quint), box-shadow var(--duration-fast) var(--ease-out-quint);
 }
 
 .sidebar-search:focus-within {
-  background: var(--surface);
   border-color: var(--primary);
   box-shadow: var(--focus-ring);
 }
@@ -550,8 +539,8 @@ body::before {
 .sidebar-lang-select {
   width: 100%;
   padding: 5px var(--space-sm);
-  background: var(--canvas-soft);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   font-size: var(--text-eyebrow-size);
   color: var(--ink-secondary);
@@ -559,10 +548,6 @@ body::before {
   cursor: pointer;
   transition: border-color var(--duration-fast) var(--ease-out-quint);
   font-family: var(--font-sans);
-}
-
-.sidebar-lang-select:hover {
-  border-color: var(--hairline);
 }
 
 .sidebar-lang-select:focus {

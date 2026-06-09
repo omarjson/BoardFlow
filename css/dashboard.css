@@ -64,9 +64,10 @@
 
 .dashboard-board-count {
   font-size: var(--text-eyebrow-size);
-  color: var(--ink-faint);
+  color: var(--ink-muted);
   font-weight: 600;
-  background: var(--canvas-soft);
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   padding: 2px 8px;
   border-radius: var(--radius-pill);
 }
@@ -80,21 +81,15 @@
 .dashboard-search {
   display: flex;
   align-items: center;
-  background: var(--canvas-soft);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-pill);
   padding: 0 var(--space-md);
-  transition: border-color var(--duration-fast) var(--ease-out-quint), background var(--duration-fast) var(--ease-out-quint), box-shadow var(--duration-fast) var(--ease-out-quint);
+  transition: border-color var(--duration-fast) var(--ease-out-quint), box-shadow var(--duration-fast) var(--ease-out-quint);
   height: 38px;
 }
 
-.dashboard-search:hover {
-  background: var(--surface);
-  border-color: var(--hairline);
-}
-
 .dashboard-search:focus-within {
-  background: var(--surface);
   border-color: var(--primary);
   box-shadow: var(--focus-ring);
 }
@@ -138,8 +133,8 @@
 
 .dashboard-sort {
   padding: 5px var(--space-sm);
-  background: var(--canvas-soft);
-  border: 1px solid transparent;
+  background: var(--surface);
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   font-size: var(--text-xs-size);
   color: var(--ink-secondary);
@@ -149,10 +144,6 @@
   transition: border-color var(--duration-fast) var(--ease-out-quint);
 }
 
-.dashboard-sort:hover {
-  border-color: var(--hairline);
-}
-
 .dashboard-sort:focus {
   border-color: var(--primary);
   box-shadow: var(--focus-ring);
@@ -160,16 +151,11 @@
 
 .dashboard-view-toggle {
   display: flex;
-  border: 1px solid transparent;
+  border: 1px solid var(--hairline);
   border-radius: var(--radius-sm);
   overflow: hidden;
   flex-shrink: 0;
-  background: var(--canvas-soft);
-  transition: border-color var(--duration-fast) var(--ease-out-quint);
-}
-
-.dashboard-view-toggle:hover {
-  border-color: var(--hairline);
+  background: var(--surface);
 }
 
 .dashboard-view-btn {
@@ -191,10 +177,8 @@
 }
 
 .dashboard-view-btn.active {
-  background: var(--surface);
+  background: var(--primary-subtle);
   color: var(--primary);
-  box-shadow: var(--shadow-soft);
-  border-radius: var(--radius-xs);
 }
 
 /* ---- Sections ---- */
