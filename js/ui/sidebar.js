@@ -91,11 +91,11 @@ class _Sidebar {
     `;
 
     this.footerEl.innerHTML = `
-      <div class="user-profile-pill" title="${displayName}">
-        <div class="user-avatar">${displayName.charAt(0).toUpperCase()}</div>
+      <div class="user-profile-pill" title="${this._escapeHtml(displayName)}">
+        <div class="user-avatar">${this._escapeHtml(displayName.charAt(0).toUpperCase())}</div>
         <div class="user-info">
-          <div class="user-name">${displayName}</div>
-          <div class="user-email">${email}</div>
+          <div class="user-name">${this._escapeHtml(displayName)}</div>
+          <div class="user-email">${this._escapeHtml(email)}</div>
         </div>
       </div>
       <select id="sidebar-lang" class="sidebar-lang-select">
@@ -269,7 +269,7 @@ class _Sidebar {
   }
 
   _getCurrentBoardId() {
-    const match = window.location.hash.match(/\/board\/([a-f0-9-]+)/i);
+    const match = window.location.hash.match(/\/board\/([^/?#]+)/);
     return match ? match[1] : null;
   }
 

@@ -18,9 +18,17 @@ class _BoardManager {
     return this.boards;
   }
 
+  _generateId() {
+    if (typeof crypto !== 'undefined' && crypto.randomUUID) return crypto.randomUUID();
+    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, c => {
+      const r = Math.random() * 16 | 0;
+      return (c === 'x' ? r : (r & 0x3 | 0x8)).toString(16);
+    });
+  }
+
   async create(title = 'Untitled Board', templateId = null) {
     const board = {
-      id: 'board-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8),
+      id: this._generateId(),
       user_id: BoardFlowAuth.getUserId(),
       title,
       description: '',
@@ -138,6 +146,63 @@ class _BoardManager {
     } catch {
       // Storage full or unavailable
     }
+  }
+
+  // ---- Favorites ----
+  getFavorites() {
+    try {
+      const stored = localStorage.getItem('boardflow_favorites');
+      return stored ? JSON.parse(stored) : [];
+    } catch { return []; }
+  }
+
+  isFavorite(boardId) {
+    return this.getFavorites().includes(boardId);
+  }
+
+  toggleFavorite(boardId) {
+    let favs = this.getFavorites();
+    if (favs.includes(boardId)) {
+      favs = favs.filter(id => id !== boardId);
+    } else {
+      favs.unshift(boardId);
+    }
+    localStorage.setItem('boardflow_favorites', JSON.stringify(favs));
+    return favs.includes(boardId);
+  }
+
+  // ---- Recent Boards ----
+  markBoardVisited(boardId) {
+    try {
+      let recent = JSON.parse(localStorage.getItem('boardflow_recent') || '[]');
+      recent = recent.filter(r => r.id !== boardId);
+      recent.unshift({ id: boardId, at: Date.now() });
+      recent = recent.slice(0, 10);
+      localStorage.setItem('boardflow_recent', JSON.stringify(recent));
+    } catch {}
+  }
+
+  getRecentBoardIds() {
+    try {
+      const recent = JSON.parse(localStorage.getItem('boardflow_recent') || '[]');
+      return recent.slice(0, 5).map(r => r.id);
+    } catch { return []; }
+  }
+
+  // ---- Item Count Cache ----
+  setItemCount(boardId, count) {
+    try {
+      const counts = JSON.parse(localStorage.getItem('boardflow_item_counts') || '{}');
+      counts[boardId] = count;
+      localStorage.setItem('boardflow_item_counts', JSON.stringify(counts));
+    } catch {}
+  }
+
+  getItemCount(boardId) {
+    try {
+      const counts = JSON.parse(localStorage.getItem('boardflow_item_counts') || '{}');
+      return counts[boardId] !== undefined ? counts[boardId] : null;
+    } catch { return null; }
   }
 }
 

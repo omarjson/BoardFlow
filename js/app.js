@@ -199,66 +199,418 @@ function renderDashboardMain() {
           <div class="dashboard-empty-icon" style="color: var(--primary);">${Icons.board}</div>
           <h2 data-i18n="no_boards_yet">No boards yet</h2>
           <p data-i18n="no_boards_desc">Create your first board to get started. You can choose a template or start blank.</p>
-          <button class="btn btn-primary" id="dashboard-new-board" style="display: flex; align-items: center; gap: var(--space-xs);">${Icons.plus} <span data-i18n="new_board">New Board</span></button>
+          <div class="dashboard-empty-templates">
+            <button class="btn btn-primary" id="dashboard-new-board" style="display: flex; align-items: center; gap: var(--space-xs);">${Icons.plus} <span data-i18n="new_board">New Board</span></button>
+            <button class="btn btn-glass" id="dashboard-template-board" data-i18n="browse_templates">Browse Templates</button>
+          </div>
         </div>
       </div>
     `;
     document.getElementById('dashboard-new-board')?.addEventListener('click', () => {
-      TemplateGallery.show();
+      Modal.show({
+        title: I18n.__('new_board'),
+        content: '<div class="form-group"><label for="new-board-title">' + I18n.__('board_title') + '</label><input type="text" id="new-board-title" placeholder="' + I18n.__('board_title') + '" autofocus></div>',
+        confirmText: I18n.__('create'),
+        onConfirm: async () => {
+          const title = document.getElementById('new-board-title').value.trim() || 'Untitled Board';
+          const board = await BoardManager.create(title);
+          Toast.show('Board created!', 'success');
+          AppRouter.navigate('/board/' + board.id);
+        }
+      });
     });
-  } else {
-    container.innerHTML = `
-      <div class="dashboard-main">
-        <div class="dashboard-header">
+    document.getElementById('dashboard-template-board')?.addEventListener('click', () => TemplateGallery.show());
+    return;
+  }
+
+  // Apply saved sort
+  const savedSort = localStorage.getItem('boardflow_sort_mode') || 'newest';
+  sortBoards(savedSort);
+
+  // Pre-read all item counts once (avoid N localStorage reads in render loop)
+  try { window._dashboardItemCounts = JSON.parse(localStorage.getItem('boardflow_item_counts') || '{}'); } catch { window._dashboardItemCounts = {}; }
+
+  // Restore search query
+  const savedQuery = localStorage.getItem('boardflow_search_query') || '';
+
+  const favorites = BoardManager.getFavorites();
+  const recentIds = BoardManager.getRecentBoardIds();
+  const currentView = localStorage.getItem('boardflow_view_mode') || 'grid';
+
+  // Separate boards into groups
+  const favoriteBoards = boards.filter(b => favorites.includes(b.id));
+  const recentBoards = recentIds.map(id => boards.find(b => b.id === id)).filter(Boolean);
+  const allBoards = boards;
+
+  container.innerHTML = `
+    <div class="dashboard-main">
+      <div class="dashboard-header">
+        <div class="dashboard-header-left">
           <h1 data-i18n="my_boards">My Boards</h1>
+          <span class="dashboard-board-count" aria-live="polite">${boards.length} ${boards.length === 1 ? 'board' : 'boards'}</span>
+        </div>
+        <div class="dashboard-header-center">
+          <div class="dashboard-search">
+            <span class="dashboard-search-icon">${Icons.search}</span>
+            <input type="text" id="dashboard-search-input" class="dashboard-search-input" placeholder="Search boards by name..." data-i18n-placeholder="search_boards" value="${Utils.escapeHtml(savedQuery)}">
+          </div>
+        </div>
+        <div class="dashboard-header-right">
+          <select id="dashboard-sort" class="dashboard-sort">
+            <option value="newest" data-i18n="sort_newest">Newest</option>
+            <option value="oldest" data-i18n="sort_oldest">Oldest</option>
+            <option value="alpha" data-i18n="sort_az">A-Z</option>
+            <option value="alpha-desc" data-i18n="sort_za">Z-A</option>
+          </select>
+          <div class="dashboard-view-toggle">
+            <button class="dashboard-view-btn${currentView === 'grid' ? ' active' : ''}" data-view="grid" title="Grid view">${Icons.grid}</button>
+            <button class="dashboard-view-btn${currentView === 'list' ? ' active' : ''}" data-view="list" title="List view">${Icons.menu}</button>
+          </div>
           <button class="btn btn-primary" id="dashboard-new-board" style="display: flex; align-items: center; gap: var(--space-xs);">${Icons.plus} <span data-i18n="new_board">New Board</span></button>
         </div>
-        <div class="dashboard-grid" id="dashboard-grid">
-          ${boards.map(board => `
-            <div class="board-card" data-id="${board.id}">
-              <div class="board-card-preview">
-                <div class="board-icon" style="color: var(--primary);">${Icons.board}</div>
-              </div>
-              <div class="board-card-body">
-                <div class="board-card-title">${Utils.escapeHtml(board.title)}</div>
-                <div class="board-card-date">${formatDate(board.updated_at)}</div>
-              </div>
-              <div class="board-card-actions">
-                <button class="btn board-rename" data-id="${board.id}" title="${I18n.__('rename')}">${Icons.edit}</button>
-                <button class="btn board-delete" data-id="${board.id}" title="${I18n.__('delete')}">${Icons.trash}</button>
-              </div>
-            </div>
-          `).join('')}
-        </div>
       </div>
-    `;
+      <div class="dashboard-sections" id="dashboard-sections" aria-live="polite" aria-label="Board sections">
+        ${recentBoards.length > 0 ? renderSection('Recent', recentBoards, 'recent-boards', 'row') : ''}
+        ${favoriteBoards.length > 0 ? renderSection('Favorites', favoriteBoards, 'favorite-boards', 'row') : ''}
+        ${renderSection('All Boards', allBoards, 'all-boards', 'grid')}
+      </div>
+    </div>
+  `;
 
-    // Event listeners
-    document.getElementById('dashboard-new-board')?.addEventListener('click', () => {
-      TemplateGallery.show();
+  document.body.classList.toggle('dashboard-list-view', currentView === 'list');
+
+  // -- Event Listeners --
+
+  document.getElementById('dashboard-new-board')?.addEventListener('click', () => {
+    Modal.show({
+      title: I18n.__('new_board'),
+      content: '<div class="form-group"><label for="new-board-title">' + I18n.__('board_title') + '</label><input type="text" id="new-board-title" placeholder="' + I18n.__('board_title') + '" autofocus></div>',
+      confirmText: I18n.__('create'),
+      onConfirm: async () => {
+        const title = document.getElementById('new-board-title').value.trim() || 'Untitled Board';
+        const board = await BoardManager.create(title);
+        Toast.show('Board created!', 'success');
+        AppRouter.navigate('/board/' + board.id);
+      }
     });
+  });
 
-    container.querySelectorAll('.board-card').forEach(card => {
-      card.addEventListener('click', (e) => {
-        if (e.target.closest('.board-rename') || e.target.closest('.board-delete')) return;
-        AppRouter.navigate(`/board/${card.dataset.id}`);
-      });
+  // View toggle
+  document.querySelectorAll('.dashboard-view-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.dashboard-view-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const view = btn.dataset.view;
+      document.body.classList.toggle('dashboard-list-view', view === 'list');
+      localStorage.setItem('boardflow_view_mode', view);
     });
+  });
 
-    container.querySelectorAll('.board-rename').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        renameBoard(btn.dataset.id);
-      });
-    });
-
-    container.querySelectorAll('.board-delete').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        deleteBoard(btn.dataset.id);
-      });
+  // Sort
+  const sortSel = document.getElementById('dashboard-sort');
+  if (sortSel) {
+    sortSel.value = localStorage.getItem('boardflow_sort_mode') || 'newest';
+    sortSel.addEventListener('change', (e) => {
+      localStorage.setItem('boardflow_sort_mode', e.target.value);
+      renderDashboardMain();
     });
   }
+
+  // Search
+  document.getElementById('dashboard-search-input')?.addEventListener('input', debounce(() => {
+    const input = document.getElementById('dashboard-search-input');
+    if (!input) return;
+    const q = input.value;
+    localStorage.setItem('boardflow_search_query', q);
+    filterDashboardBoards(q);
+  }, 200));
+
+  // Board cards
+  wireDashboardCards(container);
+
+  // Re-apply active search filter after render
+  if (savedQuery) filterDashboardBoards(savedQuery);
+
+  // Context menu clicks (global)
+  if (window._dashboardContextHandler) document.removeEventListener('click', window._dashboardContextHandler);
+  window._dashboardContextHandler = (e) => {
+    if (!e.target.closest('.board-card-context')) {
+      document.querySelectorAll('.board-card-context.open').forEach(m => m.classList.remove('open'));
+    }
+  };
+  document.addEventListener('click', window._dashboardContextHandler);
+}
+
+function renderSection(label, boards, id, layout) {
+  const count = boards.length;
+  const isRow = layout === 'row';
+  return `
+    <div class="dashboard-section" id="section-${id}">
+      <div class="dashboard-section-header">
+        <span class="dashboard-section-label">${label}</span>
+        <span class="dashboard-section-count">${count}</span>
+      </div>
+      <${isRow ? 'div class="dashboard-section-row"' : 'div class="dashboard-grid"'} id="${id}">
+        ${boards.map((board, i) => createBoardCardHTML(board, i)).join('')}
+      </${isRow ? 'div' : 'div'}>
+    </div>
+  `;
+}
+
+function createBoardCardHTML(board, index) {
+  const isFav = BoardManager.isFavorite(board.id);
+  const itemCount = window._dashboardItemCounts?.[board.id] ?? null;
+  const previewColor = getBoardPreviewColor(board);
+  const firstLetter = (board.title || 'B').charAt(0).toUpperCase();
+
+  return `
+    <div class="board-card" data-id="${board.id}" style="--card-index: ${index};" role="button" tabindex="0" aria-label="${Utils.escapeHtml(board.title)}">
+      <button class="board-card-star${isFav ? ' active' : ''}" data-id="${board.id}" title="${isFav ? 'Remove from favorites' : 'Add to favorites'}" aria-label="${isFav ? 'Remove from favorites' : 'Add to favorites'}">${isFav ? '★' : '☆'}</button>
+      <button class="board-card-menu" data-id="${board.id}" title="More actions" aria-label="More actions" aria-haspopup="true">⋯</button>
+      <div class="board-card-preview">
+        <div class="preview-placeholder" style="background: ${previewColor};">
+          ${generateMiniPreviewSVG(board, previewColor, firstLetter)}
+        </div>
+      </div>
+      <div class="board-card-body">
+        <div class="board-card-title" title="${Utils.escapeHtml(board.title)}">${Utils.escapeHtml(board.title)}</div>
+        <div class="board-card-meta">
+          ${itemCount !== null ? `<span class="board-card-meta-item">${itemCount} ${itemCount === 1 ? 'item' : 'items'}</span><span class="board-card-meta-divider">·</span>` : ''}
+          <span class="board-card-meta-date">${formatDate(board.updated_at)}</span>
+        </div>
+        ${board.template ? `<div class="board-card-badges"><span class="board-card-badge">${Utils.escapeHtml(board.template)}</span></div>` : ''}
+      </div>
+      <div class="board-card-context" data-id="${board.id}" role="menu" aria-label="Board actions">
+        <button class="context-rename" data-id="${board.id}" role="menuitem">${Icons.edit} Rename</button>
+        <button class="context-favorite" data-id="${board.id}" role="menuitem">${isFav ? Icons.starFill : Icons.star} ${isFav ? 'Remove Favorite' : 'Add to Favorites'}</button>
+        <button class="context-share" data-id="${board.id}" role="menuitem">${Icons.share} Share</button>
+        <hr>
+        <button class="context-duplicate" data-id="${board.id}" role="menuitem">${Icons.board} Duplicate</button>
+        <button class="context-delete danger" data-id="${board.id}" role="menuitem">${Icons.trash} Delete</button>
+      </div>
+    </div>
+  `;
+}
+
+function generateMiniPreviewSVG(board, color, letter) {
+  const isDark = isColorDark(color);
+  const textColor = isDark ? 'rgba(255,255,255,0.9)' : 'rgba(0,0,0,0.6)';
+  const dotColor = isDark ? 'rgba(255,255,255,0.08)' : 'rgba(0,0,0,0.06)';
+  return `
+    <svg class="preview-placeholder-svg" viewBox="0 0 200 80" preserveAspectRatio="none">
+      <rect width="200" height="80" fill="${color}"/>
+      <circle cx="30" cy="25" r="4" fill="${dotColor}"/>
+      <circle cx="50" cy="35" r="6" fill="${dotColor}"/>
+      <circle cx="80" cy="20" r="3" fill="${dotColor}"/>
+      <circle cx="110" cy="40" r="5" fill="${dotColor}"/>
+      <circle cx="145" cy="28" r="4" fill="${dotColor}"/>
+      <circle cx="170" cy="50" r="3" fill="${dotColor}"/>
+      <circle cx="60" cy="55" r="4" fill="${dotColor}"/>
+      <circle cx="130" cy="15" r="3" fill="${dotColor}"/>
+      <rect x="25" y="50" width="40" height="4" rx="2" fill="${dotColor}"/>
+      <rect x="75" y="55" width="60" height="3" rx="1.5" fill="${dotColor}"/>
+      <rect x="100" y="45" width="30" height="3" rx="1.5" fill="${dotColor}"/>
+      <text x="50%" y="55%" text-anchor="middle" dominant-baseline="central" class="preview-placeholder-letter" style="font-size: 32px; font-weight: 700; fill: ${textColor};">${letter}</text>
+    </svg>
+  `;
+}
+
+function getBoardPreviewColor(board) {
+  const colors = [
+    'linear-gradient(135deg, #6366f1, #8b5cf6)',
+    'linear-gradient(135deg, #3b82f6, #06b6d4)',
+    'linear-gradient(135deg, #10b981, #34d399)',
+    'linear-gradient(135deg, #f59e0b, #f97316)',
+    'linear-gradient(135deg, #ef4444, #f43f5e)',
+    'linear-gradient(135deg, #8b5cf6, #a78bfa)',
+    'linear-gradient(135deg, #06b6d4, #22d3ee)',
+    'linear-gradient(135deg, #f43f5e, #fb7185)',
+    'linear-gradient(135deg, #84cc16, #a3e635)',
+    'linear-gradient(135deg, #64748b, #94a3b8)'
+  ];
+  let hash = 0;
+  for (let i = 0; i < (board.id || board.title).length; i++) {
+    hash = (board.id || board.title).charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return colors[Math.abs(hash) % colors.length];
+}
+
+function isColorDark(color) {
+  const m = color.match(/#([0-9a-f]{6})/i);
+  if (!m) return false;
+  const r = parseInt(m[1].slice(0, 2), 16), g = parseInt(m[1].slice(2, 4), 16), b = parseInt(m[1].slice(4, 6), 16);
+  return r * 0.299 + g * 0.587 + b * 0.114 < 140;
+}
+
+function wireDashboardCards(container) {
+  container.querySelectorAll('.board-card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.board-card-star') || e.target.closest('.board-card-menu') || e.target.closest('.board-card-context')) return;
+      AppRouter.navigate('/board/' + card.dataset.id);
+    });
+    card.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        AppRouter.navigate('/board/' + card.dataset.id);
+      }
+    });
+  });
+
+  container.querySelectorAll('.board-card-star').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const id = btn.dataset.id;
+      const isFav = BoardManager.toggleFavorite(id);
+      btn.classList.toggle('active', isFav);
+      btn.textContent = isFav ? '★' : '☆';
+      btn.title = isFav ? 'Remove from favorites' : 'Add to favorites';
+      btn.setAttribute('aria-label', isFav ? 'Remove from favorites' : 'Add to favorites');
+    });
+  });
+
+  container.querySelectorAll('.board-card-menu').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const context = btn.parentElement.querySelector('.board-card-context');
+      document.querySelectorAll('.board-card-context.open').forEach(m => {
+        if (m !== context) m.classList.remove('open');
+      });
+      context.classList.toggle('open');
+      if (context.classList.contains('open')) {
+        const firstItem = context.querySelector('[role="menuitem"]');
+        if (firstItem) firstItem.focus();
+      }
+    });
+  });
+
+  container.querySelectorAll('.board-card-context').forEach(ctx => {
+    ctx.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') { ctx.classList.remove('open'); ctx.previousElementSibling?.focus(); return; }
+      const items = [...ctx.querySelectorAll('[role="menuitem"]')];
+      const idx = items.indexOf(document.activeElement);
+      if (e.key === 'ArrowDown') { e.preventDefault(); items[(idx + 1) % items.length]?.focus(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); items[(idx - 1 + items.length) % items.length]?.focus(); }
+    });
+  });
+
+  // Context menu actions
+  container.querySelectorAll('.context-rename').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.closest('.board-card-context')?.classList.remove('open');
+      renameBoard(btn.dataset.id);
+    });
+  });
+
+  container.querySelectorAll('.context-favorite').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.closest('.board-card-context')?.classList.remove('open');
+      const id = btn.dataset.id;
+      BoardManager.toggleFavorite(id);
+      renderDashboardMain();
+    });
+  });
+
+  container.querySelectorAll('.context-share').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.closest('.board-card-context')?.classList.remove('open');
+      ShareManager.showShareDialog(btn.dataset.id);
+    });
+  });
+
+  container.querySelectorAll('.context-duplicate').forEach(btn => {
+    btn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      btn.closest('.board-card-context')?.classList.remove('open');
+      const original = BoardManager.boards.find(b => b.id === btn.dataset.id);
+      if (original) {
+        try {
+          const dup = await BoardManager.create(original.title + ' (copy)', original.template);
+          Toast.show('Board duplicated!', 'success');
+          renderDashboardMain();
+          Sidebar.loadBoards().catch(() => {});
+        } catch (err) {
+          Toast.show('Failed to duplicate board', 'error');
+        }
+      }
+    });
+  });
+
+  container.querySelectorAll('.context-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      btn.closest('.board-card-context')?.classList.remove('open');
+      deleteBoard(btn.dataset.id);
+    });
+  });
+}
+
+function sortBoards(sortBy) {
+  const sorted = [...BoardManager.boards];
+  switch (sortBy) {
+    case 'oldest':
+      sorted.sort((a, b) => new Date(a.created_at || a.updated_at) - new Date(b.created_at || b.updated_at));
+      break;
+    case 'alpha':
+      sorted.sort((a, b) => a.title.localeCompare(b.title));
+      break;
+    case 'alpha-desc':
+      sorted.sort((a, b) => b.title.localeCompare(a.title));
+      break;
+    default:
+      sorted.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
+  }
+  BoardManager.boards = sorted;
+}
+
+function filterDashboardBoards(query) {
+  const q = query.toLowerCase().trim();
+  const grid = document.getElementById('all-boards');
+  if (!grid) return;
+  const allCards = grid.querySelectorAll('.board-card');
+  const sections = document.querySelectorAll('#section-recent-boards, #section-favorite-boards');
+  let noResultsEl = document.getElementById('dashboard-no-results');
+
+  let visibleCount = 0;
+  for (const card of allCards) {
+    const title = card.querySelector('.board-card-title')?.textContent?.toLowerCase() || '';
+    const match = !q || title.includes(q);
+    card.style.display = match ? '' : 'none';
+    if (match) visibleCount++;
+  }
+
+  for (const section of sections) {
+    let hasVisible = false;
+    for (const c of section.querySelectorAll('.board-card')) {
+      if (c.style.display !== 'none') { hasVisible = true; break; }
+    }
+    section.style.display = hasVisible ? '' : 'none';
+  }
+
+  if (!q) {
+    if (noResultsEl) noResultsEl.style.display = 'none';
+    return;
+  }
+
+  if (!noResultsEl) {
+    noResultsEl = document.createElement('div');
+    noResultsEl.id = 'dashboard-no-results';
+    noResultsEl.className = 'dashboard-no-results';
+    grid.appendChild(noResultsEl);
+  }
+
+  noResultsEl.style.display = visibleCount === 0 ? '' : 'none';
+  if (visibleCount === 0) noResultsEl.textContent = `No boards match "${q}"`;
+}
+
+function debounce(fn, ms) {
+  let timer;
+  return function(...args) {
+    clearTimeout(timer);
+    timer = setTimeout(() => fn.apply(this, args), ms);
+  };
 }
 
 async function renameBoard(boardId) {
@@ -277,10 +629,14 @@ async function renameBoard(boardId) {
     onConfirm: async () => {
       const title = document.getElementById('rename-board-title').value.trim();
       if (title) {
-        await BoardManager.update(boardId, { title });
-        Toast.show('Board renamed!', 'success');
-        renderDashboardMain();
-        Sidebar.loadBoards().catch(() => {});
+        try {
+          await BoardManager.update(boardId, { title });
+          Toast.show('Board renamed!', 'success');
+          renderDashboardMain();
+          Sidebar.loadBoards().catch(() => {});
+        } catch (err) {
+          Toast.show('Failed to rename board', 'error');
+        }
       }
     }
   });
@@ -296,10 +652,14 @@ async function deleteBoard(boardId) {
     confirmText: I18n.__('delete'),
     confirmStyle: 'danger',
     onConfirm: async () => {
-      await BoardManager.delete(boardId);
-      Toast.show('Board deleted', 'success');
-      renderDashboardMain();
-      Sidebar.loadBoards().catch(() => {});
+      try {
+        await BoardManager.delete(boardId);
+        Toast.show('Board deleted', 'success');
+        renderDashboardMain();
+        Sidebar.loadBoards().catch(() => {});
+      } catch (err) {
+        Toast.show('Failed to delete board', 'error');
+      }
     }
   });
 }
@@ -320,6 +680,7 @@ function formatDate(dateStr) {
 }
 
 async function initBoard(boardId) {
+  BoardManager.markBoardVisited(boardId);
   // Clean up previous board state
   Canvas.destroy();
   Minimap.destroy();
@@ -336,6 +697,9 @@ async function initBoard(boardId) {
 
   // Load items
   await ItemManager.loadItems(boardId);
+
+  // Cache item count for dashboard
+  BoardManager.setItemCount(boardId, ItemManager.items.length);
 
   // Init canvas
   Canvas.init();
@@ -856,7 +1220,10 @@ function createItemElement(item) {
     `;
     if (item.file_url) {
       el.style.cursor = 'pointer';
-      el.addEventListener('dblclick', () => window.open(item.file_url, '_blank'));
+      el.addEventListener('dblclick', () => {
+        const url = item.file_url;
+        if (url && /^https?:\/\//i.test(url)) window.open(url, '_blank');
+      });
     }
   } else {
     el = document.createElement('div');
@@ -920,6 +1287,7 @@ function startResize(item, dir, e) {
   const startH = item.height;
   const startPosX = item.position_x;
   const startPosY = item.position_y;
+  let rafId = null;
 
   function onMove(e) {
     const dx = (e.clientX - startX) / Canvas.zoom;
@@ -937,15 +1305,19 @@ function startResize(item, dir, e) {
     item.position_x = newX;
     item.position_y = newY;
 
-    const el = document.querySelector(`[data-id="${item.id}"]`);
-    if (el) {
-      el.style.width = `${newW}px`;
-      el.style.height = `${newH}px`;
-      el.style.transform = `translate(${newX}px, ${newY}px) rotate(${item.rotation}deg)`;
-    }
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      const el = document.querySelector(`[data-id="${item.id}"]`);
+      if (el) {
+        el.style.width = `${newW}px`;
+        el.style.height = `${newH}px`;
+        el.style.transform = `translate(${newX}px, ${newY}px) rotate(${item.rotation}deg)`;
+      }
+    });
   }
 
   function onUp() {
+    if (rafId) cancelAnimationFrame(rafId);
     ItemManager.updateItem(item.id, { width: item.width, height: item.height, position_x: item.position_x, position_y: item.position_y });
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
@@ -960,19 +1332,24 @@ function startRotate(item, e) {
   const el = document.querySelector(`[data-id="${item.id}"]`);
   if (!el) return;
 
-  // Compute center from item position and dimensions, not bounding rect
   const canvasEl = document.getElementById('canvas');
   const canvasRect = canvasEl.getBoundingClientRect();
   const centerX = canvasRect.left + Canvas.panX + item.position_x * Canvas.zoom + (item.width * Canvas.zoom) / 2;
   const centerY = canvasRect.top + Canvas.panY + item.position_y * Canvas.zoom + (item.height * Canvas.zoom) / 2;
+  let rafId = null;
 
   function onMove(e) {
     const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) + 90;
     item.rotation = Math.round(angle);
-    el.style.transform = `translate(${item.position_x}px, ${item.position_y}px) rotate(${item.rotation}deg)`;
+
+    if (rafId) cancelAnimationFrame(rafId);
+    rafId = requestAnimationFrame(() => {
+      el.style.transform = `translate(${item.position_x}px, ${item.position_y}px) rotate(${item.rotation}deg)`;
+    });
   }
 
   function onUp() {
+    if (rafId) cancelAnimationFrame(rafId);
     ItemManager.updateItem(item.id, { rotation: item.rotation });
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
