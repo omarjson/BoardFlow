@@ -163,7 +163,7 @@
 @media (min-width: 768px) and (max-width: 1023px) {
   html { font-size: 15px; }
 
-  .sidebar { width: 220px; }
+  .sidebar { width: 200px; }
 
   .dashboard-sections {
     padding: var(--space-lg);
@@ -225,24 +225,31 @@
 .sidebar-toggle {
   display: none;
   position: fixed;
-  top: var(--space-xs);
-  left: var(--space-xs);
+  top: var(--space-sm);
+  left: var(--space-sm);
   z-index: calc(var(--z-sticky) + 11);
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-md);
-  background: var(--surface);
-  border: 1px solid var(--hairline);
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  background: var(--glass-3);
+  -webkit-backdrop-filter: blur(var(--blur-md)) saturate(180%);
+  backdrop-filter: blur(var(--blur-md)) saturate(180%);
+  border: 1px solid var(--glass-border);
   box-shadow: var(--shadow-soft);
-  font-size: var(--text-body-size);
+  font-size: var(--text-body-sm-size);
   cursor: pointer;
   align-items: center;
   justify-content: center;
-  transition: background var(--transition-fast);
+  transition: background var(--duration-fast) var(--ease-out-quint);
+}
+
+.sidebar-toggle svg {
+  width: 16px;
+  height: 16px;
 }
 
 .sidebar-toggle:hover {
-  background: var(--canvas-soft);
+  background: var(--surface);
 }
 
 /* PWA install banner */

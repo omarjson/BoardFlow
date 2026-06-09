@@ -70,6 +70,7 @@ class _Sidebar {
         <span class="sidebar-label" data-i18n="search">Search</span>
         <div class="sidebar-section-content">
           <div class="sidebar-search">
+            <span class="sidebar-search-icon">${Icons.search}</span>
             <input type="text" id="board-search" placeholder="${I18n.__('search_files')}" class="sidebar-search-input">
           </div>
         </div>
