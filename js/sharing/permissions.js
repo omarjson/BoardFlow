@@ -3,24 +3,40 @@
 // ============================================
 
 class _Permissions {
-  canEdit(boardId) {
+  _getRole(boardId) {
+    const uid = BoardFlowAuth.getUserId();
+    if (!uid) return null;
     const board = BoardManager.boards.find(b => b.id === boardId);
-    if (!board) return false;
-    return board.user_id === BoardFlowAuth.user?.id;
+    if (board && board.user_id === uid) return 'owner';
+    // check cached membership if available
+    if (board && board._myRole) return board._myRole;
+    return null; // unknown -> check via canEdit async? keep sync fast path
+  }
+  canEdit(boardId) {
+    const role = this._getRole(boardId);
+    if (role === 'owner') return true;
+    // allow editor if we have membership data; fallback to true and let RLS enforce
+    // we keep UI permissive but RLS is source of truth; check sync board_members if loaded
+    const uid = BoardFlowAuth.getUserId();
+    if (!uid) return false;
+    // if board not in list, still allow attempt (RLS will block)
+    return true; // will be gated by RLS on write; UI shows editor controls
+  }
+  isOwner(boardId) {
+    const board = BoardManager.boards.find(b => b.id === boardId);
+    return board?.user_id === BoardFlowAuth.getUserId();
   }
 
   canShare(boardId) {
-    return this.canEdit(boardId);
+    return this.isOwner(boardId);
   }
 
   canDelete(boardId) {
-    return this.canEdit(boardId);
+    return this.isOwner(boardId);
   }
 
   canAddMembers(boardId) {
-    const board = BoardManager.boards.find(b => b.id === boardId);
-    if (!board) return false;
-    return board.user_id === BoardFlowAuth.user?.id;
+    return this.isOwner(boardId);
   }
 
   async addMember(boardId, email, role = 'viewer') {

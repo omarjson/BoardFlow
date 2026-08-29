@@ -148,7 +148,7 @@ BEGIN
   VALUES (
     NEW.id,
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
+    COALESCE(NEW.raw_user_meta_data->>'display_name', NEW.raw_user_meta_data->>'full_name', split_part(NEW.email, '@', 1)),
     NEW.raw_user_meta_data->>'avatar_url'
   )
   ON CONFLICT (id) DO NOTHING;
@@ -174,8 +174,16 @@ DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
 
 CREATE POLICY "Users view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
-CREATE POLICY "Users view other profiles" ON public.profiles
-  FOR SELECT USING (true);
+CREATE POLICY "Users view collaborator profiles" ON public.profiles
+  FOR SELECT USING (
+    auth.uid() = id OR EXISTS (
+      SELECT 1 FROM public.board_members bm
+      JOIN public.boards b ON b.id = bm.board_id
+      WHERE bm.user_id = auth.uid() AND (
+        b.user_id = profiles.id OR EXISTS (SELECT 1 FROM public.board_members bm2 WHERE bm2.board_id = b.id AND bm2.user_id = profiles.id)
+      )
+    )
+  );
 CREATE POLICY "Users insert own profile" ON public.profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users update own profile" ON public.profiles
@@ -212,8 +220,8 @@ CREATE POLICY "Editors update member boards" ON public.boards
   );
 CREATE POLICY "Users delete own boards" ON public.boards
   FOR DELETE USING (auth.uid() = user_id);
-CREATE POLICY "Anonymous view shared boards" ON public.boards
-  FOR SELECT USING (share_token IS NOT NULL);
+-- Share links: enumeration blocked. Use RPC get_board_by_token(token) for anon access.
+-- No anonymous share_token IS NOT NULL policy.
 
 -- board_members
 ALTER TABLE public.board_members ENABLE ROW LEVEL SECURITY;
@@ -224,7 +232,13 @@ DROP POLICY IF EXISTS "Owners update members" ON public.board_members;
 DROP POLICY IF EXISTS "Owners remove members" ON public.board_members;
 
 CREATE POLICY "View members" ON public.board_members
-  FOR SELECT USING (auth.uid() = user_id);
+  FOR SELECT USING (
+    auth.uid() = user_id OR EXISTS (
+      SELECT 1 FROM public.boards WHERE id = board_members.board_id AND user_id = auth.uid()
+    ) OR EXISTS (
+      SELECT 1 FROM public.board_members bm WHERE bm.board_id = board_members.board_id AND bm.user_id = auth.uid()
+    )
+  );
 CREATE POLICY "Owners add members" ON public.board_members
   FOR INSERT WITH CHECK (
     EXISTS (SELECT 1 FROM public.boards
@@ -265,11 +279,7 @@ CREATE POLICY "View items on public boards" ON public.items
     EXISTS (SELECT 1 FROM public.boards
             WHERE id = items.board_id AND is_public = true)
   );
-CREATE POLICY "Anonymous view items on shared boards" ON public.items
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.boards
-            WHERE id = items.board_id AND share_token IS NOT NULL)
-  );
+-- Anonymous items via share link removed — use RPC for token-gated access
 CREATE POLICY "Editors insert items" ON public.items
   FOR INSERT WITH CHECK (
     EXISTS (
@@ -355,6 +365,47 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 -- SELECT cron.schedule('cleanup-chat', '0 0 * * 0', $$SELECT public.cleanup_old_chat_messages(30);$$);
 
 -- ============================================
+-- Share link gated access (SECURE: no enumeration)
+-- ============================================
+CREATE OR REPLACE FUNCTION public.get_board_by_token(p_token TEXT)
+RETURNS SETOF public.boards
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT * FROM public.boards WHERE share_token = p_token LIMIT 1;
+$$;
+CREATE OR REPLACE FUNCTION public.get_items_by_token(p_token TEXT)
+RETURNS SETOF public.items
+LANGUAGE sql
+SECURITY DEFINER
+SET search_path = public
+AS $$
+  SELECT i.* FROM public.items i JOIN public.boards b ON b.id = i.board_id WHERE b.share_token = p_token;
+$$;
+
+-- ============================================
+-- Delete account (called from settings)
+-- ============================================
+CREATE OR REPLACE FUNCTION public.delete_user()
+RETURNS void
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, auth
+AS $$
+BEGIN
+  -- delete owned boards (cascade deletes items/members/chat)
+  DELETE FROM public.boards WHERE user_id = auth.uid();
+  -- delete memberships
+  DELETE FROM public.board_members WHERE user_id = auth.uid();
+  -- delete profile
+  DELETE FROM public.profiles WHERE id = auth.uid();
+  -- delete auth user (requires service role via trigger; if fails, profile delete is enough)
+  DELETE FROM auth.users WHERE id = auth.uid();
+END;
+$$;
+
+-- ============================================
 -- Realtime
 -- ============================================
 DO $$
@@ -386,6 +437,20 @@ BEGIN
     ALTER PUBLICATION supabase_realtime ADD TABLE public.board_members;
   END IF;
 END $$;
+
+-- ============================================
+-- Storage bucket for board files (run once)
+-- ============================================
+INSERT INTO storage.buckets (id, name, public) VALUES ('boardflow', 'boardflow', true)
+ON CONFLICT (id) DO NOTHING;
+DROP POLICY IF EXISTS "Public read boardflow" ON storage.objects;
+CREATE POLICY "Public read boardflow" ON storage.objects FOR SELECT USING (bucket_id = 'boardflow');
+DROP POLICY IF EXISTS "Users upload boardflow" ON storage.objects;
+CREATE POLICY "Users upload boardflow" ON storage.objects FOR INSERT WITH CHECK (bucket_id = 'boardflow' AND auth.role() = 'authenticated');
+DROP POLICY IF EXISTS "Users update own boardflow" ON storage.objects;
+CREATE POLICY "Users update own boardflow" ON storage.objects FOR UPDATE USING (bucket_id = 'boardflow' AND auth.uid()::text = (storage.foldername(name))[1]);
+DROP POLICY IF EXISTS "Users delete own boardflow" ON storage.objects;
+CREATE POLICY "Users delete own boardflow" ON storage.objects FOR DELETE USING (bucket_id = 'boardflow' AND auth.uid()::text = (storage.foldername(name))[1]);
 
 -- ============================================
 -- Done

@@ -3,7 +3,14 @@
 // ============================================
 
 class _LinkCard {
+  _isSafeUrl(url) {
+    try {
+      const u = new URL(url.startsWith('http') ? url : 'https://' + url);
+      return ['http:', 'https:'].includes(u.protocol);
+    } catch { return false; }
+  }
   async fetchMetadata(url) {
+    if (!this._isSafeUrl(url)) return null;
     const normalized = url.startsWith('http') ? url : 'https://' + url;
     const proxies = [
       `https://api.allorigins.win/raw?url=${encodeURIComponent(normalized)}`,
@@ -113,7 +120,9 @@ class _LinkCard {
 
     const openLink = (e) => {
       e.stopPropagation();
-      window.open(meta.url || item.url || '#', '_blank');
+      const target = meta.url || item.url || '#';
+      if (!this._isSafeUrl(target)) { Toast.show('Blocked unsafe link', 'error'); return; }
+      window.open(target, '_blank', 'noopener');
     };
 
     el.addEventListener('click', openLink);
@@ -125,6 +134,7 @@ class _LinkCard {
   }
 
   async createFromUrl(url, x, y) {
+    if (!this._isSafeUrl(url)) { Toast.show('Invalid URL — http/https only', 'error'); return null; }
     Toast.show('Fetching link preview...', 'info');
     const meta = await this.fetchMetadata(url);
     const item = await ItemManager.createItem('link_card', {

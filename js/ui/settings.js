@@ -298,35 +298,30 @@ class _Settings {
     }
   }
 
-  _saveAccount() {
+  async _saveAccount() {
     const nameInput = document.getElementById('settings-display-name');
     if (!nameInput) return;
     const newName = nameInput.value.trim();
     if (!newName) { Toast.show(I18n.__('name_required'), 'error'); return; }
-
-    if (BoardFlowAuth.user) {
-      BoardFlowAuth.user.user_metadata = BoardFlowAuth.user.user_metadata || {};
-      BoardFlowAuth.user.user_metadata.display_name = newName;
+    if (newName.length > 40) { Toast.show('Display name too long (max 40)', 'error'); return; }
+    try {
+      if (BoardFlowAuth.supabase) {
+        const { error: authErr } = await BoardFlowAuth.supabase.auth.updateUser({ data: { display_name: newName, full_name: newName } });
+        if (authErr) throw authErr;
+        if (BoardFlowAuth.user) {
+          BoardFlowAuth.user.user_metadata = { ...BoardFlowAuth.user.user_metadata, display_name: newName, full_name: newName };
+        }
+        // also update profiles table
+        const uid = BoardFlowAuth.getUserId();
+        if (uid) {
+          await BoardFlowAuth.supabase.from('profiles').update({ display_name: newName, updated_at: new Date().toISOString() }).eq('id', uid);
+        }
+      }
+      Toast.show(I18n.__('profile_updated'), 'success');
+      Sidebar.render();
+    } catch (err) {
+      Toast.show(err.message || 'Failed to update profile', 'error');
     }
-
-    const stored = localStorage.getItem('boardflow_demo_user');
-    if (stored) {
-      try {
-        const demo = JSON.parse(stored);
-        demo.user_metadata = demo.user_metadata || {};
-        demo.user_metadata.display_name = newName;
-        localStorage.setItem('boardflow_demo_user', JSON.stringify(demo));
-      } catch {}
-    }
-
-    if (BoardFlowAuth.supabase) {
-      BoardFlowAuth.supabase.auth.updateUser({
-        data: { display_name: newName }
-      }).catch(() => {});
-    }
-
-    Toast.show(I18n.__('profile_updated'), 'success');
-    Sidebar.render();
   }
 
   _changePassword() {
@@ -379,7 +374,7 @@ class _Settings {
       const confirm = document.getElementById('pw-confirm').value;
 
       if (!current || !newPw) { Toast.show(I18n.__('fill_all_fields'), 'error'); return; }
-      if (newPw.length < 6) { Toast.show(I18n.__('password_min_chars'), 'error'); return; }
+      if (newPw.length < 8) { Toast.show(I18n.__('password_min_length'), 'error'); return; }
       if (newPw !== confirm) { Toast.show(I18n.__('passwords_no_match'), 'error'); return; }
 
       if (!BoardFlowAuth.supabase) {

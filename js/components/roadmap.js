@@ -95,9 +95,9 @@ class _Roadmap {
 
   async create(x, y, title) {
     const milestones = [
-      { title: 'Phase 1', description: 'Planning', date: '', status: 'done' },
-      { title: 'Phase 2', description: 'Development', date: '', status: 'done' },
-      { title: 'Phase 3', description: 'Launch', date: '', status: 'done' }
+      { title: 'Phase 1', description: 'Planning', date: '', status: 'todo' },
+      { title: 'Phase 2', description: 'Development', date: '', status: 'todo' },
+      { title: 'Phase 3', description: 'Launch', date: '', status: 'todo' }
     ];
 
     return await ItemManager.createItem('roadmap', {
@@ -115,7 +115,7 @@ class _Roadmap {
     const rows = milestones.map((m, i) => `
       <div class="roadmap-edit-row" style="display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-sm);">
         <input type="text" class="roadmap-edit-title" value="${Utils.escapeHtml(m.title)}" placeholder="Title" style="flex: 1; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
-        <input type="text" class="roadmap-edit-date" value="${Utils.escapeHtml(m.date || '')}" placeholder="Date" style="width: 100px; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
+        <input type="date" class="roadmap-edit-date" value="${Utils.escapeHtml(m.date || '')}" style="width: 140px; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
         <select class="roadmap-edit-status" style="padding: 6px; background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
           <option value="todo" ${m.status === 'todo' ? 'selected' : ''}>Todo</option>
           <option value="in_progress" ${m.status === 'in_progress' ? 'selected' : ''}>In Progress</option>
@@ -148,7 +148,7 @@ class _Roadmap {
               title,
               date: row.querySelector('.roadmap-edit-date')?.value || '',
               status: row.querySelector('.roadmap-edit-status')?.value || 'todo',
-              description: ''
+              description: m.description || ''
             });
           }
         });
@@ -167,7 +167,7 @@ class _Roadmap {
       row.style.cssText = 'display: flex; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-sm);';
       row.innerHTML = `
         <input type="text" class="roadmap-edit-title" placeholder="Title" style="flex: 1; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
-        <input type="text" class="roadmap-edit-date" placeholder="Date" style="width: 100px; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
+        <input type="date" class="roadmap-edit-date" style="width: 140px; padding: 6px var(--space-sm); background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
         <select class="roadmap-edit-status" style="padding: 6px; background: var(--canvas-soft); border: 1px solid var(--hairline); border-radius: var(--radius-sm); font-size: var(--text-sm);">
           <option value="todo">Todo</option>
           <option value="in_progress">In Progress</option>

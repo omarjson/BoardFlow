@@ -36,6 +36,7 @@
     0 32px 64px rgba(99, 102, 241, 0.08);
   opacity: 0.9;
   z-index: 9999 !important;
+  transition: none !important;
 }
 
 .board-item.selected {
@@ -48,14 +49,19 @@
 /* ---- Resize Handles ---- */
 .item-resize-handle {
   position: absolute;
-  width: 12px;
-  height: 12px;
+  width: 14px;
+  height: 14px;
   background: var(--primary);
   border: 2px solid var(--surface);
   border-radius: 50%;
   z-index: 10;
   pointer-events: auto;
   transition: transform 0.15s ease, background 0.15s ease;
+  touch-action: none;
+}
+@media (max-width: 767px) {
+  .item-resize-handle { width: 20px; height: 20px; }
+  .item-rotate-handle { width: 28px; height: 28px; top: -36px; }
 }
 
 .item-resize-handle:hover {
@@ -107,8 +113,14 @@
 
 /* ---- Locked Items ---- */
 .board-item.is-locked {
-  pointer-events: none;
+  pointer-events: auto;
   opacity: 0.85;
+  cursor: not-allowed;
+}
+.board-item.is-locked .board-item,
+.board-item.is-locked .file-item-preview,
+.board-item.is-locked .sketch-container {
+  pointer-events: none;
 }
 
 .board-item.is-locked::after {

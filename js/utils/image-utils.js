@@ -90,17 +90,39 @@ const ImageUtils = {
     }
   },
 
+  async uploadToSupabaseStorage(file) {
+    if (!BoardFlowAuth.supabase || !BoardFlowAuth.getUserId()) return null;
+    try {
+      const ext = (file.name.split('.').pop() || 'bin').slice(0, 10);
+      const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Utils.generateId('f');
+      const path = `${BoardFlowAuth.getUserId()}/${uuid}.${ext}`;
+      const { error } = await BoardFlowAuth.supabase.storage.from('boardflow').upload(path, file, { cacheControl: '3600', upsert: false });
+      if (error) {
+        // bucket may not exist yet
+        console.warn('Supabase Storage upload failed:', error.message);
+        return null;
+      }
+      const { data } = BoardFlowAuth.supabase.storage.from('boardflow').getPublicUrl(path);
+      return data?.publicUrl || null;
+    } catch (err) {
+      console.warn('Supabase Storage error:', err);
+      return null;
+    }
+  },
+
   async uploadToPuter(file) {
     if (typeof puter === 'undefined') return null;
-
     try {
-      const result = await puter.fs.write(`BoardFlow/${file.name}`, file);
-      if (result?.url) return result.url;
+      const uuid = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Utils.generateId('p');
+      const safeName = `${uuid}-${file.name}`.replace(/[^a-zA-Z0-9._-]/g, '_');
+      const result = await puter.fs.write(`BoardFlow/${safeName}`, file);
+      if (result?.url) return { url: result.url, id: result.path || safeName };
       if (result?.path) {
         try {
           const fileBlob = await puter.fs.read(result.path);
-          if (fileBlob?.url) return fileBlob.url;
+          if (fileBlob?.url) return { url: fileBlob.url, id: result.path };
         } catch {}
+        return { url: null, id: result.path };
       }
       return null;
     } catch (err) {
@@ -118,29 +140,31 @@ const ImageUtils = {
 
   async uploadFile(file) {
     const isImage = file.type.startsWith('image/');
-    const isLarge = file.size > 5 * 1024 * 1024;
 
-    // Images under 5MB → ImgBB
-    if (isImage && !isLarge) {
+    // 1. Supabase Storage (free 1GB, RLS, no extra key) — best for all file types
+    try {
+      const url = await this.uploadToSupabaseStorage(file);
+      if (url) return { url, provider: 'supabase', id: url };
+    } catch (err) { console.warn('Supabase Storage failed, trying ImgBB:', err); }
+
+    // 2. Images under 5MB → ImgBB (permanent, free 32MB) if key configured
+    if (isImage && file.size <= 5 * 1024 * 1024) {
       try {
         const url = await this.uploadToImgBB(file);
-        if (url) return { url, provider: 'imgbb' };
-      } catch (err) {
-        console.warn('ImgBB upload failed, trying Puter:', err);
-      }
+        if (url) return { url, provider: 'imgbb', id: url };
+      } catch (err) { console.warn('ImgBB upload failed, trying Puter:', err); }
     }
 
-    // Videos, audio, large files → Puter.js
+    // 3. Puter.js (user-pays, no setup)
     if (typeof puter !== 'undefined') {
       try {
-        const url = await this.uploadToPuter(file);
-        if (url) return { url, provider: 'puter' };
-      } catch (err) {
-        console.warn('Puter upload failed, using local:', err);
-      }
+        const res = await this.uploadToPuter(file);
+        if (res && res.url) return { url: res.url, provider: 'puter', id: res.id };
+        if (res && res.id) return { url: null, provider: 'puter', id: res.id };
+      } catch (err) { console.warn('Puter upload failed, using local:', err); }
     }
 
-    // Fallback: cache in IndexedDB
+    // 4. Fallback: IndexedDB (local only, not shared)
     try {
       return await this._uploadToIndexedDB(file);
     } catch (err) {

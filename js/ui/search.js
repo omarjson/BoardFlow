@@ -61,14 +61,15 @@ class _BoardSearch {
 
     if (!q) {
       if (countEl) countEl.textContent = '';
+      this._matches = [];
       return;
     }
 
     const matches = ItemManager.items.filter(item => {
-      const title = (item.title || '').toLowerCase();
-      const content = (item.content || '').toLowerCase();
-      return title.includes(q) || content.includes(q);
+      const hay = [item.title, item.content, item.url, item.file_url, JSON.stringify(item.metadata||''), (item.sketch_data?JSON.stringify(item.sketch_data):'')].join(' ').toLowerCase();
+      return hay.includes(q);
     });
+    this._matches = matches;
 
     if (countEl) countEl.textContent = matches.length ? `${matches.length} found` : '';
 
@@ -115,7 +116,7 @@ class _BoardSearch {
   }
 
   _goToResult(index) {
-    const item = ItemManager.items[index];
+    const item = (this._matches && this._matches[index]) || ItemManager.items[index];
     if (!item) return;
     ItemManager.deselectAll();
     ItemManager.selectItem(item.id);

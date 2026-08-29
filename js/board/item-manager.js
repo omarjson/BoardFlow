@@ -21,8 +21,11 @@ class _ItemManager {
 
   _pushHistory() {
     if (window.BoardHistory) {
+      const deep = (obj) => {
+        try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj)); }
+      };
       BoardHistory.push({
-        items: this.items.map(i => ({ ...i })),
+        items: this.items.map(i => deep(i)),
         selectedIds: [...this.selectedItems]
       });
     }
@@ -32,32 +35,61 @@ class _ItemManager {
     this.boardId = boardId;
     this.items = [];
     this.selectedItems.clear();
-
-    if (BoardFlowAuth.supabase) {
-      const { data, error } = await BoardFlowAuth.supabase
-        .from('items')
-        .select('*')
-        .eq('board_id', boardId);
-      if (error) {
-        console.error('Failed to load items:', error.message);
-      } else if (data) {
-        this.items = data;
-      }
-    } else {
-      const stored = localStorage.getItem(`boardflow_items_${boardId}`);
-      if (stored) {
-        try { this.items = JSON.parse(stored); } catch { this.items = []; }
-      }
+    if (!BoardFlowAuth.supabase) throw new Error('Supabase not configured');
+    const { data, error } = await BoardFlowAuth.supabase
+      .from('items')
+      .select('*')
+      .eq('board_id', boardId)
+      .order('z_index', { ascending: true });
+    if (error) {
+      console.error('Failed to load items:', error.message);
+      Toast.show(I18n.__('error_occurred') + ': ' + error.message, 'error');
+    } else if (data) {
+      this.items = data;
     }
-
     this._markSynced();
     this.onItemsChange?.(this.items);
+    this._subscribeRealtime(boardId);
     return this.items;
   }
 
+  _realtimeChannel = null;
+  _subscribeRealtime(boardId) {
+    if (!BoardFlowAuth.supabase) return;
+    if (this._realtimeChannel) {
+      try { BoardFlowAuth.supabase.removeChannel(this._realtimeChannel); } catch {}
+      this._realtimeChannel = null;
+    }
+    this._realtimeChannel = BoardFlowAuth.supabase
+      .channel('items:' + boardId)
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'items', filter: `board_id=eq.${boardId}` }, (payload) => {
+        if (payload.eventType === 'INSERT') {
+          if (!this.items.find(i => i.id === payload.new.id)) {
+            this.items.push(payload.new);
+            this.onItemsChange?.(this.items);
+          }
+        } else if (payload.eventType === 'UPDATE') {
+          const idx = this.items.findIndex(i => i.id === payload.new.id);
+          if (idx !== -1) {
+            // last-write-wins but don't overwrite local unsaved edge: simple merge
+            this.items[idx] = payload.new;
+            this.onItemsChange?.(this.items);
+          }
+        } else if (payload.eventType === 'DELETE') {
+          this.items = this.items.filter(i => i.id !== payload.old.id);
+          this.selectedItems.delete(payload.old.id);
+          window.Connections?.removeConnectionsForItem(payload.old.id);
+          this.onItemsChange?.(this.items);
+          this.onSelectionChange?.(this.selectedItems);
+        }
+      })
+      .subscribe();
+  }
+
   async createItem(type, options = {}) {
-    const item = {
-      id: Utils.generateId('item'),
+    if (!this.boardId) throw new Error('No board loaded');
+    this._pushHistory();
+    const row = {
       board_id: this.boardId,
       type,
       position_x: options.x ?? 0,
@@ -75,42 +107,33 @@ class _ItemManager {
       file_id: options.file_id || null,
       sketch_data: options.sketch_data || null,
       metadata: options.metadata || null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      created_by: BoardFlowAuth.getUserId()
     };
-
-    if (BoardFlowAuth.supabase) {
-      const { id: _localId, ...row } = item;
-      const { data, error } = await BoardFlowAuth.supabase
-        .from('items')
-        .insert(row)
-        .select()
-        .single();
-      if (error) throw error;
-      item.id = data.id;
+    const { data, error } = await BoardFlowAuth.supabase
+      .from('items')
+      .insert(row)
+      .select()
+      .single();
+    if (error) throw error;
+    // avoid duplicate if realtime already inserted
+    if (!this.items.find(i => i.id === data.id)) {
+      this.items.push(data);
+      this.onItemsChange?.(this.items);
     }
-
-    this._pushHistory();
-    this.items.push(item);
-    this._saveLocal();
     this._markSynced();
-    this.onItemsChange?.(this.items);
-    return item;
+    return data;
   }
 
   async updateItem(id, updates) {
-    if (BoardFlowAuth.supabase) {
-      const { error } = await BoardFlowAuth.supabase
-        .from('items')
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
-    }
-
+    const safe = { ...updates, updated_at: new Date().toISOString() };
+    const { error } = await BoardFlowAuth.supabase
+      .from('items')
+      .update(safe)
+      .eq('id', id);
+    if (error) throw error;
     const item = this.items.find(i => i.id === id);
     if (item) {
-      Object.assign(item, updates, { updated_at: new Date().toISOString() });
-      this._saveLocal();
+      Object.assign(item, safe);
       this._markSynced();
       if (!this.suppressRender) {
         this.onItemsChange?.(this.items);
@@ -120,20 +143,15 @@ class _ItemManager {
   }
 
   async deleteItem(id) {
-    if (BoardFlowAuth.supabase) {
-      const { error } = await BoardFlowAuth.supabase
-        .from('items')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
-    }
-
-    window.Connections?.removeConnectionsForItem(id);
-
     this._pushHistory();
+    window.Connections?.removeConnectionsForItem(id);
+    const { error } = await BoardFlowAuth.supabase
+      .from('items')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
     this.items = this.items.filter(i => i.id !== id);
     this.selectedItems.delete(id);
-    this._saveLocal();
     this._markSynced();
     this.onItemsChange?.(this.items);
     this.onSelectionChange?.(this.selectedItems);
@@ -142,24 +160,13 @@ class _ItemManager {
   async deleteSelected() {
     const ids = [...this.selectedItems];
     if (ids.length === 0) return;
-
-    // Delete from Supabase in parallel
-    if (BoardFlowAuth.supabase) {
-      const { error } = await BoardFlowAuth.supabase.from('items').delete().in('id', ids);
-      if (error) throw error;
-    }
-
-    ids.forEach(id => window.Connections?.removeConnectionsForItem(id));
-
     this._pushHistory();
-
-    // Remove from local array
+    ids.forEach(id => window.Connections?.removeConnectionsForItem(id));
+    const { error } = await BoardFlowAuth.supabase.from('items').delete().in('id', ids);
+    if (error) throw error;
     this.items = this.items.filter(i => !ids.includes(i.id));
     ids.forEach(id => this.selectedItems.delete(id));
-    this._saveLocal();
     this._markSynced();
-
-    // Fire callbacks once
     this.onItemsChange?.(this.items);
     this.onSelectionChange?.(this.selectedItems);
   }
@@ -197,6 +204,7 @@ class _ItemManager {
   bringToFront(id) {
     const item = this.items.find(i => i.id === id);
     if (item) {
+      this._pushHistory();
       const maxZ = Math.max(...this.items.map(i => i.z_index), 0);
       item.z_index = maxZ + 1;
       this.updateItem(id, { z_index: item.z_index });
@@ -206,6 +214,7 @@ class _ItemManager {
   sendToBack(id) {
     const item = this.items.find(i => i.id === id);
     if (item) {
+      this._pushHistory();
       const minZ = Math.min(...this.items.map(i => i.z_index), 0);
       item.z_index = minZ - 1;
       this.updateItem(id, { z_index: item.z_index });
@@ -213,11 +222,16 @@ class _ItemManager {
   }
 
   _saveLocal() {
-    if (!this.boardId || BoardFlowAuth.supabase) return;
+    // kept for dashboard item counts only (no item persistence here)
     try {
-      localStorage.setItem(`boardflow_items_${this.boardId}`, JSON.stringify(this.items));
-    } catch {
-      // Storage full
+      if (this.boardId) BoardManager.setItemCount(this.boardId, this.items.length);
+    } catch {}
+  }
+
+  destroyRealtime() {
+    if (this._realtimeChannel && BoardFlowAuth.supabase) {
+      try { BoardFlowAuth.supabase.removeChannel(this._realtimeChannel); } catch {}
+      this._realtimeChannel = null;
     }
   }
 }

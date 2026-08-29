@@ -9,31 +9,45 @@ const I18n = {
   supportedLangs: ['en','ar','fr','es','pt','de','ru','tr','hi','zh-CN','ja','ko','it','nl','id'],
 
   async init() {
-    // Load all locale files in parallel
-    await Promise.all(this.supportedLangs.map(async (lang) => {
+    const saved = localStorage.getItem('boardflow_lang');
+    const target = saved || this._detectBrowserLang();
+    // lazy: only load en + target
+    const toLoad = [...new Set(['en', target])];
+    await Promise.all(toLoad.map(async (lang) => {
       try {
         const resp = await fetch(`/js/i18n/locales/${lang}.json`);
-        if (resp.ok) {
-          this.locales[lang] = await resp.json();
-        }
-      } catch (err) {
-        console.warn('i18n: failed to load locale', lang, err);
-      }
+        if (resp.ok) this.locales[lang] = await resp.json();
+      } catch (err) { console.warn('i18n: failed to load locale', lang, err); }
     }));
-
-    // Detect browser language after locales are loaded
+    // lazy-load remaining in background
+    this.supportedLangs.filter(l => !toLoad.includes(l)).forEach(async (lang) => {
+      try { const r = await fetch(`/js/i18n/locales/${lang}.json`); if (r.ok) this.locales[lang] = await r.json(); } catch {}
+    });
     this.currentLang = localStorage.getItem('boardflow_lang') || this._detectBrowserLang();
-
-    // Fallback to embedded English
-    if (!this.locales.en) {
-      this.locales.en = this._getFallbackEnglish();
-    }
-
+    if (!this.locales.en) this.locales.en = this._getFallbackEnglish();
+    // ensure fallback has all en.json keys (if fetch failed)
+    this._ensureFallbackCoverage();
     this._applyDirection();
     this._translatePage();
   },
 
-  setLanguage(lang) {
+  _ensureFallbackCoverage() {
+    try {
+      const en = this.locales.en || {};
+      const fb = this._getFallbackEnglish();
+      Object.keys(en).forEach(k => { if (!(k in fb)) fb[k] = en[k]; });
+      // keep fallback updated
+      this._fallbackCache = fb;
+    } catch {}
+  },
+
+  async setLanguage(lang) {
+    if (!this.locales[lang]) {
+      try {
+        const r = await fetch(`/js/i18n/locales/${lang}.json`);
+        if (r.ok) this.locales[lang] = await r.json();
+      } catch {}
+    }
     if (!this.locales[lang]) {
       Toast.show(this.__('language_not_available'), 'error');
       return;
@@ -42,6 +56,9 @@ const I18n = {
     localStorage.setItem('boardflow_lang', lang);
     this._applyDirection();
     this._translatePage();
+    // re-render sidebar/settings if present
+    try { window.Sidebar?.render?.(); } catch {}
+    try { window.Settings?.render?.(); } catch {}
     Toast.show(this.__('language_changed'), 'success');
   },
 
@@ -54,16 +71,15 @@ const I18n = {
   },
 
   __(key, params = {}) {
-    const fallback = this._getFallbackEnglish();
+    const fallback = this._fallbackCache || this._getFallbackEnglish();
     const locale = this.locales[this.currentLang] || fallback;
     let text = locale[key] || (this.locales.en ? this.locales.en[key] : null) || fallback[key] || key;
-
     for (const [k, v] of Object.entries(params)) {
       if (typeof text === 'string') {
-        text = text.replaceAll(`{${k}}`, v);
+        const safe = String(v).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        text = text.replaceAll(`{${k}}`, safe);
       }
     }
-
     return text || key;
   },
 
@@ -90,7 +106,10 @@ const I18n = {
   _translatePage() {
     document.querySelectorAll('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
-      el.innerHTML = this.__(key);
+      // only allow trusted HTML keys (contain <span)
+      const val = this.__(key);
+      if (val.includes('<') && (key.includes('pricing') || key.includes('hero'))) el.innerHTML = val;
+      else el.textContent = val;
     });
 
     document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {

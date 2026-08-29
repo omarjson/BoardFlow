@@ -12,6 +12,9 @@ class _Toast {
     if (this.container) return;
     this.container = document.createElement('div');
     this.container.className = 'toast-container';
+    this.container.setAttribute('role', 'status');
+    this.container.setAttribute('aria-live', 'polite');
+    this.container.setAttribute('aria-atomic', 'false');
     this.container.style.cssText = `
       position: fixed;
       bottom: var(--space-lg);
@@ -75,7 +78,10 @@ class _Toast {
     toast.appendChild(iconSpan);
     toast.appendChild(textSpan);
 
+    toast.setAttribute('role', 'alert');
+    toast.setAttribute('tabindex', '0');
     toast.addEventListener('click', () => this._remove(toast));
+    toast.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === 'Escape' || e.key === ' ') { e.preventDefault(); this._remove(toast); } });
 
     this.container.appendChild(toast);
 

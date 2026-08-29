@@ -25,6 +25,12 @@
   --accent-teal: #2a9d99;
   --accent-green: #1aae39;
   --accent-brown: #523410;
+  --accent-rose: #ff64c8;
+  --accent-amber: #f59e0b;
+  --accent-emerald: #10b981;
+  --accent-cyan: #06b6d4;
+  --accent-violet: #8b5cf6;
+  --accent-fuchsia: #d946ef;
 
   /* ---- Surface (Warm Foundations) ---- */
   --canvas: #f9f9f6;
@@ -154,7 +160,6 @@
      ============================================ */
   --radius-full: var(--radius-pill);
   --radius-lg: var(--radius-card);
-  --radius-md: var(--radius-sm);
   --radius-xxs: var(--radius-xs);
 
   --space-xxs: var(--space-1);

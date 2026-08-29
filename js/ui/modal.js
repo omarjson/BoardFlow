@@ -35,12 +35,14 @@ class _Modal {
 
     document.body.appendChild(this.backdrop);
     this.isOpen = true;
+    this._previousFocus = document.activeElement;
     document.body.style.overflow = 'hidden';
 
     // Focus first input if present
     requestAnimationFrame(() => {
-      const firstInput = this.backdrop.querySelector('input, textarea');
+      const firstInput = this.backdrop.querySelector('input, textarea, select');
       if (firstInput) firstInput.focus();
+      else this.backdrop.querySelector('.modal-confirm')?.focus();
       onOpen?.();
     });
 
@@ -70,6 +72,13 @@ class _Modal {
 
     document.addEventListener('keydown', this._escHandler = (e) => {
       if (e.key === 'Escape') this.close();
+      if (e.key === 'Tab' && this.backdrop) {
+        const focusable = this.backdrop.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+        if (focusable.length === 0) return;
+        const first = focusable[0], last = focusable[focusable.length - 1];
+        if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+        else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+      }
     });
 
     // Animate in
@@ -82,10 +91,12 @@ class _Modal {
     this.isOpen = false;
     document.body.style.overflow = '';
     document.removeEventListener('keydown', this._escHandler);
+    const prev = this._previousFocus;
     this._closeTimeout = setTimeout(() => {
       this.backdrop?.remove();
       this.backdrop = null;
       this._closeTimeout = null;
+      if (prev && typeof prev.focus === 'function') try { prev.focus(); } catch {}
     }, 200);
   }
 }

@@ -80,8 +80,9 @@ class _DragDrop {
 
     if (!this.dragItem) return;
 
+    const deep = (obj) => { try { return structuredClone(obj); } catch { return JSON.parse(JSON.stringify(obj)); } };
     BoardHistory.push({
-      items: ItemManager.items.map(i => ({ ...i })),
+      items: ItemManager.items.map(i => deep(i)),
       selectedIds: [...ItemManager.selectedItems]
     });
 
@@ -105,20 +106,41 @@ class _DragDrop {
 
   onDrag(clientX, clientY) {
     if (!this.dragElement || !this.dragItem) return;
-
     const canvasPos = Canvas.screenToCanvas(clientX, clientY);
     let newX = canvasPos.x - this.offsetX;
     let newY = canvasPos.y - this.offsetY;
-
     if (Canvas.gridEnabled) {
       const gridSize = Canvas.gridSize;
       newX = Math.round(newX / gridSize) * gridSize;
       newY = Math.round(newY / gridSize) * gridSize;
     }
-
-    this.dragElement.style.transform = `translate(${newX}px, ${newY}px) rotate(${this.dragItem.rotation}deg)`;
-    this.dragItem.position_x = newX;
-    this.dragItem.position_y = newY;
+    // multi-drag: move all selected items by same delta
+    const dx = newX - this.dragItem.position_x;
+    const dy = newY - this.dragItem.position_y;
+    const selectedIds = [...ItemManager.selectedItems];
+    if (selectedIds.length > 1 && selectedIds.includes(this.dragItem.id)) {
+      selectedIds.forEach(id => {
+        const it = ItemManager.getItem(id);
+        const el = document.querySelector(`.board-item[data-id="${id}"]`);
+        if (!it || !el) return;
+        if (id === this.dragItem.id) {
+          el.style.transform = `translate(${newX}px, ${newY}px) rotate(${it.rotation}deg)`;
+          it.position_x = newX; it.position_y = newY;
+        } else {
+          const nx = it.position_x + dx;
+          const ny = it.position_y + dy;
+          el.style.transform = `translate(${nx}px, ${ny}px) rotate(${it.rotation}deg)`;
+          it.position_x = nx; it.position_y = ny;
+        }
+      });
+    } else {
+      this.dragElement.style.transform = `translate(${newX}px, ${newY}px) rotate(${this.dragItem.rotation}deg)`;
+      this.dragItem.position_x = newX;
+      this.dragItem.position_y = newY;
+    }
+    // live update connections & minimap
+    window.Connections?.render();
+    window.Minimap?.render();
   }
 
   endDrag() {
@@ -131,9 +153,11 @@ class _DragDrop {
     this.dragElement.classList.remove('dragging');
     this._canvasEl.style.cursor = 'grab';
 
-    ItemManager.updateItem(this.dragItem.id, {
-      position_x: this.dragItem.position_x,
-      position_y: this.dragItem.position_y
+    // persist all selected items
+    const toSave = [...ItemManager.selectedItems].length > 1 ? [...ItemManager.selectedItems] : [this.dragItem.id];
+    toSave.forEach(id => {
+      const it = ItemManager.getItem(id);
+      if (it) ItemManager.updateItem(id, { position_x: it.position_x, position_y: it.position_y });
     });
 
     this.onDragEnd?.(this.dragItem);

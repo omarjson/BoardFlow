@@ -101,126 +101,121 @@ class _BoardChat {
   }
 
   async _sendMessage(content) {
-    const msg = {
-      id: Utils.generateId('msg'),
-      board_id: this.boardId,
-      user_id: BoardFlowAuth.user?.id || 'anonymous',
-      content,
-      message_type: 'text',
-      created_at: new Date().toISOString()
-    };
-
-    this.messages.push(msg);
-    this._renderMessage(msg);
-
-    if (BoardFlowAuth.supabase) {
-      try {
-        const { error } = await BoardFlowAuth.supabase
-          .from('chat_messages')
-          .insert(msg);
-        if (error) throw error;
-      } catch (err) {
-        console.error('Failed to save message:', err);
-      }
+    if (!BoardFlowAuth.supabase || !this.boardId) return;
+    const uid = BoardFlowAuth.getUserId();
+    if (!uid) { Toast.show('Please sign in to chat', 'error'); return; }
+    // optimistic render without id (will be replaced by realtime)
+    const optimistic = { board_id: this.boardId, user_id: uid, content, message_type: 'text', created_at: new Date().toISOString(), _optimistic: true };
+    this.messages.push(optimistic);
+    this._renderMessage(optimistic);
+    try {
+      const { data, error } = await BoardFlowAuth.supabase
+        .from('chat_messages')
+        .insert({ board_id: this.boardId, user_id: uid, content, message_type: 'text' })
+        .select()
+        .single();
+      if (error) throw error;
+      // replace optimistic with real
+      const idx = this.messages.indexOf(optimistic);
+      if (idx !== -1) { this.messages[idx] = data; }
+    } catch (err) {
+      console.error('Failed to save message:', err);
+      Toast.show('Failed to send', 'error');
+      this.messages = this.messages.filter(m => m !== optimistic);
+      // re-render to remove ghost
+      this._renderMessages();
     }
   }
 
   async _loadMessages() {
     this.messages = [];
-
-    if (BoardFlowAuth.supabase && this.boardId) {
-      try {
-        const { data } = await BoardFlowAuth.supabase
-          .from('chat_messages')
-          .select('*')
-          .eq('board_id', this.boardId)
-          .order('created_at', { ascending: true })
-          .limit(50);
-
-        if (data) {
-          this.messages = data;
-          this._renderMessages();
-        }
-        return;
-      } catch (err) {
-        console.error('Failed to load messages:', err);
-      }
+    if (!BoardFlowAuth.supabase || !this.boardId) { this._renderMessages(); return; }
+    try {
+      const { data, error } = await BoardFlowAuth.supabase
+        .from('chat_messages')
+        .select('*, profiles(display_name)')
+        .eq('board_id', this.boardId)
+        .order('created_at', { ascending: true })
+        .limit(80);
+      if (error) throw error;
+      if (data) this.messages = data;
+    } catch (err) {
+      console.error('Failed to load messages:', err);
     }
-
-    // Local storage fallback
-    const stored = localStorage.getItem(`boardflow_chat_${this.boardId}`);
-    if (stored) {
-      try {
-        this.messages = JSON.parse(stored);
-        this._renderMessages();
-      } catch {}
-    } else {
-      this._renderMessages();
-    }
+    this._renderMessages();
   }
 
   _subscribeRealtime() {
     if (!BoardFlowAuth.supabase || !this.boardId) return;
-
     if (this._subscription) {
-      this._subscription.unsubscribe();
+      try { BoardFlowAuth.supabase.removeChannel(this._subscription); } catch {}
+      this._subscription = null;
     }
-
     this._subscription = BoardFlowAuth.supabase
       .channel(`chat-${this.boardId}`)
       .on('postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'chat_messages', filter: `board_id=eq.${this.boardId}` },
-        (payload) => {
-          const msg = payload.new;
+        async (payload) => {
+          let msg = payload.new;
+          // fetch profile for display name
+          try {
+            const { data } = await BoardFlowAuth.supabase.from('profiles').select('display_name').eq('id', msg.user_id).single();
+            if (data) msg.profiles = data;
+          } catch {}
           if (!this.messages.find(m => m.id === msg.id)) {
+            // remove optimistic duplicate
+            this.messages = this.messages.filter(m => !m._optimistic || m.content !== msg.content);
             this.messages.push(msg);
             this._renderMessage(msg);
           }
         }
       )
       .subscribe((status) => {
-        if (status === 'CHANNEL_ERROR') {
-          console.error('Chat realtime connection error');
-        }
+        if (status === 'CHANNEL_ERROR') console.error('Chat realtime connection error');
       });
   }
 
   _renderMessages() {
     const container = document.getElementById('chat-messages');
     if (!container) return;
-
-    container.innerHTML = '<div class="chat-message chat-system">Board Chat</div>';
+    container.innerHTML = `<div class="chat-message chat-system">${Utils.escapeHtml(I18n.__('welcome_chat'))}</div>`;
     this.messages.forEach(msg => this._renderMessage(msg));
   }
 
   _renderMessage(msg) {
     const container = document.getElementById('chat-messages');
     if (!container) return;
-
-    const isOwn = msg.user_id === BoardFlowAuth.user?.id || msg.user_id === 'anonymous';
-    if (!isOwn && localStorage.getItem('boardflow_chat_sound') !== 'false') {
+    const isOwn = msg.user_id === BoardFlowAuth.getUserId();
+    if (!isOwn && !msg._optimistic && localStorage.getItem('boardflow_chat_sound') !== 'false') {
       try {
-        if (!this._audioCtx) {
-          this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
+        if (!this._audioCtx) this._audioCtx = new (window.AudioContext || window.webkitAudioContext)();
         const ctx = this._audioCtx;
+        if (ctx.state === 'suspended') ctx.resume();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.frequency.value = 660;
-        osc.type = 'sine';
-        gain.gain.setValueAtTime(0.15, ctx.currentTime);
+        osc.connect(gain); gain.connect(ctx.destination);
+        osc.frequency.value = 660; osc.type = 'sine';
+        gain.gain.setValueAtTime(0.12, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.15);
-        osc.start(ctx.currentTime);
-        osc.stop(ctx.currentTime + 0.15);
+        osc.start(ctx.currentTime); osc.stop(ctx.currentTime + 0.15);
       } catch {}
+    }
+    // unread badge when panel closed
+    if (!this.isOpen && !isOwn) {
+      const btn = document.getElementById('tb-chat');
+      if (btn && !btn.querySelector('.chat-badge')) {
+        const b = document.createElement('span'); b.className = 'chat-badge'; b.textContent = '•'; b.style.cssText = 'position:absolute;top:2px;right:2px;background:var(--danger);color:#fff;border-radius:50%;width:8px;height:8px;font-size:0;';
+        btn.style.position = 'relative'; btn.appendChild(b);
+      }
+    }
+    if (this.isOpen) {
+      const b = document.querySelector('#tb-chat .chat-badge'); if (b) b.remove();
     }
     const el = document.createElement('div');
     el.className = `chat-message ${isOwn ? 'chat-own' : 'chat-other'}`;
-    const userId = String(msg.user_id ?? '');
+    const displayName = msg.profiles?.display_name || (isOwn ? 'You' : String(msg.user_id || '').slice(0, 8) || 'User');
     el.innerHTML = `
-      <div class="chat-msg-user" style="font-size: var(--text-xs); color: var(--ink-muted); margin-bottom: 2px;">${Utils.escapeHtml(userId === 'anonymous' ? 'You' : userId.slice(0, 8) || 'User')}</div>
+      <div class="chat-msg-user" style="font-size: var(--text-xs); color: var(--ink-muted); margin-bottom: 2px;">${Utils.escapeHtml(displayName)}</div>
       <div class="chat-msg-content">${Utils.escapeHtml(msg.content)}</div>
       <div class="chat-msg-time" style="font-size: var(--text-xs); color: var(--ink-muted); margin-top: 2px;">${this._formatTime(msg.created_at)}</div>
     `;

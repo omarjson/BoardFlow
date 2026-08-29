@@ -79,13 +79,35 @@ class _ShareManager {
     });
 
     document.getElementById('share-generate-btn')?.addEventListener('click', async () => {
-      const token = Utils.generateId('share');
-      await BoardManager.update(board.id, { share_token: token, is_public: true });
+      const token = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : Utils.generateId('share');
+      await BoardManager.update(board.id, { share_token: token });
+      board.share_token = token;
       const input = document.getElementById('share-link');
       if (input) {
         input.value = `${window.location.origin}/#/board/shared/${token}`;
       }
       document.getElementById('share-generate-btn')?.remove();
+      // add revoke button
+      const copyBtn = document.getElementById('share-copy-btn');
+      if (copyBtn && !document.getElementById('share-revoke-btn')) {
+        const revoke = document.createElement('button');
+        revoke.id = 'share-revoke-btn';
+        revoke.className = 'btn btn-ghost';
+        revoke.textContent = 'Revoke';
+        revoke.addEventListener('click', async () => {
+          await BoardManager.update(board.id, { share_token: null });
+          board.share_token = null;
+          if (input) input.value = I18n.__('generate_link_first');
+          revoke.remove();
+          const gen = document.createElement('button');
+          gen.id = 'share-generate-btn';
+          gen.className = 'btn btn-primary';
+          gen.textContent = I18n.__('generate');
+          copyBtn.after(gen);
+          Toast.show('Link revoked', 'success');
+        });
+        copyBtn.after(revoke);
+      }
       Toast.show(I18n.__('link_generated'), 'success');
     });
 
@@ -110,6 +132,12 @@ class _ShareManager {
       }
       return;
     }
+    // enter key to invite
+    const emailInput = document.getElementById('share-email');
+    if (emailInput && !emailInput._bindEnter) {
+      emailInput._bindEnter = true;
+      emailInput.addEventListener('keydown', (e) => { if (e.key === 'Enter') { e.preventDefault(); document.getElementById('share-invite-btn')?.click(); }});
+    }
 
     try {
       const { data } = await BoardFlowAuth.supabase
@@ -121,11 +149,31 @@ class _ShareManager {
       if (membersList) {
         if (data && data.length > 0) {
           membersList.innerHTML = data.map(m => `
-            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-xs) 0; font-size: var(--text-sm);">
-              <span>${Utils.escapeHtml(m.profiles?.email || 'Unknown')}</span>
-              <span style="color: var(--ink-muted); font-size: var(--text-xs);">${Utils.escapeHtml(m.role)}</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; padding: var(--space-xs) 0; font-size: var(--text-sm); gap:8px;">
+              <span style="flex:1; overflow:hidden; text-overflow:ellipsis;">${Utils.escapeHtml(m.profiles?.email || m.profiles?.display_name || 'Unknown')}</span>
+              <select data-user-id="${m.user_id}" class="share-role-select" style="padding:4px 6px; border:1px solid var(--hairline); border-radius:6px; font-size:12px;">
+                <option value="viewer" ${m.role==='viewer'?'selected':''}>${I18n.__('viewer')}</option>
+                <option value="editor" ${m.role==='editor'?'selected':''}>${I18n.__('editor')}</option>
+                <option value="owner" ${m.role==='owner'?'selected':''}>owner</option>
+              </select>
+              <button data-remove-id="${m.user_id}" class="btn btn-ghost" style="padding:4px 8px; font-size:12px;" title="Remove">×</button>
             </div>
           `).join('');
+          membersList.querySelectorAll('.share-role-select').forEach(sel => {
+            sel.addEventListener('change', async (e) => {
+              const uid = e.target.dataset.userId;
+              const role = e.target.value;
+              const ok = await Permissions.changeRole(board.id, uid, role);
+              if (ok) this._loadMembers(board);
+            });
+          });
+          membersList.querySelectorAll('[data-remove-id]').forEach(btn => {
+            btn.addEventListener('click', async (e) => {
+              const uid = e.target.dataset.removeId;
+              const ok = await Permissions.removeMember(board.id, uid);
+              if (ok) this._loadMembers(board);
+            });
+          });
         } else {
           membersList.innerHTML = `<div style="font-size: var(--text-sm); color: var(--ink-muted);">${I18n.__('no_members')}</div>`;
         }

@@ -21,11 +21,13 @@ class _Connections {
       this.svgEl = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
       this.svgEl.style.cssText = `
         position: absolute;
-        top: 0; left: 0;
-        width: 100%; height: 100%;
+        top: -5000px; left: -5000px;
+        width: 10000px; height: 10000px;
         pointer-events: none;
         z-index: 0;
+        overflow: visible;
       `;
+      this.svgEl.setAttribute('viewBox', '-5000 -5000 10000 10000');
       container.prepend(this.svgEl);
     }
   }
@@ -37,49 +39,76 @@ class _Connections {
     this._cleanupConnectMode();
   }
 
-  load(boardId) {
-    const stored = localStorage.getItem(`boardflow_connections_${boardId}`);
-    if (stored) {
-      try { this.connections = JSON.parse(stored); } catch { this.connections = []; }
-    } else {
-      this.connections = [];
-    }
-    this.render();
-  }
-
-  save(boardId) {
+  async load(boardId) {
+    if (!boardId) return;
+    this.boardId = boardId;
     try {
-      localStorage.setItem(`boardflow_connections_${boardId}`, JSON.stringify(this.connections));
-    } catch {}
-  }
-
-  addConnection(sourceId, targetId, type = 'arrow') {
-    if (sourceId === targetId) return;
-    this.connections.push({
-      id: Utils.generateId('conn'),
-      sourceId,
-      targetId,
-      type,
-      color: '#6e6e73',
-      width: 2
-    });
+      const { data, error } = await BoardFlowAuth.supabase.from('items').select('*').eq('board_id', boardId).eq('type', 'connection');
+      if (!error && data) {
+        this.connections = data.map(row => ({
+          id: row.id,
+          sourceId: row.metadata?.sourceId,
+          targetId: row.metadata?.targetId,
+          type: row.metadata?.type || 'arrow',
+          color: row.color || '#6e6e73',
+          width: row.metadata?.width || 2
+        })).filter(c => c.sourceId && c.targetId);
+      } else {
+        this.connections = [];
+      }
+    } catch { this.connections = []; }
     this.render();
   }
 
-  removeConnection(id) {
+  async save(boardId) {
+    // connections are persisted as items, no-op
+  }
+
+  async addConnection(sourceId, targetId, type = 'arrow') {
+    if (sourceId === targetId) return;
+    if (this.connections.find(c => (c.sourceId === sourceId && c.targetId === targetId) || (c.sourceId === targetId && c.targetId === sourceId))) {
+      Toast.show('Already connected', 'info');
+      return;
+    }
+    const meta = { sourceId, targetId, type, width: 2 };
+    const conn = { id: null, sourceId, targetId, type, color: '#6e6e73', width: 2 };
+    if (ItemManager.boardId) {
+      try {
+        const { data } = await BoardFlowAuth.supabase.from('items').insert({
+          board_id: ItemManager.boardId,
+          type: 'connection',
+          position_x: 0, position_y: 0, width: 0, height: 0,
+          color: conn.color,
+          metadata: meta,
+          created_by: BoardFlowAuth.getUserId()
+        }).select().single();
+        if (data) conn.id = data.id;
+      } catch (e) { console.warn('save connection', e); conn.id = Utils.generateId('conn'); }
+    } else {
+      conn.id = Utils.generateId('conn');
+    }
+    this.connections.push(conn);
+    this.render();
+  }
+
+  async removeConnection(id) {
     this.connections = this.connections.filter(c => c.id !== id);
     this.render();
+    try { await BoardFlowAuth.supabase.from('items').delete().eq('id', id); } catch {}
   }
 
-  removeConnectionsForItem(itemId) {
+  async removeConnectionsForItem(itemId) {
+    const toDel = this.connections.filter(c => c.sourceId === itemId || c.targetId === itemId);
     this.connections = this.connections.filter(c => c.sourceId !== itemId && c.targetId !== itemId);
     this.render();
+    for (const c of toDel) { try { await BoardFlowAuth.supabase.from('items').delete().eq('id', c.id); } catch {} }
   }
 
   render() {
     if (!this.svgEl) return;
-
+    // SVG is inside scaled container, so use canvas coords directly: compute item centers in canvas space
     const zoom = Canvas.zoom || 1;
+    // ensure svg covers full container logical size
     this.svgEl.innerHTML = '';
 
     // Shared defs for arrow markers
@@ -134,7 +163,6 @@ class _Connections {
       path.addEventListener('click', (e) => {
         e.stopPropagation();
         this.removeConnection(conn.id);
-        if (ItemManager.boardId) this.save(ItemManager.boardId);
       });
       path.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
@@ -175,11 +203,10 @@ class _Connections {
       this._tempLine.setAttribute('y2', (e.clientY - containerRect.top) / zoom);
     };
 
-    this._onUp = (e) => {
+    this._onUp = async (e) => {
       const targetEl = document.elementFromPoint(e.clientX, e.clientY)?.closest('.board-item');
       if (targetEl && targetEl.dataset.id !== sourceId) {
-        this.addConnection(sourceId, targetEl.dataset.id);
-        if (ItemManager.boardId) this.save(ItemManager.boardId);
+        await this.addConnection(sourceId, targetEl.dataset.id);
         Toast.show('Connection created', 'success');
       }
       this._cleanupConnectMode();

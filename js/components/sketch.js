@@ -132,17 +132,24 @@ class _SketchTool {
     const parent = this.canvas.parentElement;
     const rect = parent.getBoundingClientRect();
     const toolbarHeight = parent.querySelector('.sketch-toolbar')?.offsetHeight || 40;
-
     const dpr = window.devicePixelRatio || 1;
-    this.canvas.width = rect.width * dpr;
-    this.canvas.height = (rect.height - toolbarHeight) * dpr;
+    // preserve drawing at old DPR before resize
+    const prevData = this.ctx ? this.canvas.toDataURL() : null;
+    this.canvas.width = Math.max(1, Math.round(rect.width * dpr));
+    this.canvas.height = Math.max(1, Math.round((rect.height - toolbarHeight) * dpr));
     this.canvas.style.width = rect.width + 'px';
     this.canvas.style.height = (rect.height - toolbarHeight) + 'px';
     this.canvas.style.marginTop = toolbarHeight + 'px';
-    this.ctx.scale(dpr, dpr);
+    this.ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     this._logicalWidth = rect.width;
     this._logicalHeight = rect.height - toolbarHeight;
-    this._redraw();
+    if (prevData) {
+      const img = new Image();
+      img.onload = () => { this.ctx.drawImage(img, 0, 0, this._logicalWidth, this._logicalHeight); };
+      img.src = prevData;
+    } else {
+      this._redraw();
+    }
   }
 
   _bindEvents(wrapper) {
@@ -422,9 +429,14 @@ class _SketchTool {
     }
 
     this._pushUndo();
+    // compress fill to dataURL to avoid 8MB buffer in history/JSON
+    const tmpCanvas = document.createElement('canvas');
+    tmpCanvas.width = width; tmpCanvas.height = height;
+    tmpCanvas.getContext('2d').putImageData(imageData, 0, 0);
+    const fillDataUrl = tmpCanvas.toDataURL('image/png');
     this.paths.push({
       tool: 'fill',
-      imageData: imageData.data.buffer.slice(0),
+      fillDataUrl,
       width, height
     });
     this.ctx.putImageData(imageData, 0, 0);
@@ -456,8 +468,19 @@ class _SketchTool {
 
   _drawPath(ctx, path, isPreview) {
     if (path.tool === 'fill') {
-      const imgData = new ImageData(new Uint8ClampedArray(path.imageData), path.width, path.height);
-      ctx.putImageData(imgData, 0, 0);
+      if (path.fillDataUrl) {
+        // draw cached fill image
+        if (!path._fillImg) {
+          path._fillImg = new Image();
+          path._fillImg.src = path.fillDataUrl;
+        }
+        if (path._fillImg.complete) ctx.drawImage(path._fillImg, 0, 0, path.width / (window.devicePixelRatio||1), path.height / (window.devicePixelRatio||1));
+        return;
+      }
+      if (path.imageData) {
+        const imgData = new ImageData(new Uint8ClampedArray(path.imageData), path.width, path.height);
+        ctx.putImageData(imgData, 0, 0);
+      }
       return;
     }
 
@@ -562,15 +585,18 @@ class _SketchTool {
     ctx.restore();
   }
 
+  _clonePaths(p) {
+    try { return structuredClone(p); } catch { return JSON.parse(JSON.stringify(p)); }
+  }
   _pushUndo() {
-    this.undoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    this.undoStack.push(this._clonePaths(this.paths));
     if (this.undoStack.length > 50) this.undoStack.shift();
     this.redoStack = [];
   }
 
   undo() {
     if (this.undoStack.length === 0) return;
-    this.redoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    this.redoStack.push(this._clonePaths(this.paths));
     this.paths = this.undoStack.pop();
     this._redraw();
     this._save();
@@ -578,7 +604,7 @@ class _SketchTool {
 
   redo() {
     if (this.redoStack.length === 0) return;
-    this.undoStack.push(JSON.parse(JSON.stringify(this.paths)));
+    this.undoStack.push(this._clonePaths(this.paths));
     this.paths = this.redoStack.pop();
     this._redraw();
     this._save();

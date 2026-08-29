@@ -11,7 +11,7 @@ const BoardExport = {
     try {
       Toast.show('Rendering board...', 'info');
 
-      const scale = parseInt(localStorage.getItem('boardflow_export_scale') || '2', 10);
+      const scale = Utils.clamp(parseInt(localStorage.getItem('boardflow_export_scale') || '2', 10) || 2, 1, 3);
       const includeGrid = localStorage.getItem('boardflow_export_grid') !== 'false';
 
       const items = container.querySelectorAll('.board-item');
@@ -39,15 +39,15 @@ const BoardExport = {
       maxY += padding;
 
       const cloneDoc = (doc) => {
-        doc.querySelectorAll('.board-item').forEach(el => {
-          el.style.transform = el.style.transform.replace(/translate\([^)]+\)/, '');
-        });
-        if (!includeGrid) {
-          doc.querySelector('.canvas-grid')?.remove();
-        }
+        const c = doc.getElementById('canvas-container');
+        if (c) c.style.transform = 'none';
+        doc.querySelectorAll('.canvas-grid').forEach(el => { if (!includeGrid) el.remove(); else el.style.opacity = '0.18'; });
+        // ensure connections svg visible
+        const svg = doc.querySelector('#canvas-container svg');
+        if (svg) svg.style.display = 'block';
       };
 
-      const canvas = await html2canvas(container, {
+      const canvas = await html2canvas(document.getElementById('canvas'), {
         backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim() || '#fafafa',
         useCORS: true,
         allowTaint: false,
@@ -55,10 +55,10 @@ const BoardExport = {
         logging: false,
         width: maxX - minX,
         height: maxY - minY,
-        x: minX,
-        y: minY,
-        windowWidth: maxX - minX + 100,
-        windowHeight: maxY - minY + 100,
+        x: minX * (Canvas.zoom || 1) + (Canvas.panX || 0),
+        y: minY * (Canvas.zoom || 1) + (Canvas.panY || 0),
+        windowWidth: (maxX - minX) * (Canvas.zoom || 1) + 100,
+        windowHeight: (maxY - minY) * (Canvas.zoom || 1) + 100,
         onclone: cloneDoc
       });
 
@@ -109,13 +109,14 @@ const BoardExport = {
       maxX += padding;
       maxY += padding;
 
+      const includeGridPdf = localStorage.getItem('boardflow_export_grid') !== 'false';
       const cloneDoc = (doc) => {
-        doc.querySelectorAll('.board-item').forEach(el => {
-          el.style.transform = el.style.transform.replace(/translate\([^)]+\)/, '');
-        });
+        const c = doc.getElementById('canvas-container');
+        if (c) c.style.transform = 'none';
+        doc.querySelectorAll('.canvas-grid').forEach(el => { if (!includeGridPdf) el.remove(); });
       };
 
-      const canvas = await html2canvas(container, {
+      const canvas = await html2canvas(document.getElementById('canvas'), {
         backgroundColor: getComputedStyle(document.documentElement).getPropertyValue('--canvas').trim() || '#fafafa',
         useCORS: true,
         allowTaint: false,
@@ -123,14 +124,24 @@ const BoardExport = {
         logging: false,
         width: maxX - minX,
         height: maxY - minY,
-        x: minX,
-        y: minY,
-        windowWidth: maxX - minX + 100,
-        windowHeight: maxY - minY + 100,
+        x: minX * (Canvas.zoom || 1) + (Canvas.panX || 0),
+        y: minY * (Canvas.zoom || 1) + (Canvas.panY || 0),
+        windowWidth: (maxX - minX) * (Canvas.zoom || 1) + 100,
+        windowHeight: (maxY - minY) * (Canvas.zoom || 1) + 100,
         onclone: cloneDoc
       });
 
       const imgData = canvas.toDataURL('image/png');
+      // try download instead of popup to avoid blocker
+      const isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone;
+      if (isStandalone) {
+        const a = document.createElement('a');
+        a.href = imgData;
+        a.download = `boardflow-${Date.now()}.png`;
+        a.click();
+        Toast.show('Image downloaded — print to PDF from gallery', 'success');
+        return;
+      }
       const printWindow = window.open('', '_blank');
       if (!printWindow) {
         Toast.show('Pop-up blocked — allow pop-ups for this site', 'error');

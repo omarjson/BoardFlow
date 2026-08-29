@@ -15,7 +15,7 @@ class _Canvas {
     this.startX = 0;
     this.startY = 0;
     this.gridEnabled = localStorage.getItem('boardflow_grid_enabled') !== 'false';
-    this.gridSize = parseInt(localStorage.getItem('boardflow_grid_size') || '20', 10);
+    this.gridSize = Utils.clamp(parseInt(localStorage.getItem('boardflow_grid_size') || '20', 10) || 20, 8, 64);
     this._bound = false;
     this.onZoomChange = null;
     this.onPanChange = null;
@@ -105,6 +105,7 @@ class _Canvas {
         this.onPanChange?.(this.panX, this.panY);
       } else if (e.touches.length === 2) {
         const dist = this._getTouchDist(e.touches);
+        if (!this._lastTouchDist || this._lastTouchDist < 1) { this._lastTouchDist = dist; return; }
         const center = this._getTouchCenter(e.touches);
         const scale = dist / this._lastTouchDist;
         const newZoom = Utils.clamp(this.zoom * scale, this.minZoom, this.maxZoom);
@@ -236,7 +237,9 @@ class _Canvas {
 
   toggleGrid() {
     this.gridEnabled = !this.gridEnabled;
+    localStorage.setItem('boardflow_grid_enabled', String(this.gridEnabled));
     this._renderGrid();
+    Toast.show(this.gridEnabled ? (I18n.__('show_grid') || 'Grid on') : (I18n.__('hide_grid') || 'Grid off'), 'info');
   }
 
   getZoom() {

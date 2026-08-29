@@ -1,4 +1,4 @@
-const CACHE = 'boardflow-v8';
+const CACHE = 'boardflow-v9';
 const CRITICAL = [
   '/js/config.js',
   '/js/auth/auth.js',
@@ -99,9 +99,15 @@ const STATIC = [
 
 self.addEventListener('install', (e) => {
   e.waitUntil(
-    caches.open(CACHE).then(cache => cache.addAll(STATIC))
+    caches.open(CACHE).then(cache =>
+      Promise.allSettled(STATIC.map(u => cache.add(u).catch(err => console.warn('SW cache skip', u, err.message))))
+    )
   );
   self.skipWaiting();
+});
+
+self.addEventListener('message', (e) => {
+  if (e.data === 'SKIP_WAITING') self.skipWaiting();
 });
 
 self.addEventListener('activate', (e) => {
@@ -115,24 +121,22 @@ self.addEventListener('activate', (e) => {
 
 self.addEventListener('fetch', (e) => {
   const url = new URL(e.request.url);
-
   if (url.origin !== self.location.origin) return;
-
   const path = url.pathname;
-
-  // Network-first for locales
+  if (e.request.mode === 'navigate') {
+    e.respondWith(
+      fetch(e.request).catch(() => caches.match('/index.html').then(r => r || new Response('Offline', { status: 503 })))
+    );
+    return;
+  }
   if (path.startsWith('/js/i18n/locales/')) {
     e.respondWith(networkFirst(e.request));
     return;
   }
-
-  // Network-only-no-store for critical files
   if (CRITICAL_SET.has(path)) {
     e.respondWith(networkOnlyNoStore(e.request));
     return;
   }
-
-  // Cache-first for other same-origin assets
   e.respondWith(cacheFirst(e.request));
 });
 
@@ -168,10 +172,7 @@ async function networkFirst(request) {
 async function networkOnlyNoStore(request) {
   try {
     const resp = await fetch(request, { cache: 'no-store' });
-    if (resp.ok && request.method === 'GET') {
-      const cache = await caches.open(CACHE);
-      cache.put(request, resp.clone());
-    }
+    // do not cache critical to allow instant updates; still fallback to cache on offline
     return resp;
   } catch {
     const cached = await caches.match(request);

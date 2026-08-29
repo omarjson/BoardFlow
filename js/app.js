@@ -5,7 +5,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   try {
     const bfProto = window.BoardFlowAuth ? Object.getPrototypeOf(window.BoardFlowAuth) : null;
-    const expectedMethods = ['init', 'signIn', 'signUp', 'signOut', 'isAuthenticated', 'getUser', 'getUserId', 'onAuthChange'];
+    const expectedMethods = ['init', 'signIn', 'signUp', 'signOut', 'isAuthenticated', 'getUser', 'getUserId', 'onAuthChange', 'signInWithGoogle', 'resetPassword', 'resendConfirmation', 'updatePassword'];
     const missingMethods = bfProto ? expectedMethods.filter(m => typeof bfProto[m] !== 'function') : expectedMethods;
     const diag = {
       BoardFlowAuth: typeof window.BoardFlowAuth + (window.BoardFlowAuth ? ' ownKeys=' + Object.keys(window.BoardFlowAuth).join(',') + ' missingMethods=' + (missingMethods.length ? missingMethods.join(',') : 'none') : ''),
@@ -117,16 +117,18 @@ function setupRoutes() {
       showPage('contact');
     })
     .on('/login', () => {
+      if (BoardFlowAuth.isAuthenticated()) { AppRouter.navigate('/dashboard'); return; }
       showPage('login');
       initLoginPage();
     })
     .on('/signup', () => {
+      if (BoardFlowAuth.isAuthenticated()) { AppRouter.navigate('/dashboard'); return; }
       showPage('signup');
       initSignupPage();
     })
     .on('/dashboard', () => {
       if (!BoardFlowAuth.isAuthenticated()) {
-        AppRouter.navigate('/');
+        AppRouter.navigate('/login?next=' + encodeURIComponent('/dashboard'));
         return;
       }
       showPage('dashboard');
@@ -134,7 +136,7 @@ function setupRoutes() {
     })
     .on('/settings', () => {
       if (!BoardFlowAuth.isAuthenticated()) {
-        AppRouter.navigate('/');
+        AppRouter.navigate('/login?next=' + encodeURIComponent('/settings'));
         return;
       }
       showPage('dashboard');
@@ -143,7 +145,7 @@ function setupRoutes() {
     })
     .on('/board/:id', (ctx) => {
       if (!BoardFlowAuth.isAuthenticated()) {
-        AppRouter.navigate('/');
+        AppRouter.navigate('/login?next=' + encodeURIComponent('/board/' + ctx.params.id));
         return;
       }
       showPage('board');
@@ -690,6 +692,7 @@ async function initBoard(boardId) {
   BoardHistory.clear();
   AudioRecorder.destroy();
   VideoUpload.destroy();
+  ItemManager.destroyRealtime?.();
   if (window._syncTickInterval) {
     clearInterval(window._syncTickInterval);
     window._syncTickInterval = null;
@@ -767,8 +770,10 @@ async function initBoard(boardId) {
   updateSyncIndicator();
   window._syncTickInterval = setInterval(updateSyncIndicator, 15000);
 
-  // Minimap render on pan
-  Canvas.onPanChange = () => Minimap.render();
+  // Minimap & connections live on pan/zoom
+  Canvas.onPanChange = () => { Minimap.render(); Connections.render(); };
+  const origZoom = Canvas.onZoomChange;
+  Canvas.onZoomChange = (z) => { origZoom?.(z); Minimap.render(); Connections.render(); };
 
   // Canvas right-click context menu
   const canvasEl = document.getElementById('canvas');
@@ -1250,26 +1255,32 @@ function createItemElement(item) {
     el.classList.add('selected');
   }
 
-  // Resize handles
+  // Resize handles (mouse + touch)
   ['nw', 'ne', 'sw', 'se'].forEach(dir => {
     const handle = document.createElement('div');
     handle.className = `item-resize-handle ${dir}`;
-    handle.addEventListener('mousedown', (e) => {
+    const start = (e) => {
       e.stopPropagation();
       if (item.metadata?.is_locked) return;
-      startResize(item, dir, e);
-    });
+      e.preventDefault();
+      startResize(item, dir, e.touches ? e.touches[0] : e);
+    };
+    handle.addEventListener('mousedown', start);
+    handle.addEventListener('touchstart', start, { passive: false });
     el.appendChild(handle);
   });
 
-  // Rotate handle
+  // Rotate handle (mouse + touch)
   const rotateHandle = document.createElement('div');
   rotateHandle.className = 'item-rotate-handle';
-  rotateHandle.addEventListener('mousedown', (e) => {
+  const startRot = (e) => {
     e.stopPropagation();
     if (item.metadata?.is_locked) return;
-    startRotate(item, e);
-  });
+    e.preventDefault();
+    startRotate(item, e.touches ? e.touches[0] : e);
+  };
+  rotateHandle.addEventListener('mousedown', startRot);
+  rotateHandle.addEventListener('touchstart', startRot, { passive: false });
   el.appendChild(rotateHandle);
 
   // Apply locked state
@@ -1322,9 +1333,12 @@ function startResize(item, dir, e) {
   const startPosY = item.position_y;
   let rafId = null;
 
-  function onMove(e) {
-    const dx = (e.clientX - startX) / Canvas.zoom;
-    const dy = (e.clientY - startY) / Canvas.zoom;
+  function getClient(ev) { return ev.touches ? ev.touches[0] : ev; }
+
+  function onMove(ev) {
+    const p = getClient(ev);
+    const dx = (p.clientX - startX) / Canvas.zoom;
+    const dy = (p.clientY - startY) / Canvas.zoom;
 
     let newW = startW, newH = startH, newX = startPosX, newY = startPosY;
 
@@ -1346,6 +1360,8 @@ function startResize(item, dir, e) {
         el.style.height = `${newH}px`;
         el.style.transform = `translate(${newX}px, ${newY}px) rotate(${item.rotation}deg)`;
       }
+      Connections.render();
+      Minimap?.render();
     });
   }
 
@@ -1354,10 +1370,14 @@ function startResize(item, dir, e) {
     ItemManager.updateItem(item.id, { width: item.width, height: item.height, position_x: item.position_x, position_y: item.position_y });
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('touchend', onUp);
   }
 
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onUp);
 }
 
 function startRotate(item, e) {
@@ -1371,13 +1391,17 @@ function startRotate(item, e) {
   const centerY = canvasRect.top + Canvas.panY + item.position_y * Canvas.zoom + (item.height * Canvas.zoom) / 2;
   let rafId = null;
 
-  function onMove(e) {
-    const angle = Math.atan2(e.clientY - centerY, e.clientX - centerX) * (180 / Math.PI) + 90;
+  function getClient(ev) { return ev.touches ? ev.touches[0] : ev; }
+
+  function onMove(ev) {
+    const p = getClient(ev);
+    const angle = Math.atan2(p.clientY - centerY, p.clientX - centerX) * (180 / Math.PI) + 90;
     item.rotation = Math.round(angle);
 
     if (rafId) cancelAnimationFrame(rafId);
     rafId = requestAnimationFrame(() => {
       el.style.transform = `translate(${item.position_x}px, ${item.position_y}px) rotate(${item.rotation}deg)`;
+      Connections.render();
     });
   }
 
@@ -1386,53 +1410,56 @@ function startRotate(item, e) {
     ItemManager.updateItem(item.id, { rotation: item.rotation });
     window.removeEventListener('mousemove', onMove);
     window.removeEventListener('mouseup', onUp);
+    window.removeEventListener('touchmove', onMove);
+    window.removeEventListener('touchend', onUp);
   }
 
   window.addEventListener('mousemove', onMove);
   window.addEventListener('mouseup', onUp);
+  window.addEventListener('touchmove', onMove, { passive: false });
+  window.addEventListener('touchend', onUp);
 }
 
 // ---- Undo/Redo ----
 
 function handleUndo() {
-  const state = {
-    items: ItemManager.items.map(i => ({ ...i })),
-    selectedIds: [...ItemManager.selectedItems]
-  };
+  const deep = o => { try { return structuredClone(o); } catch { return JSON.parse(JSON.stringify(o)); } };
+  const state = { items: ItemManager.items.map(i => deep(i)), selectedIds: [...ItemManager.selectedItems] };
   const prev = BoardHistory.undo(state);
   if (prev) {
     ItemManager.items = prev.items;
     ItemManager.selectedItems = new Set(prev.selectedIds);
-    ItemManager._saveLocal();
+    // persist undo to Supabase
+    prev.items.forEach(async (it) => {
+      try { await ItemManager.updateItem(it.id, it); } catch {}
+    });
     ItemManager._markSynced();
     renderBoardItems();
     updateItemSelectionUI();
+    Connections.render();
     Minimap?.render();
   }
 }
 
 function handleRedo() {
-  const state = {
-    items: ItemManager.items.map(i => ({ ...i })),
-    selectedIds: [...ItemManager.selectedItems]
-  };
+  const deep = o => { try { return structuredClone(o); } catch { return JSON.parse(JSON.stringify(o)); } };
+  const state = { items: ItemManager.items.map(i => deep(i)), selectedIds: [...ItemManager.selectedItems] };
   const next = BoardHistory.redo(state);
   if (next) {
     ItemManager.items = next.items;
     ItemManager.selectedItems = new Set(next.selectedIds);
-    ItemManager._saveLocal();
+    next.items.forEach(async (it) => { try { await ItemManager.updateItem(it.id, it); } catch {} });
     ItemManager._markSynced();
     renderBoardItems();
     updateItemSelectionUI();
+    Connections.render();
     Minimap?.render();
   }
 }
 
 function pushHistoryState() {
-  BoardHistory.push({
-    items: ItemManager.items.map(i => ({ ...i })),
-    selectedIds: [...ItemManager.selectedItems]
-  });
+  const deep = o => { try { return structuredClone(o); } catch { return JSON.parse(JSON.stringify(o)); } };
+  BoardHistory.push({ items: ItemManager.items.map(i => deep(i)), selectedIds: [...ItemManager.selectedItems] });
 }
 
 // ---- Keyboard Shortcuts ----

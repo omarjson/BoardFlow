@@ -128,6 +128,15 @@ class _AIAssistant {
     if (this.panel) {
       this.panel.style.display = 'flex';
       this.isOpen = true;
+      // polling for puter availability
+      const statusEl = document.getElementById('ai-status');
+      if (statusEl) {
+        let tries = 0;
+        const iv = setInterval(()=> {
+          if (this.isAvailable()) { statusEl.textContent = '🟢 Online'; clearInterval(iv); this._loadModels(); }
+          else if (++tries > 10) clearInterval(iv);
+        }, 800);
+      }
       requestAnimationFrame(() => document.getElementById('ai-chat-input')?.focus());
       return;
     }
@@ -218,7 +227,6 @@ class _AIAssistant {
     this.panel?.remove();
     this.panel = null;
     this.isOpen = false;
-    this.messages = [];
   }
 
   _bindEvents() {
@@ -301,35 +309,39 @@ class _AIAssistant {
       }
     });
 
-    // OCR
+    // OCR with picker
     document.getElementById('ai-ocr-select')?.addEventListener('click', async () => {
-      const items = ItemManager.items.filter(i => i.type === 'image' || i.type === 'screenshot');
-      if (items.length === 0) {
-        Toast.show('No images on the board', 'info');
+      const items = ItemManager.items.filter(i => (i.type === 'image' || i.type === 'screenshot') && i.file_url);
+      if (items.length === 0) { Toast.show('No images on the board', 'info'); return; }
+      if (items.length === 1) {
+        const resultEl = document.getElementById('ai-ocr-result');
+        resultEl.innerHTML = '<div class="ai-loading">Extracting text...</div>';
+        const text = await this.ocr(items[0].file_url);
+        if (text) {
+          resultEl.innerHTML = `<div class="ai-message ai-system" style="white-space: pre-wrap;">${Utils.escapeHtml(text)}</div><button class="btn btn-secondary btn-sm copy-ocr-text" style="margin-top: var(--space-sm);">Copy Text</button>`;
+          resultEl.querySelector('.copy-ocr-text')?.addEventListener('click', () => { navigator.clipboard.writeText(text); Toast.show('Text copied','success'); });
+        } else resultEl.textContent = 'No text could be extracted';
         return;
       }
-
-      const resultEl = document.getElementById('ai-ocr-result');
-      resultEl.innerHTML = '<div class="ai-loading">Extracting text...</div>';
-
-      for (const item of items) {
-        if (item.file_url) {
-          const text = await this.ocr(item.file_url);
+      // picker for multiple images
+      Modal.show({
+        title: 'Choose image for OCR',
+        content: `<div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:300px;overflow:auto;">${items.map((it,idx)=>`<button class="ocr-pick-btn" data-idx="${idx}" style="border:1px solid var(--hairline);border-radius:8px;overflow:hidden;padding:0;background:var(--surface);"><img src="${Utils.escapeHtml(it.file_url)}" style="width:100%;height:100px;object-fit:cover;"><div style="padding:6px;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${Utils.escapeHtml(it.title||'Image '+(idx+1))}</div></button>`).join('')}</div>`,
+        confirmText: 'Cancel', hideCancel: true, onConfirm: ()=>{}
+      });
+      document.querySelectorAll('.ocr-pick-btn').forEach(btn=>{
+        btn.addEventListener('click', async ()=>{
+          const idx = parseInt(btn.dataset.idx); Modal.close();
+          const resultEl = document.getElementById('ai-ocr-result');
+          resultEl.innerHTML = '<div class="ai-loading">Extracting text...</div>';
+          const text = await this.ocr(items[idx].file_url);
           if (text) {
-            const escapedText = Utils.escapeHtml(text);
-            resultEl.innerHTML = `
-              <div class="ai-message ai-system" style="white-space: pre-wrap;">${escapedText}</div>
-              <button class="btn btn-secondary btn-sm copy-ocr-text" style="margin-top: var(--space-sm);">Copy Text</button>
-            `;
-            resultEl.querySelector('.copy-ocr-text')?.addEventListener('click', () => {
-              navigator.clipboard.writeText(text);
-              Toast.show('Text copied', 'success');
-            });
-            return;
-          }
-        }
-      }
-      resultEl.textContent = 'No text could be extracted';
+            resultEl.innerHTML = `<div class="ai-message ai-system" style="white-space: pre-wrap;">${Utils.escapeHtml(text)}</div><button class="btn btn-secondary btn-sm copy-ocr-text" style="margin-top: var(--space-sm);">Copy Text</button><button class="btn btn-secondary btn-sm create-ocr-note" style="margin-top:var(--space-sm);margin-left:6px;">Create Note</button>`;
+            resultEl.querySelector('.copy-ocr-text')?.addEventListener('click', ()=>{ navigator.clipboard.writeText(text); Toast.show('Text copied','success'); });
+            resultEl.querySelector('.create-ocr-note')?.addEventListener('click', ()=> this._createNoteFromText(text));
+          } else resultEl.textContent = 'No text could be extracted';
+        });
+      });
     });
 
     // TTS
@@ -371,53 +383,58 @@ class _AIAssistant {
   async _loadModels() {
     const select = document.getElementById('ai-model');
     if (!select || !this.isAvailable()) return;
-
+    // cache with 1h TTL
+    const cacheKey = 'boardflow_ai_models_cache';
+    const cached = (() => { try { const c = JSON.parse(localStorage.getItem(cacheKey)||'null'); if (c && Date.now()-c.ts < 3600000) return c.data; } catch {} return null; })();
+    if (cached) { this._renderModels(select, cached); return; }
     try {
       const models = await puter.ai.listModels();
+      try { localStorage.setItem(cacheKey, JSON.stringify({ ts: Date.now(), data: models })); } catch {}
       if (!models?.length) return;
 
+      this._renderModels(select, models);
+    } catch (err) {
+      console.warn('Failed to load AI models:', err);
+      // try cached even if stale
+      const stale = (() => { try { return JSON.parse(localStorage.getItem(cacheKey)||'null')?.data; } catch { return null; }})();
+      if (stale) { this._renderModels(select, stale); return; }
+      select.innerHTML = '<option value="openai/gpt-4o-mini">GPT-4o Mini</option>';
+    }
+  }
+
+  _renderModels(select, models) {
       const saved = localStorage.getItem('boardflow_ai_model');
       const providers = {};
-
       models.forEach(m => {
         const provider = m.provider || 'other';
         if (!providers[provider]) providers[provider] = [];
         providers[provider].push(m);
       });
-
       const providerOrder = ['openai', 'claude', 'gemini', 'deepseek', 'grok', 'mistral', 'meta', 'z-ai'];
       const sorted = Object.entries(providers).sort((a, b) => {
-        const ai = providerOrder.indexOf(a[0]);
-        const bi = providerOrder.indexOf(b[0]);
+        const ai = providerOrder.indexOf(a[0]); const bi = providerOrder.indexOf(b[0]);
         return (ai === -1 ? 99 : ai) - (bi === -1 ? 99 : bi);
       });
-
       select.innerHTML = '';
       let firstId = null;
-
       sorted.forEach(([provider, list]) => {
         const group = document.createElement('optgroup');
         group.label = provider.charAt(0).toUpperCase() + provider.slice(1);
         list.sort((a, b) => (a.name || a.id).localeCompare(b.name || b.id));
         list.forEach(m => {
           const opt = document.createElement('option');
-          opt.value = m.id;
-          opt.textContent = m.name || m.id;
+          opt.value = m.id; opt.textContent = m.name || m.id;
           group.appendChild(opt);
           if (!firstId) firstId = m.id;
         });
         select.appendChild(group);
       });
-
-      if (saved && select.querySelector(`option[value="${saved}"]`)) {
-        select.value = saved;
-      } else if (firstId) {
-        select.value = firstId;
+      if (saved && select.querySelector(`option[value="${saved}"]`)) select.value = saved;
+      else if (firstId) select.value = firstId;
+      if (!select._bound) {
+        select._bound = true;
+        select.addEventListener('change', () => localStorage.setItem('boardflow_ai_model', select.value));
       }
-
-      select.addEventListener('change', () => {
-        localStorage.setItem('boardflow_ai_model', select.value);
-      });
     } catch (err) {
       console.warn('Failed to load AI models:', err);
       select.innerHTML = '<option value="gpt-5.4-nano">GPT-5.4 Nano</option>';
@@ -483,6 +500,12 @@ class _AIAssistant {
     msg.textContent = content;
     container.appendChild(msg);
     container.scrollTop = container.scrollHeight;
+    // persist to local history (cap 100)
+    try {
+      this.messages.push({ role, content, at: Date.now() });
+      if (this.messages.length > 100) this.messages = this.messages.slice(-100);
+      localStorage.setItem('boardflow_ai_history', JSON.stringify(this.messages));
+    } catch {}
   }
 
   _addGeneratedImage(url) {

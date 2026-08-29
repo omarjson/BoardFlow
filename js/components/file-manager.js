@@ -24,7 +24,7 @@ class _FileManager {
 
   _buildContent() {
     const fileCards = this.files.map(f => `
-      <div class="fm-file" data-id="${f.id}" style="
+      <div class="fm-file" data-id="${Utils.escapeHtml(f.id)}" style="
         display: flex;
         align-items: center;
         gap: var(--space-sm);
@@ -32,14 +32,14 @@ class _FileManager {
         border-radius: var(--radius-md);
         cursor: pointer;
         transition: var(--transition-fast);
-      ">
+      " title="${Utils.escapeHtml(f.name)}">
         <div style="font-size: 24px; flex-shrink: 0;">${ImageUtils.getFileIcon(f.mimeType || f.type)}</div>
         <div style="flex: 1; min-width: 0;">
           <div class="fm-file-name" style="font-size: var(--text-sm); overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${Utils.escapeHtml(f.name)}</div>
-          <div style="font-size: var(--text-xs); color: var(--ink-muted);">${ImageUtils.formatFileSize(f.size || 0)}</div>
+          <div style="font-size: var(--text-xs); color: var(--ink-muted);">${ImageUtils.formatFileSize(f.size || 0)} · ${Utils.escapeHtml(f.source || '')}</div>
         </div>
-        <button class="btn btn-ghost fm-insert" data-id="${f.id}" style="padding: 4px 8px; font-size: var(--text-xs);">Add to Board</button>
-        <button class="btn btn-ghost fm-download" data-id="${f.id}" title="Download" aria-label="Download ${Utils.escapeHtml(f.name)}" style="padding: 4px 8px;">⬇</button>
+        <button class="btn btn-ghost fm-insert" data-id="${Utils.escapeHtml(f.id)}" style="padding: 4px 8px; font-size: var(--text-xs);">Add to Board</button>
+        <button class="btn btn-ghost fm-download" data-id="${Utils.escapeHtml(f.id)}" title="Download" aria-label="Download ${Utils.escapeHtml(f.name)}" style="padding: 4px 8px;">⬇</button>
       </div>
     `).join('');
 
@@ -77,12 +77,33 @@ class _FileManager {
 
   async _loadFiles() {
     this.files = [];
-
+    // 1. Supabase Storage
+    if (BoardFlowAuth.supabase && BoardFlowAuth.getUserId()) {
+      try {
+        const uid = BoardFlowAuth.getUserId();
+        const { data, error } = await BoardFlowAuth.supabase.storage.from('boardflow').list(uid, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+        if (!error && data) {
+          this.files = data.filter(f => f.name !== '.emptyFolderPlaceholder').map(f => {
+            const { data: urlData } = BoardFlowAuth.supabase.storage.from('boardflow').getPublicUrl(`${uid}/${f.name}`);
+            return {
+              id: `${uid}/${f.name}`,
+              name: f.name.includes('-') ? f.name.split('-').slice(1).join('-') : f.name,
+              path: `${uid}/${f.name}`,
+              size: f.metadata?.size || 0,
+              mimeType: f.metadata?.mimetype || 'application/octet-stream',
+              type: 'file',
+              source: 'supabase',
+              url: urlData?.publicUrl
+            };
+          });
+        }
+      } catch (e) { console.warn('Supabase list failed', e); }
+    }
     if (typeof puter !== 'undefined') {
       try {
         const list = await puter.fs.read('BoardFlow/');
         if (list && Array.isArray(list)) {
-          this.files = list.map(item => ({
+          const puterFiles = list.map(item => ({
             id: item.id || item.path,
             name: item.name || item.path?.split('/').pop(),
             path: item.path,
@@ -91,18 +112,18 @@ class _FileManager {
             type: 'file',
             source: 'puter'
           }));
+          this.files = [...this.files, ...puterFiles];
         }
-      } catch {
-        // Puter files not available, using local files
-      }
+      } catch {}
     }
-
-    // Add local cached files
+    // Add local cached files (dedupe by id)
     const localFiles = localStorage.getItem('boardflow_uploaded_files');
     if (localFiles) {
       try {
         const parsed = JSON.parse(localFiles);
-        this.files = [...parsed, ...this.files];
+        const existingIds = new Set(this.files.map(f => f.id));
+        const newLocals = parsed.filter(f => !existingIds.has(f.id));
+        this.files = [...this.files, ...newLocals];
       } catch {}
     }
   }
@@ -115,14 +136,33 @@ class _FileManager {
     document.getElementById('fm-file-input')?.addEventListener('change', async (e) => {
       const files = e.target.files;
       if (!files.length) return;
-
+      const btn = document.getElementById('fm-upload');
+      const orig = btn ? btn.textContent : '';
+      if (btn) { btn.disabled = true; btn.textContent = 'Uploading...'; }
       for (const file of files) {
+        // 5MB soft limit warning, but allow
+        if (file.size > 50 * 1024 * 1024) { Toast.show(`${file.name} too large (>50MB)`, 'error'); continue; }
         await this._handleFileUpload(file);
       }
-
+      if (btn) { btn.disabled = false; btn.textContent = orig; }
       Toast.show(`${files.length} file(s) uploaded`, 'success');
       this._refresh();
     });
+
+    // drag & drop zone
+    const dropZone = document.querySelector('.fm-list');
+    if (dropZone) {
+      dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.style.background = 'var(--primary-subtle)'; });
+      dropZone.addEventListener('dragleave', () => { dropZone.style.background = ''; });
+      dropZone.addEventListener('drop', async (e) => {
+        e.preventDefault(); dropZone.style.background = '';
+        const files = e.dataTransfer?.files;
+        if (!files?.length) return;
+        for (const file of files) await this._handleFileUpload(file);
+        Toast.show(`${files.length} file(s) uploaded`, 'success');
+        this._refresh();
+      });
+    }
 
     document.getElementById('fm-screenshot')?.addEventListener('click', async () => {
       Toast.show('Taking screenshot...', 'info');
@@ -194,10 +234,16 @@ class _FileManager {
   }
 
   _saveLocalFile(entry) {
-    const stored = localStorage.getItem('boardflow_uploaded_files');
-    let files = stored ? JSON.parse(stored) : [];
-    files.unshift(entry);
-    localStorage.setItem('boardflow_uploaded_files', JSON.stringify(files));
+    try {
+      const stored = localStorage.getItem('boardflow_uploaded_files');
+      let files = stored ? JSON.parse(stored) : [];
+      files.unshift(entry);
+      // cap at 50 entries to avoid quota
+      if (files.length > 50) files = files.slice(0, 50);
+      localStorage.setItem('boardflow_uploaded_files', JSON.stringify(files));
+    } catch (e) {
+      if (e.name === 'QuotaExceededError') Toast.show('Storage full — delete old files', 'error');
+    }
   }
 
   _addToBoard(file) {
@@ -230,8 +276,24 @@ class _FileManager {
   }
 
   _downloadFile(file) {
-    if (file.url) {
-      window.open(file.url, '_blank');
+    if (!file.url) { Toast.show('No download URL', 'error'); return; }
+    if (file.url.startsWith('data:')) {
+      const a = document.createElement('a');
+      a.href = file.url;
+      a.download = file.name || 'download';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    } else {
+      // Supabase URLs may need encode, use anchor download
+      const a = document.createElement('a');
+      a.href = file.url;
+      a.target = '_blank';
+      a.rel = 'noopener';
+      a.download = file.name || '';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
     }
   }
 

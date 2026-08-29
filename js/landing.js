@@ -27,37 +27,42 @@
     // ---- Theme Toggle ----
 
     initThemeToggle() {
-      const toggle = document.getElementById('theme-toggle');
-      if (!toggle) return;
-
-      const savedTheme = localStorage.getItem('boardflow_theme') || 'light';
-      document.documentElement.setAttribute('data-theme', savedTheme);
-
-      toggle.addEventListener('click', () => {
-        const current = document.documentElement.getAttribute('data-theme') || 'light';
-        const next = current === 'dark' ? 'light' : 'dark';
+      const toggles = document.querySelectorAll('#theme-toggle, #about-theme-toggle, #contact-theme-toggle, #ds-theme-toggle');
+      if (!toggles.length) return;
+      const apply = (next) => {
         document.documentElement.setAttribute('data-theme', next);
         localStorage.setItem('boardflow_theme', next);
+        document.querySelector('meta[name="theme-color"]')?.setAttribute('content', next === 'dark' ? '#1c1c1e' : '#6366f1');
+      };
+      const saved = localStorage.getItem('boardflow_theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      apply(saved);
+      toggles.forEach(toggle => {
+        toggle.addEventListener('click', () => {
+          const current = document.documentElement.getAttribute('data-theme') || 'light';
+          const next = current === 'dark' ? 'light' : 'dark';
+          apply(next);
+        });
       });
     },
 
     // ---- Language Selector ----
 
     initLangSelector() {
-      const selector = document.getElementById('lang-selector');
-      if (!selector) return;
-
+      const selectors = document.querySelectorAll('.lang-selector, #lang-selector, #about-lang-selector, #contact-lang-selector');
+      if (!selectors.length) return;
       const currentLang = localStorage.getItem('boardflow_lang') || 'en';
-      selector.value = currentLang;
-
-      selector.addEventListener('change', () => {
-        const lang = selector.value;
-        if (window.I18n && typeof window.I18n.setLanguage === 'function') {
-          window.I18n.setLanguage(lang);
-        } else {
-          localStorage.setItem('boardflow_lang', lang);
-          location.reload();
-        }
+      selectors.forEach(s => s.value = currentLang);
+      selectors.forEach(selector => {
+        selector.addEventListener('change', () => {
+          const lang = selector.value;
+          selectors.forEach(s => s.value = lang);
+          if (window.I18n && typeof window.I18n.setLanguage === 'function') {
+            window.I18n.setLanguage(lang);
+          } else {
+            localStorage.setItem('boardflow_lang', lang);
+            location.reload();
+          }
+        });
       });
     },
 
@@ -97,9 +102,32 @@
     // ---- Mobile Nav Toggle ----
 
     initMobileNav() {
+      document.querySelectorAll('.landing-nav-toggle, #landing-nav-toggle, #about-nav-toggle').forEach(toggle => {
+        const nav = toggle.closest('.landing-nav');
+        const navLinks = nav?.querySelector('.landing-nav-links') || document.getElementById('landing-nav-links');
+        if (!toggle || !navLinks) return;
+        const setOpen = (isOpen) => {
+          navLinks.classList.toggle('open', isOpen);
+          toggle.setAttribute('aria-expanded', String(isOpen));
+          document.body.style.overflow = isOpen ? 'hidden' : '';
+        };
+        if (toggle._bound) return;
+        toggle._bound = true;
+        toggle.addEventListener('click', (e) => {
+          e.stopPropagation();
+          setOpen(!navLinks.classList.contains('open'));
+        });
+        document.addEventListener('click', (e) => {
+          if (navLinks.classList.contains('open') && !navLinks.contains(e.target) && e.target !== toggle) setOpen(false);
+        });
+        navLinks.querySelectorAll('a').forEach(link => link.addEventListener('click', () => setOpen(false)));
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && navLinks.classList.contains('open')) { setOpen(false); toggle.focus(); }
+        });
+      });
+      return;
       const toggle = document.getElementById('landing-nav-toggle');
       const navLinks = document.getElementById('landing-nav-links') || document.querySelector('.landing-nav-links');
-
       if (!toggle || !navLinks) return;
 
       function setOpen(isOpen) {

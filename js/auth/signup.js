@@ -35,22 +35,42 @@ function initSignupPage() {
 
     const submitBtn = form.querySelector('button[type="submit"]');
     submitBtn.disabled = true;
+    submitBtn.setAttribute('aria-busy', 'true');
     submitBtn.textContent = I18n.__('creating_account');
 
     try {
-      await BoardFlowAuth.signUp(email, password, name);
+      const data = await BoardFlowAuth.signUp(email, password, name);
+      // If email confirmation required, session will be null
+      if (data && !data.session) {
+        showMessage(I18n.__('account_created'), 'success');
+        // stay on page, offer resend
+        submitBtn.disabled = false;
+        submitBtn.removeAttribute('aria-busy');
+        submitBtn.textContent = I18n.__('sign_up');
+        return;
+      }
       showMessage(I18n.__('account_created'), 'success');
-      setTimeout(() => AppRouter.navigate('/dashboard'), 1500);
+      setTimeout(() => AppRouter.navigate('/dashboard'), 800);
     } catch (err) {
       showMessage(err.message || I18n.__('failed_create_account'), 'error');
     } finally {
       submitBtn.disabled = false;
-      submitBtn.textContent = I18n.__('sign_up');
+      submitBtn.removeAttribute('aria-busy');
+      if (submitBtn.textContent === I18n.__('creating_account')) submitBtn.textContent = I18n.__('sign_up');
     }
+  });
+
+  // Google on signup
+  document.getElementById('signup-google')?.addEventListener('click', async () => {
+    const btn = document.getElementById('signup-google');
+    btn.disabled = true;
+    try { await BoardFlowAuth.signInWithGoogle(); } catch (err) { showMessage(err.message || I18n.__('google_failed'), 'error'); btn.disabled = false; }
   });
 
   function showMessage(text, type) {
     messageEl.textContent = text;
     messageEl.className = 'auth-message visible ' + type;
+    messageEl.setAttribute('role', 'alert');
+    messageEl.setAttribute('aria-live', 'polite');
   }
 }

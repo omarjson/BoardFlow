@@ -10,11 +10,8 @@ class _BoardManager {
   }
 
   async init() {
-    if (BoardFlowAuth.supabase) {
-      await this._loadFromSupabase();
-    } else {
-      this._loadFromLocal();
-    }
+    if (!BoardFlowAuth.supabase) throw new Error('Supabase not configured');
+    await this._loadFromSupabase();
     return this.boards;
   }
 
@@ -27,108 +24,120 @@ class _BoardManager {
   }
 
   async create(title = 'Untitled Board', templateId = null) {
+    if (!BoardFlowAuth.supabase) throw new Error('Supabase not configured');
+    if (!BoardFlowAuth.getUserId()) throw new Error('Not authenticated');
     const board = {
-      id: this._generateId(),
       user_id: BoardFlowAuth.getUserId(),
-      title,
+      title: title || 'Untitled Board',
       description: '',
       is_public: false,
       share_token: null,
       template: templateId,
-      thumbnail_url: null,
-      created_at: new Date().toISOString(),
-      updated_at: new Date().toISOString()
+      thumbnail_url: null
     };
-
-    if (BoardFlowAuth.supabase) {
-      const { data, error } = await BoardFlowAuth.supabase
-        .from('boards')
-        .insert({ ...board, id: undefined })
-        .select()
-        .single();
-      if (error) throw error;
-      board.id = data.id;
-    }
-
-    this.boards.unshift(board);
+    const { data, error } = await BoardFlowAuth.supabase
+      .from('boards')
+      .insert(board)
+      .select()
+      .single();
+    if (error) throw error;
+    this.boards.unshift(data);
     this._saveLocal();
-    return board;
+    // add owner membership for convenience (if trigger not present)
+    try {
+      await BoardFlowAuth.supabase.from('board_members').insert({ board_id: data.id, user_id: BoardFlowAuth.getUserId(), role: 'owner' });
+    } catch {}
+    return data;
   }
 
   async getAll() {
-    if (BoardFlowAuth.supabase) {
-      await this._loadFromSupabase();
-    }
+    await this._loadFromSupabase();
     return this.boards;
   }
 
   async getById(id) {
-    if (BoardFlowAuth.supabase) {
-      const { data } = await BoardFlowAuth.supabase
-        .from('boards')
-        .select('*')
-        .eq('id', id)
-        .single();
-      return data;
-    }
-    return this.boards.find(b => b.id === id) || null;
+    const { data, error } = await BoardFlowAuth.supabase
+      .from('boards')
+      .select('*')
+      .eq('id', id)
+      .single();
+    if (error && error.code !== 'PGRST116') throw error;
+    return data || null;
   }
 
   async getByShareToken(token) {
     if (!token) return null;
-    if (BoardFlowAuth.supabase) {
-      const { data } = await BoardFlowAuth.supabase
-        .from('boards')
-        .select('*')
-        .eq('share_token', token)
-        .single();
-      return data;
-    }
-    return this.boards.find(b => b.share_token === token) || null;
+    // share links should require token match, not enumeration
+    const { data, error } = await BoardFlowAuth.supabase
+      .from('boards')
+      .select('*')
+      .eq('share_token', token)
+      .single();
+    if (error && error.code !== 'PGRST116') console.warn('getByShareToken', error.message);
+    return data || null;
   }
 
   async update(id, updates) {
-    if (BoardFlowAuth.supabase) {
-      const { error } = await BoardFlowAuth.supabase
-        .from('boards')
-        .update({ ...updates, updated_at: new Date().toISOString() })
-        .eq('id', id);
-      if (error) throw error;
+    const whitelist = ['title', 'description', 'is_public', 'share_token', 'template', 'thumbnail_url'];
+    const safe = {};
+    Object.keys(updates).forEach(k => { if (whitelist.includes(k)) safe[k] = updates[k]; });
+    if (Object.keys(safe).length === 0 && Object.keys(updates).length === 0) {
+      // touch updated_at only
+      safe.updated_at = new Date().toISOString();
+    } else {
+      safe.updated_at = new Date().toISOString();
     }
-
+    const { error } = await BoardFlowAuth.supabase
+      .from('boards')
+      .update(safe)
+      .eq('id', id);
+    if (error) throw error;
     const board = this.boards.find(b => b.id === id);
     if (board) {
-      Object.assign(board, updates, { updated_at: new Date().toISOString() });
+      Object.assign(board, safe);
       this._saveLocal();
     }
     return board;
   }
 
   async delete(id) {
-    if (BoardFlowAuth.supabase) {
-      const { error } = await BoardFlowAuth.supabase
-        .from('boards')
-        .delete()
-        .eq('id', id);
-      if (error) throw error;
-    }
-
+    const { error } = await BoardFlowAuth.supabase
+      .from('boards')
+      .delete()
+      .eq('id', id);
+    if (error) throw error;
     this.boards = this.boards.filter(b => b.id !== id);
     this._saveLocal();
   }
 
   async _loadFromSupabase() {
-    if (!BoardFlowAuth.supabase || !BoardFlowAuth.getUserId()) return;
-    const { data, error } = await BoardFlowAuth.supabase
+    if (!BoardFlowAuth.supabase || !BoardFlowAuth.getUserId()) { this.boards = []; return; }
+    const uid = BoardFlowAuth.getUserId();
+    // owned boards
+    const { data: owned, error: e1 } = await BoardFlowAuth.supabase
       .from('boards')
       .select('*')
-      .eq('user_id', BoardFlowAuth.getUserId())
+      .eq('user_id', uid)
       .order('updated_at', { ascending: false });
-    if (error) {
-      console.error('Failed to load boards:', error.message);
-      return;
+    if (e1) console.error('Failed to load owned boards:', e1.message);
+    // shared boards via membership
+    const { data: memberships, error: e2 } = await BoardFlowAuth.supabase
+      .from('board_members')
+      .select('board_id')
+      .eq('user_id', uid);
+    let shared = [];
+    if (!e2 && memberships && memberships.length) {
+      const ids = memberships.map(m => m.board_id);
+      const { data: sharedBoards, error: e3 } = await BoardFlowAuth.supabase
+        .from('boards')
+        .select('*')
+        .in('id', ids);
+      if (!e3 && sharedBoards) shared = sharedBoards;
+      else if (e3) console.error('Failed to load shared boards:', e3.message);
     }
-    if (data) this.boards = data;
+    const map = new Map();
+    [...(owned || []), ...shared].forEach(b => map.set(b.id, b));
+    this.boards = Array.from(map.values()).sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
   }
 
   _loadFromLocal() {

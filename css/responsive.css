@@ -336,20 +336,32 @@
 }
 
 /* PWA install banner */
-.pwa-install-banner {
+#pwa-install-banner.pwa-install-banner {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: var(--space-xs);
-  padding: var(--space-xs) var(--space-md);
-  background: var(--primary);
-  color: var(--ink-inverse);
-  font-size: var(--text-caption-size);
+  gap: var(--space-sm);
+  padding: var(--space-sm) var(--space-md);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--hairline);
+  box-shadow: var(--shadow-elevated);
   border-radius: var(--radius-md);
-  cursor: pointer;
+  z-index: var(--z-toast);
+  font-size: var(--text-sm);
 }
-.pwa-install-banner:hover {
-  background: var(--primary-active);
+#pwa-install-banner .btn { white-space: nowrap; }
+.dashboard-card-star:focus-visible,
+.dashboard-card-menu:focus-visible,
+.board-card:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
+.board-card:focus-within .board-card-star,
+.board-card:focus-within .board-card-menu { opacity: 1; transform: none; }
 
 /* Print styles */
 @media print {
