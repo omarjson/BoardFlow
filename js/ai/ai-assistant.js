@@ -435,10 +435,6 @@ class _AIAssistant {
         select._bound = true;
         select.addEventListener('change', () => localStorage.setItem('boardflow_ai_model', select.value));
       }
-    } catch (err) {
-      console.warn('Failed to load AI models:', err);
-      select.innerHTML = '<option value="gpt-5.4-nano">GPT-5.4 Nano</option>';
-    }
   }
 
   async _startSTT() {

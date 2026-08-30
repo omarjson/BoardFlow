@@ -209,7 +209,8 @@
 
   .toolbar-label { display: none; }
   .toolbar-divider { margin: 0 2px; }
-  .toolbar-btn { min-width: 40px; min-height: 40px; }
+  .toolbar-btn { min-width: 44px; min-height: 44px; }
+  .board-toolbar .toolbar-btn { min-width: 44px; min-height: 44px; }
 
   .minimap {
     width: 100px;

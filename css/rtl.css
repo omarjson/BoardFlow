@@ -1,101 +1,81 @@
-html[dir="rtl"] .auth-card {
-  text-align: right;
-}
+/* RTL Base */
+html[dir="rtl"] { direction: rtl; }
+html[dir="rtl"] body { direction: rtl; }
 
-html[dir="rtl"] .auth-form label {
-  text-align: right;
-}
+html[dir="rtl"] .auth-card { text-align: right; }
+html[dir="rtl"] .auth-form label { text-align: right; }
 
+/* Sidebar */
 html[dir="rtl"] .sidebar {
   border-right: none;
   border-left: 1px solid var(--hairline);
-}
-
-html[dir="rtl"] .sidebar-header h2 {
-  margin-right: 0;
-  margin-left: auto;
-}
-
-html[dir="rtl"] .toolbar-label {
-  direction: ltr;
-}
-
-html[dir="rtl"] .modal-footer {
-  flex-direction: row-reverse;
-}
-
-html[dir="rtl"] .toast {
+  right: 0;
   left: auto;
-  right: var(--space-md);
 }
+html[dir="rtl"] .sidebar-header h2 { margin-right: 0; margin-left: auto; }
+html[dir="rtl"] .sidebar.collapsed .sidebar-label { display: none; }
 
-html[dir="rtl"] #chat-panel {
-  right: auto;
-  left: 0;
-}
+/* Landing */
+html[dir="rtl"] .landing-nav-inner { flex-direction: row-reverse; }
+html[dir="rtl"] .landing-hero-content { direction: rtl; }
+html[dir="rtl"] .landing-hero-text { text-align: right; }
+html[dir="rtl"] .landing-hero-actions { justify-content: flex-end; }
+html[dir="rtl"] .landing-section-header { text-align: center; }
+html[dir="rtl"] .landing-footer-grid { direction: rtl; }
+html[dir="rtl"] .landing-footer-brand { text-align: right; }
+html[dir="rtl"] .landing-testimonials-grid,
+html[dir="rtl"] .landing-use-cases { direction: rtl; }
+html[dir="rtl"] .contact-grid { direction: rtl; }
 
-html[dir="rtl"] #ai-panel {
-  right: auto;
-  left: 0;
-  border-left: none;
-  border-right: 1px solid var(--hairline);
-}
+/* Dashboard */
+html[dir="rtl"] .dashboard-header { flex-direction: row-reverse; }
+html[dir="rtl"] .dashboard-header-left,
+html[dir="rtl"] .dashboard-header-center,
+html[dir="rtl"] .dashboard-header-right { direction: rtl; }
+html[dir="rtl"] .dashboard-search { flex-direction: row-reverse; }
+html[dir="rtl"] .dashboard-search-icon { margin-right: 0; margin-left: var(--space-xs); }
+html[dir="rtl"] .board-card-context { right: auto; left: var(--space-xs); }
+html[dir="rtl"] .board-card-star { left: auto; right: var(--space-xs); }
+html[dir="rtl"] .board-card-menu { right: auto; left: var(--space-xs); }
 
-html[dir="rtl"] .minimap {
-  right: auto;
-  left: var(--space-md);
-}
+/* Board */
+html[dir="rtl"] .board-toolbar { direction: ltr; } /* toolbar icons stay LTR but container anchored */
+html[dir="rtl"] .board-toolbar { left: 0; right: 0; }
+html[dir="rtl"] .toolbar-label { direction: ltr; }
+html[dir="rtl"] .minimap { right: auto; left: var(--space-md); }
+html[dir="rtl"] #canvas-container { direction: ltr; }
 
-html[dir="rtl"] .context-menu {
-  transform-origin: top right;
-}
+/* Panels */
+html[dir="rtl"] .modal-footer { flex-direction: row-reverse; }
+html[dir="rtl"] .modal-header { flex-direction: row-reverse; }
+html[dir="rtl"] .toast { left: auto; right: var(--space-md); }
+html[dir="rtl"] #chat-panel { right: auto; left: 0; }
+html[dir="rtl"] #ai-panel { right: auto; left: 0; border-left: none; border-right: 1px solid var(--hairline); }
+html[dir="rtl"] .context-menu { transform-origin: top right; }
+html[dir="rtl"] .ai-messages,
+html[dir="rtl"] .chat-messages { direction: rtl; }
+html[dir="rtl"] .file-manager { right: auto; left: 0; }
+html[dir="rtl"] .template-gallery-grid { direction: rtl; }
+html[dir="rtl"] .settings-tabs { direction: rtl; }
+html[dir="rtl"] .settings-section { text-align: right; }
 
-html[dir="rtl"] .ai-messages {
-  direction: rtl;
-}
-
-html[dir="rtl"] .chat-messages {
-  direction: rtl;
-}
-
-html[dir="rtl"] .dashboard-grid {
-  direction: rtl;
-}
-
-html[dir="rtl"] .board-card {
-  text-align: right;
-}
-
-html[dir="rtl"] .roadmap-timeline {
-  padding-right: 24px;
-  padding-left: var(--space-md);
-}
-
-html[dir="rtl"] .roadmap-milestones {
-  padding-left: 0;
-  padding-right: 24px;
-}
-
-html[dir="rtl"] .roadmap-dot {
-  left: auto;
-  right: -18px;
-}
-
-html[dir="rtl"] .roadmap-milestone {
-  padding-left: 0;
-  padding-right: var(--space-md);
-}
-
-html[dir="rtl"] .link-card {
-  text-align: right;
-}
-
+/* Content */
+html[dir="rtl"] .dashboard-grid { direction: rtl; }
+html[dir="rtl"] .board-card { text-align: right; }
+html[dir="rtl"] .roadmap-timeline { padding-right: 24px; padding-left: var(--space-md); }
+html[dir="rtl"] .roadmap-milestones { padding-left: 0; padding-right: 24px; }
+html[dir="rtl"] .roadmap-dot { left: auto; right: -18px; }
+html[dir="rtl"] .roadmap-milestone { padding-left: 0; padding-right: var(--space-md); }
+html[dir="rtl"] .link-card { text-align: right; }
 html[dir="rtl"] input,
 html[dir="rtl"] textarea,
-html[dir="rtl"] select {
-  text-align: right;
-}
+html[dir="rtl"] select { text-align: right; }
+html[dir="rtl"] .auth-input-group { flex-direction: row-reverse; }
 
-html[dir="rtl"] .auth-input-group {
-  flex-direction: row-reverse;
+/* Mobile overrides */
+@media (max-width: 767px) {
+  html[dir="rtl"] .landing-hero-content { text-align: right; }
+  html[dir="rtl"] .landing-hero-actions { justify-content: center; }
+  :lang(ar) .landing-hero-text { text-align: center; }
+  html[dir="rtl"]:lang(ar) .landing-hero-text { text-align: right; }
 }
