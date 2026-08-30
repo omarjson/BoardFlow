@@ -162,6 +162,45 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- ============================================
+-- RLS Helpers — SECURITY DEFINER to avoid infinite recursion
+-- These functions bypass RLS (run as postgres) so policies can
+-- reference boards ↔ board_members without looping.
+-- ============================================
+CREATE OR REPLACE FUNCTION public.is_board_owner(bid uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.boards WHERE id = bid AND user_id = auth.uid());
+$$;
+CREATE OR REPLACE FUNCTION public.is_board_member(bid uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.board_members WHERE board_id = bid AND user_id = auth.uid());
+$$;
+CREATE OR REPLACE FUNCTION public.is_board_editor(bid uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT EXISTS (SELECT 1 FROM public.board_members WHERE board_id = bid AND user_id = auth.uid() AND role IN ('owner','editor'));
+$$;
+CREATE OR REPLACE FUNCTION public.can_view_profile(target_id uuid)
+RETURNS boolean LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT auth.uid() = target_id
+  OR EXISTS (
+    SELECT 1 FROM public.boards b
+    WHERE b.user_id = auth.uid() AND EXISTS (SELECT 1 FROM public.board_members bm WHERE bm.board_id = b.id AND bm.user_id = target_id)
+  )
+  OR EXISTS (
+    SELECT 1 FROM public.boards b
+    WHERE b.user_id = target_id AND EXISTS (SELECT 1 FROM public.board_members bm WHERE bm.board_id = b.id AND bm.user_id = auth.uid())
+  )
+  OR EXISTS (
+    SELECT 1 FROM public.board_members bm1
+    JOIN public.board_members bm2 ON bm1.board_id = bm2.board_id
+    WHERE bm1.user_id = auth.uid() AND bm2.user_id = target_id
+  );
+$$;
+CREATE OR REPLACE FUNCTION public.find_user_id_by_email(email text)
+RETURNS uuid LANGUAGE sql SECURITY DEFINER SET search_path = public AS $$
+  SELECT id FROM public.profiles WHERE profiles.email = find_user_id_by_email.email LIMIT 1;
+$$;
+
+-- ============================================
 -- RLS
 -- ============================================
 
@@ -169,21 +208,14 @@ CREATE TRIGGER on_auth_user_created
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 DROP POLICY IF EXISTS "Users view own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users view other profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Users view collaborator profiles" ON public.profiles;
 DROP POLICY IF EXISTS "Users update own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Users insert own profile" ON public.profiles;
 
 CREATE POLICY "Users view own profile" ON public.profiles
   FOR SELECT USING (auth.uid() = id);
 CREATE POLICY "Users view collaborator profiles" ON public.profiles
-  FOR SELECT USING (
-    auth.uid() = id OR EXISTS (
-      SELECT 1 FROM public.board_members bm
-      JOIN public.boards b ON b.id = bm.board_id
-      WHERE bm.user_id = auth.uid() AND (
-        b.user_id = profiles.id OR EXISTS (SELECT 1 FROM public.board_members bm2 WHERE bm2.board_id = b.id AND bm2.user_id = profiles.id)
-      )
-    )
-  );
+  FOR SELECT USING (public.can_view_profile(id));
 CREATE POLICY "Users insert own profile" ON public.profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
 CREATE POLICY "Users update own profile" ON public.profiles
@@ -202,22 +234,15 @@ DROP POLICY IF EXISTS "Editors update member boards" ON public.boards;
 CREATE POLICY "Users view own boards" ON public.boards
   FOR SELECT USING (auth.uid() = user_id);
 CREATE POLICY "Users view member boards" ON public.boards
-  FOR SELECT USING (
-    EXISTS (SELECT 1 FROM public.board_members
-            WHERE board_id = boards.id AND user_id = auth.uid())
-  );
+  FOR SELECT USING (public.is_board_member(id));
 CREATE POLICY "Users view public boards" ON public.boards
   FOR SELECT USING (is_public = true);
 CREATE POLICY "Users create boards" ON public.boards
   FOR INSERT WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Users update own boards" ON public.boards
-  FOR UPDATE USING (auth.uid() = user_id);
+  FOR UPDATE USING (auth.uid() = user_id) WITH CHECK (auth.uid() = user_id);
 CREATE POLICY "Editors update member boards" ON public.boards
-  FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.board_members
-            WHERE board_id = boards.id AND user_id = auth.uid()
-            AND role IN ('owner', 'editor'))
-  );
+  FOR UPDATE USING (public.is_board_editor(id)) WITH CHECK (public.is_board_editor(id));
 CREATE POLICY "Users delete own boards" ON public.boards
   FOR DELETE USING (auth.uid() = user_id);
 -- Share links: enumeration blocked. Use RPC get_board_by_token(token) for anon access.
@@ -233,27 +258,14 @@ DROP POLICY IF EXISTS "Owners remove members" ON public.board_members;
 
 CREATE POLICY "View members" ON public.board_members
   FOR SELECT USING (
-    auth.uid() = user_id OR EXISTS (
-      SELECT 1 FROM public.boards WHERE id = board_members.board_id AND user_id = auth.uid()
-    ) OR EXISTS (
-      SELECT 1 FROM public.board_members bm WHERE bm.board_id = board_members.board_id AND bm.user_id = auth.uid()
-    )
+    auth.uid() = user_id OR public.is_board_owner(board_id) OR public.is_board_member(board_id)
   );
 CREATE POLICY "Owners add members" ON public.board_members
-  FOR INSERT WITH CHECK (
-    EXISTS (SELECT 1 FROM public.boards
-            WHERE id = board_members.board_id AND user_id = auth.uid())
-  );
+  FOR INSERT WITH CHECK (public.is_board_owner(board_id));
 CREATE POLICY "Owners update members" ON public.board_members
-  FOR UPDATE USING (
-    EXISTS (SELECT 1 FROM public.boards
-            WHERE id = board_members.board_id AND user_id = auth.uid())
-  );
+  FOR UPDATE USING (public.is_board_owner(board_id)) WITH CHECK (public.is_board_owner(board_id));
 CREATE POLICY "Owners remove members" ON public.board_members
-  FOR DELETE USING (
-    EXISTS (SELECT 1 FROM public.boards
-            WHERE id = board_members.board_id AND user_id = auth.uid())
-  );
+  FOR DELETE USING (public.is_board_owner(board_id));
 
 -- items
 ALTER TABLE public.items ENABLE ROW LEVEL SECURITY;

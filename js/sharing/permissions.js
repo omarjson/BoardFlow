@@ -51,12 +51,17 @@ class _Permissions {
     }
 
     try {
-      const { data: profile } = await BoardFlowAuth.supabase
-        .from('profiles')
-        .select('id')
-        .eq('email', email)
-        .single();
-
+      // Use SECURITY DEFINER RPC to find user by email (bypasses profiles RLS)
+      let profile = null;
+      try {
+        const { data: rpcId } = await BoardFlowAuth.supabase.rpc('find_user_id_by_email', { email });
+        if (rpcId) profile = { id: rpcId };
+      } catch {}
+      if (!profile) {
+        // fallback to direct query (works if collaborator)
+        const { data } = await BoardFlowAuth.supabase.from('profiles').select('id').eq('email', email).single();
+        profile = data;
+      }
       if (!profile) {
         Toast.show(I18n.__('user_not_found'), 'error');
         return false;
